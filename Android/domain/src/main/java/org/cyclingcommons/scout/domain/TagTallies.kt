@@ -12,6 +12,7 @@ data class TagTalliesSnapshot(
     val closureDetails: IntArray,
     val surfaceDetails: IntArray,
     val sceneryDetails: IntArray = IntArray(7),
+    val resupplyDetails: IntArray = IntArray(4),
     val lastTapType: Int,
     val lastTapDetail: Int,
     val lastTapAtMs: Long,
@@ -25,6 +26,7 @@ data class TagTalliesSnapshot(
             closureDetails.contentEquals(other.closureDetails) &&
             surfaceDetails.contentEquals(other.surfaceDetails) &&
             sceneryDetails.contentEquals(other.sceneryDetails) &&
+            resupplyDetails.contentEquals(other.resupplyDetails) &&
             lastTapType == other.lastTapType &&
             lastTapDetail == other.lastTapDetail &&
             lastTapAtMs == other.lastTapAtMs &&
@@ -37,6 +39,7 @@ data class TagTalliesSnapshot(
         result = 31 * result + closureDetails.contentHashCode()
         result = 31 * result + surfaceDetails.contentHashCode()
         result = 31 * result + sceneryDetails.contentHashCode()
+        result = 31 * result + resupplyDetails.contentHashCode()
         result = 31 * result + lastTapType
         result = 31 * result + lastTapDetail
         result = 31 * result + lastTapAtMs.hashCode()
@@ -52,7 +55,7 @@ class TagTallies {
     /** 1 normally; [Timings.TALKBACK_TIMEOUT_SCALE] while TalkBack is on. */
     var timeoutScale: Int = 1
 
-    private val counts = IntArray(9) // index = poi_type 1..8
+    private val counts = IntArray(10) // index = poi_type 1..9
     /** Hazard kind buckets (POTHOLES..UNKNOWN). Codes collide with poi_type. */
     private val dangerDetails = IntArray(6) // index = Danger 1..5
     /** Closure duration buckets (TODAY..UNKNOWN). Codes collide with poi_type. */
@@ -61,6 +64,8 @@ class TagTallies {
     private val surfaceDetails = IntArray(10) // index = Surface 1..9
     /** Scenery kind buckets (NATURE..UNKNOWN). Codes collide with poi_type. */
     private val sceneryDetails = IntArray(7) // index = Scenery 1..6
+    /** Resupply kind buckets (WATER..MECHANICAL). Codes collide with poi_type. */
+    private val resupplyDetails = IntArray(4) // index = Resupply 1..3
 
     var lastTapType: Int = PoiType.NONE
         private set
@@ -88,12 +93,16 @@ class TagTallies {
     fun sceneryDetailCount(detail: Int): Int =
         if (detail in Scenery.NATURE..Scenery.UNKNOWN) sceneryDetails[detail] else 0
 
+    fun resupplyDetailCount(detail: Int): Int =
+        if (detail in Resupply.WATER..Resupply.MECHANICAL) resupplyDetails[detail] else 0
+
     fun clear() {
         counts.fill(0)
         dangerDetails.fill(0)
         closureDetails.fill(0)
         surfaceDetails.fill(0)
         sceneryDetails.fill(0)
+        resupplyDetails.fill(0)
         lastTapType = PoiType.NONE
         lastTapDetail = Duration.NONE
         lastTapAtMs = 0L
@@ -102,8 +111,7 @@ class TagTallies {
 
     fun tileCount(code: Int): Int =
         when (code) {
-            PoiType.UI_RESUPPLY ->
-                counts[PoiType.WATER] + counts[PoiType.FOOD] + counts[PoiType.MECHANICAL]
+            PoiType.UI_RESUPPLY -> counts[PoiType.RESUPPLY]
             in 1 until counts.size -> counts[code]
             else -> 0
         }
@@ -135,6 +143,11 @@ class TagTallies {
                 if (d in Scenery.NATURE..Scenery.UNKNOWN) {
                     sceneryDetails[d] = (sceneryDetails[d] - 1).coerceAtLeast(0)
                 }
+            } else if (lastTapType == PoiType.RESUPPLY) {
+                val d = lastTapDetail
+                if (d in Resupply.WATER..Resupply.MECHANICAL) {
+                    resupplyDetails[d] = (resupplyDetails[d] - 1).coerceAtLeast(0)
+                }
             }
             lastTapType = PoiType.NONE
             lastTapDetail = Duration.NONE
@@ -150,6 +163,8 @@ class TagTallies {
                     closureDetails[detail]++
                 type == PoiType.SCENERY && detail in Scenery.NATURE..Scenery.UNKNOWN ->
                     sceneryDetails[detail]++
+                type == PoiType.RESUPPLY && detail in Resupply.WATER..Resupply.MECHANICAL ->
+                    resupplyDetails[detail]++
                 type == PoiType.SURFACE && detail in Surface.ASPHALT..Surface.END -> {
                     // Includes END for the submenu tile; grid SURFACE ignores END.
                     surfaceDetails[detail]++
@@ -173,6 +188,7 @@ class TagTallies {
             closureDetails = closureDetails.copyOf(),
             surfaceDetails = surfaceDetails.copyOf(),
             sceneryDetails = sceneryDetails.copyOf(),
+            resupplyDetails = resupplyDetails.copyOf(),
             lastTapType = lastTapType,
             lastTapDetail = lastTapDetail,
             lastTapAtMs = lastTapAtMs,
@@ -185,6 +201,7 @@ class TagTallies {
         closureDetails.fill(0)
         surfaceDetails.fill(0)
         sceneryDetails.fill(0)
+        resupplyDetails.fill(0)
         snapshot.counts.copyInto(counts, endIndex = minOf(snapshot.counts.size, counts.size))
         snapshot.dangerDetails.copyInto(
             dangerDetails,
@@ -201,6 +218,10 @@ class TagTallies {
         snapshot.sceneryDetails.copyInto(
             sceneryDetails,
             endIndex = minOf(snapshot.sceneryDetails.size, sceneryDetails.size),
+        )
+        snapshot.resupplyDetails.copyInto(
+            resupplyDetails,
+            endIndex = minOf(snapshot.resupplyDetails.size, resupplyDetails.size),
         )
         lastTapType = snapshot.lastTapType
         lastTapDetail = snapshot.lastTapDetail

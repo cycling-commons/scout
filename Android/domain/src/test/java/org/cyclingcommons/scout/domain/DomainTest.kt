@@ -59,9 +59,11 @@ class TagTalliesTest {
     @Test
     fun resupplyTileSumsLeaves() {
         val t = TagTallies()
-        t.countTap(PoiType.WATER, 0, 1000)
-        t.countTap(PoiType.FOOD, 0, 5000)
+        t.countTap(PoiType.RESUPPLY, Resupply.WATER, 1000)
+        t.countTap(PoiType.RESUPPLY, Resupply.FOOD, 5000)
         assertEquals(2, t.tileCount(PoiType.UI_RESUPPLY))
+        assertEquals(1, t.resupplyDetailCount(Resupply.WATER))
+        assertEquals(1, t.resupplyDetailCount(Resupply.FOOD))
     }
 
     @Test
@@ -236,6 +238,21 @@ class ScoutControllerTest {
         c.onTileTap(0, 1000) // RESUPPLY
         c.onTick(1000 + Timings.PICK_MS + 1)
         assertEquals(0, c.queueSize())
+        assertEquals(UiMode.GRID, c.snapshot().mode)
+    }
+
+    @Test
+    fun resupplyPickerCommitsAfterCorrectWindow() {
+        val c = ScoutController()
+        c.start()
+        c.onTileTap(0, 1000) // RESUPPLY
+        assertEquals(UiMode.RESUPPLY, c.snapshot().mode)
+        c.onTileTap(0, 1100) // WATER
+        assertEquals(0, c.queueSize())
+        c.onTick(1100 + Timings.CORRECT_MS + 1)
+        val tag = c.drainTag()
+        assertEquals(PoiType.RESUPPLY, tag!!.type)
+        assertEquals(Resupply.WATER, tag.detail)
         assertEquals(UiMode.GRID, c.snapshot().mode)
     }
 

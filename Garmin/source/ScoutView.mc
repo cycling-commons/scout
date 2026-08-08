@@ -19,8 +19,9 @@ enum {
     POI_OTHER      = 4,   // anything else
     POI_CLOSURE    = 5,   // road shut / detour needed
     POI_SURFACE    = 6,   // potholes, broken tarmac, unexpected gravel
-    POI_FOOD       = 7,   // cafe, shop, bakery
-    POI_MECHANICAL = 8    // bike shop, public pump, tools
+    POI_FOOD       = 7,   // cafe, shop, bakery (legacy writer — use POI_RESUPPLY)
+    POI_MECHANICAL = 8,   // bike shop, public pump, tools (legacy writer)
+    POI_RESUPPLY   = 9    // resupply point; kind in poi_detail (RESUP_*)
 }
 
 // How long a closure is expected to last, written into "poi_detail".
@@ -82,6 +83,15 @@ enum {
     DANG_CORNER   = 3,
     DANG_OTHER    = 4,
     DANG_UNKNOWN  = 5
+}
+
+// Resupply kind, written into "poi_detail" when poi_type == POI_RESUPPLY. Shares the
+// byte with the other detail enums the same way (the reader keys off poi_type).
+enum {
+    RESUP_NONE       = 0,
+    RESUP_WATER      = 1,
+    RESUP_FOOD       = 2,
+    RESUP_MECHANICAL = 3
 }
 
 // Tiles that only steer the UI. Never written to the FIT, so they sit at the
@@ -159,7 +169,7 @@ class ScoutView extends WatchUi.DataField {
     // On-screen tally only, per poi_type (index = POI code 1..8; slot 0 unused).
     // The FIT stays a raw log of what was tapped; this mirrors the parser's undo
     // rule so the per-tile number the rider sees matches what the ride yields.
-    hidden var _counts as Array<Number> = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+    hidden var _counts as Array<Number> = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     hidden var _lastTapType as Number = POI_NONE;
     hidden var _lastTapAt as Number = 0;
 
@@ -214,10 +224,10 @@ class ScoutView extends WatchUi.DataField {
     ];
 
     hidden var _resButtons as Array<Array> = [
-        [POI_WATER,      "WATER",  0x1E7FC0],
-        [POI_FOOD,       "FOOD",   0xE67E22],
-        [POI_MECHANICAL, "REPAIR", 0x7F8C8D],
-        [UI_BACK,        "BACK",   0x444444]
+        [RESUP_WATER,      "WATER",  0x1E7FC0],
+        [RESUP_FOOD,       "FOOD",   0xE67E22],
+        [RESUP_MECHANICAL, "REPAIR", 0x7F8C8D],
+        [UI_BACK,          "BACK",   0x444444]
     ];
 
     // Surface picker, smooth -> rough. First element is a SURF_* detail code, not
@@ -666,7 +676,7 @@ class ScoutView extends WatchUi.DataField {
     // RESUPPLY is a group, so it sums its leaves (water + food + repair).
     hidden function tileCount(code as Number) as Number {
         if (code == UI_RESUPPLY) {
-            return _counts[POI_WATER] + _counts[POI_FOOD] + _counts[POI_MECHANICAL];
+            return _counts[POI_RESUPPLY];
         }
         if (code >= 1 && code < _counts.size()) {
             return _counts[code];
@@ -752,8 +762,10 @@ class ScoutView extends WatchUi.DataField {
             holdPick(POI_SCENERY, code, i);   // a wrong kind is re-pickable for CORRECT_MS
         } else if (_mode == MODE_NOTICE) {
             holdPick(POI_DANGER, code, i);    // a wrong kind is re-pickable for CORRECT_MS
+        } else if (_mode == MODE_RESUPPLY) {
+            holdPick(POI_RESUPPLY, code, i);  // a wrong kind is re-pickable for CORRECT_MS
         } else {
-            holdPick(code, DUR_NONE, i);      // resupply leaf (WATER/FOOD/REPAIR)
+            holdPick(code, DUR_NONE, i);
         }
         WatchUi.requestUpdate();
     }

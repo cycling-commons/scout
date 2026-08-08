@@ -287,15 +287,19 @@ const fitToDate = (t) => t == null ? null : new Date((t + FIT_EPOCH) * 1000);
 
 // --- poi-tagger specific decoding (must match PoiTaggerView.mc) ---
 const POI_TYPE = { 1: 'NOTICE', 2: 'SCENERY', 3: 'WATER', 4: 'OTHER',
-                   5: 'CLOSURE', 6: 'SURFACE', 7: 'FOOD', 8: 'MECHANICAL' };
+                   5: 'CLOSURE', 6: 'SURFACE', 7: 'FOOD', 8: 'MECHANICAL', 9: 'RESUPPLY' };
 const POI_COLOR = { 1: '#d1421f', 2: '#2e8b57', 3: '#1e7fc0', 4: '#b58900',
-                    5: '#8e44ad', 6: '#8e5a2b', 7: '#e67e22', 8: '#7f8c8d' };
+                    5: '#8e44ad', 6: '#8e5a2b', 7: '#e67e22', 8: '#7f8c8d', 9: '#1e7fc0' };
+// Legacy resupply leaves (pre-1.3): separate poi_types with detail 0 — normalize for display.
+const LEGACY_RESUPPLY = { 3: 1, 7: 2, 8: 3 };
 const POI_DETAIL = { 1: 'TODAY', 2: 'DAYS', 3: 'WEEKS', 4: 'MONTHS', 5: 'UNKNOWN' };
 // Hazard kind, in poi_detail when poi_type === 1 (DANGER / NOTICE). 0 = legacy / unspecified.
 const POI_DANGER = { 1: 'Potholes', 2: 'Crossing', 3: 'Corner', 4: 'Other', 5: 'Unknown' };
 // Scenery kind, in poi_detail when poi_type === 2 (SCENERY). 0 = legacy / unspecified.
 const POI_SCENERY = { 1: 'Nature', 2: 'History', 3: 'Culture', 4: 'View',
                       5: 'Architecture', 6: 'Unknown' };
+// Resupply kind, in poi_detail when poi_type === 9 (RESUPPLY). 0 = legacy / unspecified.
+const POI_RESUPPLY = { 1: 'Water', 2: 'Food', 3: 'Repair' };
 // Surface type, in poi_detail when poi_type === 6 (SURFACE). Smooth -> rough,
 // aligned to OSM surface= values. 0/absent = unspecified surface point.
 const POI_SURFACE = { 1: 'Asphalt', 2: 'Concrete', 3: 'Paving (klinkers)',
@@ -307,6 +311,30 @@ const OSM_SURFACE = { 1: 'asphalt', 2: 'concrete', 3: 'paving_stones', 4: 'sett'
 const SURF_COLOR = { 1: '#555555', 2: '#8a8a8a', 3: '#c0392b', 4: '#9b7653',
                      5: '#6e4b3a', 6: '#b58900', 7: '#8e5a2b', 8: '#d2b48c' };
 const SURF_TYPE = 6, SURF_END = 9;   // poi_type for SURFACE; poi_detail for "stretch ends"
+
+// Display row for the tag table: legacy WATER/FOOD/MECHANICAL → RESUPPLY + kind.
+function tagRowDisplay(t) {
+  if (t.type === 9) {
+    return {
+      name: 'RESUPPLY',
+      color: POI_COLOR[9],
+      detail: POI_RESUPPLY[t.detail] ?? (t.detail ? 'code ' + t.detail : 'unspecified'),
+    };
+  }
+  const legacy = LEGACY_RESUPPLY[t.type];
+  if (legacy) {
+    return {
+      name: 'RESUPPLY',
+      color: POI_COLOR[9],
+      detail: POI_RESUPPLY[legacy] + ' (legacy)',
+    };
+  }
+  return {
+    name: POI_TYPE[t.type] ?? ('UNKNOWN (' + t.type + ')'),
+    color: POI_COLOR[t.type] ?? '#777',
+    detail: null,
+  };
+}
 
 // Finds a developer field by name, whatever index the device assigned it.
 function findDevKey(devFields, name) {
@@ -669,9 +697,10 @@ function render(p, file) {
     html.push('<div class="scroll" style="margin-top:.8rem"><table><thead><tr><th>#</th><th>Time (UTC)</th>' +
               '<th>Type</th><th>Detail</th><th>Lat</th><th>Lon</th><th>Map</th><th></th></tr></thead><tbody>');
     tags.forEach((t, i) => {
-      const name = POI_TYPE[t.type] ?? ('UNKNOWN (' + t.type + ')');
-      const color = POI_COLOR[t.type] ?? '#777';
-      const detail = (() => {
+      const row = tagRowDisplay(t);
+      const name = row.name;
+      const color = row.color;
+      const detail = row.detail ?? (() => {
         if (t.type === 1) {   // DANGER / NOTICE -> hazard kind
           return POI_DANGER[t.detail] ?? (t.detail ? 'code ' + t.detail : 'unspecified');
         }

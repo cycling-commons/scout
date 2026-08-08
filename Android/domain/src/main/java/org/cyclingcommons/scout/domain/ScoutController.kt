@@ -161,7 +161,7 @@ class ScoutController(
                 UiMode.RESUPPLY ->
                     tiles.map {
                         if (it.code == PoiType.UI_BACK) 0
-                        else tallies.tileCount(it.code)
+                        else tallies.resupplyDetailCount(it.code)
                     }
                 UiMode.SURFACE ->
                     tiles.map {
@@ -252,7 +252,7 @@ class ScoutController(
                     UiMode.DURATION -> holdPick(PoiType.CLOSURE, code, index, nowMs)
                     UiMode.SURFACE -> holdPick(PoiType.SURFACE, code, index, nowMs)
                     UiMode.SCENERY -> holdPick(PoiType.SCENERY, code, index, nowMs)
-                    UiMode.RESUPPLY -> holdPick(code, Duration.NONE, index, nowMs)
+                    UiMode.RESUPPLY -> holdPick(PoiType.RESUPPLY, code, index, nowMs)
                     UiMode.GRID -> Unit
                 }
             }

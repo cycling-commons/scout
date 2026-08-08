@@ -11,6 +11,7 @@ object PoiType {
     const val SURFACE = 6
     const val FOOD = 7
     const val MECHANICAL = 8
+    const val RESUPPLY = 9
 
     /** UI-only: never written to FIT */
     const val UI_RESUPPLY = 254
@@ -60,6 +61,14 @@ object Scenery {
     const val VIEW = 4
     const val ARCH = 5
     const val UNKNOWN = 6
+}
+
+/** Resupply kind when poi_type == RESUPPLY */
+object Resupply {
+    const val NONE = 0
+    const val WATER = 1
+    const val FOOD = 2
+    const val MECHANICAL = 3
 }
 
 /** uint8 FIT invalid — radar not tracking */

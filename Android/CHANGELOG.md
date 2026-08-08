@@ -5,6 +5,11 @@ truth. Tag releases **`android/vX.Y.Z`** (see root [README](../README.md#release
 
 ## Unreleased
 
+## 1.3.0 — 2026-08-08
+- **Resupply FIT encoding** unified: `poi_type` 9 + detail (WATER / FOOD /
+  REPAIR), matching SCENERY and CLOSURE. Legacy types 3 / 7 / 8 still parse.
+- Ride recovery persists resupply detail tallies.
+
 ## 1.2.0 — 2026-08-08
 - Scenery picker label **ARCHITECT** (was ARCH); FIT code unchanged.
 - Undo window unified to **3 s** for all tiles (was 6 s for two-tap tiles).

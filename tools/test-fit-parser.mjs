@@ -63,7 +63,7 @@ for (const t of liveTags) byType[t.type] = (byType[t.type] || 0) + 1;
 check('the DANGER undo pair cancels (2 cancelled)', tags.length - liveTags.length === 2,
       (tags.length - liveTags.length) + ' cancelled');
 check('live tag counts per type are as tagged',
-      JSON.stringify(byType) === JSON.stringify({ 1: 1, 2: 1, 3: 1, 4: 1, 5: 5, 6: 4, 7: 1, 8: 1 }),
+      JSON.stringify(byType) === JSON.stringify({ 1: 1, 2: 1, 4: 1, 5: 5, 6: 4, 9: 3 }),
       JSON.stringify(byType));
 check('a CLOSURE carries its duration through the binary path',
       liveTags.find(t => t.type === 5).detail >= 1);
@@ -142,9 +142,9 @@ check('NOTICE pair 2s apart -> cancelled',
 check('SCENERY pair 2s apart -> cancelled',
       JSON.stringify(live([at(0, 2), at(2, 2)])) === '[]',
       JSON.stringify(live([at(0, 2), at(2, 2)])));
-check('RESUPPLY leaf (WATER) pair 2s apart -> cancelled',
-      JSON.stringify(live([at(0, 3), at(2, 3)])) === '[]',
-      JSON.stringify(live([at(0, 3), at(2, 3)])));
+check('RESUPPLY pair 2s apart -> cancelled',
+      JSON.stringify(live([at(0, 9), at(2, 9)])) === '[]',
+      JSON.stringify(live([at(0, 9), at(2, 9)])));
 check('OTHER (direct tile) pair 4s apart -> kept',
       JSON.stringify(live([at(0, 4), at(4, 4)])) === '[4,4]',
       JSON.stringify(live([at(0, 4), at(4, 4)])));

@@ -45,9 +45,9 @@ object Tiles {
     )
 
     val resupply: List<Tile> = listOf(
-        Tile(PoiType.WATER, "WATER", 0x1E7FC0),
-        Tile(PoiType.FOOD, "FOOD", 0xE67E22),
-        Tile(PoiType.MECHANICAL, "REPAIR", 0x7F8C8D),
+        Tile(Resupply.WATER, "WATER", 0x1E7FC0),
+        Tile(Resupply.FOOD, "FOOD", 0xE67E22),
+        Tile(Resupply.MECHANICAL, "REPAIR", 0x7F8C8D),
         Tile(PoiType.UI_BACK, "BACK", 0x444444),
     )
 

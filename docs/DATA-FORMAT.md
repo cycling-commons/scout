@@ -40,15 +40,14 @@ before they commit; the other one tags on the spot.
       RESUPPLY →  WHAT KIND?    WATER · FOOD · REPAIR
       SCENERY  →  SCENERY?      NATURE · HISTORY · CULTURE · VIEW · ARCHITECT · UNKNOWN
 
-The pickers look alike but encode differently. DANGER, CLOSURE, SCENERY, and SURFACE each
-write **one** `poi_type` with a qualifier in `poi_detail`. RESUPPLY is a menu
-folder, not a code — it writes nothing itself; its leaves are **three distinct
-`poi_type`s** (WATER=3, FOOD=7, REPAIR=`MECHANICAL`=8) with `poi_detail` 0, because
-each resupply kind is its own OSM-style POI category (drinking water / cafe-shop /
-bike shop), not a qualifier on one feature the way a duration or a surface is.
+The pickers look alike and encode the same way: DANGER, CLOSURE, SCENERY, SURFACE,
+and RESUPPLY each write **one** `poi_type` with a qualifier in `poi_detail`.
 
 `poi_type`: 1=DANGER · 2=SCENERY · 3=WATER · 4=OTHER · 5=CLOSURE · 6=SURFACE ·
-7=FOOD · 8=MECHANICAL. Codes are **append-only** — add new ones, never renumber.
+7=FOOD · 8=MECHANICAL · **9=RESUPPLY**. Codes are **append-only** — add new ones,
+never renumber. Types **3, 7, 8** are **legacy writers** (resupply leaves written
+as their own type with detail 0); parsers and the viewer still read them and
+display them as RESUPPLY + kind.
 
 `poi_detail` carries a qualifier for the type on the same record; it is 0 wherever
 no qualifier applies. The reader keys off `poi_type`, so the two code sets below
@@ -60,6 +59,9 @@ may overlap numerically.
   5=UNKNOWN.
 - `poi_type == 2` (SCENERY) — kind: 1=NATURE · 2=HISTORY · 3=CULTURE · 4=VIEW ·
   5=ARCHITECT (architecture) · 6=UNKNOWN. 0 = legacy bare tap or unspecified.
+- `poi_type == 9` (RESUPPLY) — kind: 1=WATER · 2=FOOD · 3=MECHANICAL (REPAIR).
+  0 = legacy / unspecified. Legacy rides may instead use `poi_type` 3 / 7 / 8 with
+  detail 0 — treat as the same kinds when parsing or displaying.
 - `poi_type == 6` (SURFACE) — surface type, smooth→rough, aligned to OSM
   `surface=`: 1=asphalt · 2=concrete · 3=paving_stones · 4=sett ·
   5=cobblestone · 6=gravel · 7=ground (dirt) · 8=sand · **9=END** (stretch ends,
@@ -244,7 +246,8 @@ they do not change the FIT. Every Scout port must show them the same way
   numerically overlap `poi_type` — keep a **separate** detail bucket array.
 - **Scenery submenu:** per-`poi_detail` counts (`NATURE`…`UNKNOWN`). Same
   code-overlap caveat — separate scenery detail buckets.
-- **Resupply submenu:** per-leaf `poi_type` counts on WATER / FOOD / REPAIR.
+- **Resupply submenu:** per-`poi_detail` counts (`WATER`…`MECHANICAL`). Same
+  undo rules as scenery; grid RESUPPLY folder shows the sum.
 - **Surface submenu:** per-`poi_detail` counts (`ASPHALT`…`SAND` and `END`). Same
   code-overlap caveat — separate surface detail buckets. Grid SURFACE total still
   counts stretch **starts** only (not END). No double-tap undo → leaf counts only
@@ -298,7 +301,7 @@ tag / radar not tracking. A handful of seconds from a real ride:
     1000000006  52.0024   4.0036      0        0          1    40   28    no tag; radar picks up a car (1 target, 40 m, +28 kph)
     1000000007  52.0028   4.0042      0        0          1    25   30    same car still tracked → parser counts it
     1000000008  52.0032   4.0048      0        0          0   255  255    count back to 0; near/speed invalid again
-    1000000013  52.0052   4.0078      3        0         255  255  255    WATER — a RESUPPLY leaf: its own poi_type, detail 0
+    1000000013  52.0052   4.0078      9        1         255  255  255    RESUPPLY + detail 1 = WATER
     1000000022  52.0088   4.0132      5        1         255  255  255    CLOSURE + poi_detail 1 = TODAY (type & qualifier, one record)
     1000000024  52.0096   4.0144      6        5         255  255  255    SURFACE + detail 5 = cobbles — stretch STARTS here
     1000000027  52.0108   4.0162      6        6         255  255  255    SURFACE + detail 6 = gravel — cobbles ends, gravel starts
@@ -306,10 +309,9 @@ tag / radar not tracking. A handful of seconds from a real ride:
     1000000057  52.0228   4.0342      1        0         255  255  255    DANGER …
     1000000058  52.0232   4.0348      1        0         255  255  255    … again 1 s later → parser cancels the pair (undo)
 
-Note how the three picker patterns look on disk: CLOSURE and SURFACE are one
-`poi_type` carrying a `poi_detail` qualifier, while the RESUPPLY leaf (WATER) is
-just its own `poi_type` with detail 0. This is the exact output of
-`tools/make-test-fit.mjs`, so `node tools/make-test-fit.mjs out.fit`
+Two-tap pickers (CLOSURE, SCENERY, RESUPPLY, SURFACE, NOTICE) each write one
+`poi_type` with a `poi_detail` qualifier on the same record. This is the exact
+output of `tools/make-test-fit.mjs`, so `node tools/make-test-fit.mjs out.fit`
 writes the file these rows came from — drop it on the viewer to see them plotted.
 
 ## Checking a FIT file (the viewer + tests)

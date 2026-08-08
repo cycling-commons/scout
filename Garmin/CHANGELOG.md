@@ -5,6 +5,11 @@ entered in the Connect IQ store at upload time.
 
 ## Unreleased
 
+## 1.3.0 — 2026-08-08
+- **Resupply FIT encoding** unified: writes `poi_type` 9 (RESUPPLY) with
+  `poi_detail` WATER / FOOD / REPAIR — same pattern as SCENERY and CLOSURE.
+  Legacy types 3 / 7 / 8 still parse.
+
 ## 1.2.0 — 2026-08-08
 - **Open-surface strip** while a stretch is active: banner `rec. surface tap to END`;
   tap the strip to END; SURFACE tile shows the active type.

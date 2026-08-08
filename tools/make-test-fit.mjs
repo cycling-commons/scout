@@ -49,9 +49,9 @@ export const SCENARIO = (() => {
 
   tag(5, 1, 1);                        // DANGER / POTHOLES
   tag(10, 2, 4);                       // SCENERY / VIEW
-  tag(13, 3, 0);                       // WATER  (resupply leaf)
-  tag(15, 7, 0);                       // FOOD
-  tag(17, 8, 0);                       // MECHANICAL
+  tag(13, 9, 1);                       // RESUPPLY / WATER
+  tag(18, 9, 2);                       // RESUPPLY / FOOD (>3 s after WATER — same type)
+  tag(25, 9, 3);                       // RESUPPLY / MECHANICAL
   tag(19, 4, 0);                       // OTHER
   tag(22, 5, 1);                       // CLOSURE / TODAY
   tag(30, 5, 2);                       // CLOSURE / DAYS

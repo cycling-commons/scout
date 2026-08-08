@@ -169,12 +169,13 @@ writing original FIT when feasible so existing ingest tools keep working.
 | 0 | NONE | — | — |
 | 1 | DANGER | NOTICE¹ | Opens notice picker |
 | 2 | SCENERY | SCENERY | Opens scenery picker |
-| 3 | WATER | WATER | Resupply leaf |
+| 3 | WATER | — | Legacy resupply leaf (read as RESUPPLY + WATER) |
 | 4 | OTHER | OTHER | Direct tag |
 | 5 | CLOSURE | CLOSURE | Opens duration picker |
 | 6 | SURFACE | SURFACE | Opens surface picker (segment channel) |
-| 7 | FOOD | FOOD | Resupply leaf |
-| 8 | MECHANICAL | REPAIR | Resupply leaf |
+| 7 | FOOD | — | Legacy resupply leaf (read as RESUPPLY + FOOD) |
+| 8 | MECHANICAL | — | Legacy resupply leaf (read as RESUPPLY + MECHANICAL) |
+| 9 | RESUPPLY | RESUPPLY | Opens resupply picker |
 
 UI-only codes (never written): `254` = RESUPPLY folder, `255` = BACK.
 
@@ -237,16 +238,17 @@ Surface is a **segment channel**, not a point channel (see §7).
 | 5 | ARCHITECT (architecture) |
 | 6 | UNKNOWN |
 
-### 5.6 Resupply encoding
+### 5.6 Resupply kind (`poi_type == 9`) → `poi_detail`
 
-RESUPPLY is a **menu folder**, not a written code. Leaves are distinct
-`poi_type`s with `poi_detail = 0`:
+| Code | Label |
+| --- | --- |
+| 0 | NONE / legacy |
+| 1 | WATER |
+| 2 | FOOD |
+| 3 | MECHANICAL (REPAIR) |
 
-- WATER = 3  
-- FOOD = 7  
-- MECHANICAL = 8  
-
----
+**Legacy encoding (read-only):** types 3 / 7 / 8 with detail 0 map to the same
+kinds. New recordings write `(9, detail)` only.
 
 ## 6. Interaction model (normative timings)
 
@@ -352,7 +354,7 @@ to the file. See also [DATA-FORMAT.md](DATA-FORMAT.md) (Undo).
 - Shown as label + count (e.g. `NOTICE` with `3` beneath / beside on Garmin).
 - Counts mirror parser undo: same type within undo window annihilates for
   display; both taps still go to the file.
-- RESUPPLY folder tile shows the **sum** of WATER + FOOD + MECHANICAL.
+- RESUPPLY folder tile shows the **sum** of all resupply kind commits.
 - CLOSURE tile shows the **sum** of all committed closure durations.
 - NOTICE tile shows the **sum** of all committed hazard kinds.
 - SCENERY tile shows the **sum** of all committed scenery kinds.
@@ -366,7 +368,7 @@ to the file. See also [DATA-FORMAT.md](DATA-FORMAT.md) (Undo).
 | Notice (`NOTICE?`) | Per-**detail** count: how many times that kind (`POTHOLES` … `UNKNOWN`) was committed this ride. BACK never tallies. |
 | Duration (`CLOSED FOR?`) | Per-**detail** count: how many times that duration (`TODAY` … `UNKNOWN`) was committed this ride. BACK never tallies. |
 | Scenery (`SCENERY?`) | Per-**detail** count: how many times that kind (`NATURE` … `UNKNOWN`) was committed this ride. BACK never tallies. |
-| Resupply (`WHAT KIND?`) | Per-leaf `poi_type` count (WATER / FOOD / MECHANICAL). BACK never tallies. |
+| Resupply (`WHAT KIND?`) | Per-detail count (`WATER` / `FOOD` / `REPAIR`). BACK never tallies. |
 | Surface | Per-**detail** count: how many times that surface leaf (`ASPHALT` … `SAND`, and `END`) was committed this ride. BACK never tallies. (Grid SURFACE total still counts **starts only**, not END.) |
 
 Closure, notice, scenery, and surface detail buckets are independent of `poi_type` indices
@@ -385,7 +387,7 @@ change tallies.
 | Tag class | Window |
 | --- | --- |
 | Direct (OTHER) | 3 s |
-| Two-tap leaves (NOTICE, SCENERY, CLOSURE, WATER, FOOD, MECHANICAL) | 3 s |
+| Two-tap leaves (NOTICE, SCENERY, CLOSURE, RESUPPLY) | 3 s |
 | SURFACE | **Exempt** — second surface tag is a transition, never an undo |
 
 ### 6.11 Confirmation feedback

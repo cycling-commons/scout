@@ -192,9 +192,9 @@ class ScoutFitWriterTest {
             }
             tag(5, 1, 0)
             tag(10, 2, 0)
-            tag(13, 3, 0)
-            tag(15, 7, 0)
-            tag(17, 8, 0)
+            tag(13, 9, 1)
+            tag(18, 9, 2)
+            tag(25, 9, 3)
             tag(19, 4, 0)
             tag(22, 5, 1)
             tag(30, 5, 2)

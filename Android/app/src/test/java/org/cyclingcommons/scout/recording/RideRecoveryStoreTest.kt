@@ -40,11 +40,12 @@ class RideRecoveryStoreTest {
                 timer = TimerState.IDLE,
                 queuedTags = emptyList(),
                 tallies = TagTalliesSnapshot(
-                    counts = IntArray(9),
+                    counts = IntArray(10),
                     dangerDetails = IntArray(6),
                     closureDetails = IntArray(6),
                     surfaceDetails = IntArray(10),
                     sceneryDetails = IntArray(7),
+                    resupplyDetails = IntArray(4),
                     lastTapType = 0,
                     lastTapDetail = 0,
                     lastTapAtMs = 0,

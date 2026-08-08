@@ -82,6 +82,7 @@ class RideRecoveryStore(context: Context) {
             root.put("closureDetails", JSONArray(tallies.closureDetails.toList()))
             root.put("surfaceDetails", JSONArray(tallies.surfaceDetails.toList()))
             root.put("sceneryDetails", JSONArray(tallies.sceneryDetails.toList()))
+            root.put("resupplyDetails", JSONArray(tallies.resupplyDetails.toList()))
             root.put("lastTapType", tallies.lastTapType)
             root.put("lastTapDetail", tallies.lastTapDetail)
             root.put("lastTapAtMs", tallies.lastTapAtMs)
@@ -116,6 +117,12 @@ class RideRecoveryStore(context: Context) {
                             root.getJSONArray("sceneryDetails").toIntArray()
                         } else {
                             IntArray(7)
+                        },
+                    resupplyDetails =
+                        if (root.has("resupplyDetails")) {
+                            root.getJSONArray("resupplyDetails").toIntArray()
+                        } else {
+                            IntArray(4)
                         },
                     lastTapType = root.getInt("lastTapType"),
                     lastTapDetail = root.getInt("lastTapDetail"),
