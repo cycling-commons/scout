@@ -5,8 +5,8 @@
 			"type": "monkeyc",
 			"request": "launch",
 			"name": "Run Scout",
-			"prg": "${workspaceFolder}${pathSeparator}bin${pathSeparator}Scout.prg",
-			"prgDebugXml": "${workspaceFolder}${pathSeparator}bin${pathSeparator}Scout.prg.debug.xml",
+			"prg": "${workspaceFolder}${pathSeparator}bin${pathSeparator}${workspaceFolderBasename}.prg",
+			"prgDebugXml": "${workspaceFolder}${pathSeparator}bin${pathSeparator}${workspaceFolderBasename}.prg.debug.xml",
 			"stopAtLaunch": false,
 			"device": "${command:GetTargetDevice}"
 		}

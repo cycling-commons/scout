@@ -5,7 +5,6 @@
 			"label": "Build Scout",
 			"type": "monkeyc",
 			"device": "edge1030plus",
-			"outputFile": "Scout",
 			"group": {
 				"kind": "build",
 				"isDefault": true

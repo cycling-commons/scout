@@ -1,1 +1,2 @@
 project.manifest = manifest.xml
+edge830.resourcePath = $(edge830.resourcePath);resources-edge830
