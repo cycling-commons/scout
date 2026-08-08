@@ -1,8 +1,12 @@
 {
 	"folders": [
 		{
+			"name": "Scout",
 			"path": "."
 		}
 	],
-	"settings": {}
+	"settings": {
+		"monkeyC.jungleFiles": "monkey.jungle",
+		"monkeyC.typeCheckLevel": "2"
+	}
 }

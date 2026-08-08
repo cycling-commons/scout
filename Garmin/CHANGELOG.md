@@ -5,6 +5,12 @@ entered in the Connect IQ store at upload time.
 
 ## Unreleased
 
+## 1.2.0 — 2026-08-08
+- **Open-surface strip** while a stretch is active: banner `rec. surface tap to END`;
+  tap the strip to END; SURFACE tile shows the active type.
+- Undo window unified to **3 s** for all tiles (was 6 s for two-tap tiles).
+- Scenery picker label **ARCHITECT** (was ARCH); FIT code unchanged.
+
 ## 1.1.0 — 2026-08-08
 - Tile label **NOTICE** (was BEWARE); FIT type code 1 stays `DANGER`.
 - **NOTICE** and **SCENERY** detail pickers (two-tap, same flow as closure and
@@ -24,7 +30,7 @@ entered in the Connect IQ store at upload time.
   them as coloured lines along the track with measured lengths.
 - Two-tap pickers with a 3 s correction window (re-pick to replace before it
   commits; only the final choice is written), plus double-tap undo — 3 s for
-  direct tiles, 6 s for the two-tap tiles.
+  direct tiles, 3 s for all tiles).
 - Per-tile ride tally and a tap-tone confirmation (distinct tone on undo).
 - Optional Varia-compatible radar: per-second vehicle count, nearest range, and
   per-pass speed (closing speed plus the rider's own speed, unit-aware, ±5 kph).

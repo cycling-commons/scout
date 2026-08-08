@@ -1,0 +1,14 @@
+{
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"type": "monkeyc",
+			"request": "launch",
+			"name": "Run Scout",
+			"prg": "${workspaceFolder}${pathSeparator}bin${pathSeparator}Scout.prg",
+			"prgDebugXml": "${workspaceFolder}${pathSeparator}bin${pathSeparator}Scout.prg.debug.xml",
+			"stopAtLaunch": false,
+			"device": "${command:GetTargetDevice}"
+		}
+	]
+}

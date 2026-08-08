@@ -93,7 +93,7 @@ check('radar coverage is partial (mostly not tracking)',
 
 // ---------- 3. the undo rule ----------
 // Same type twice inside the window annihilates; any other type never interacts.
-// Window is 3s for direct tiles, 6s for two-tap (subitem) tiles.
+// Window is 3s for all tiles (direct and two-tap).
 console.log('\n[3] Undo rule (second tap of the same tile within the window)');
 
 const T0 = new Date('2026-07-17T10:00:00Z').getTime();
@@ -129,21 +129,23 @@ check('CLOSURE pair cancels regardless of differing detail', (() => {
   return live(rows).length === 0;
 })());
 
-// Two-tap tiles get a doubled (6s) window: they commit after a picker and take
-// longer to re-navigate for an undo. Direct tiles stay at 3s.
-check('CLOSURE pair 5s apart -> cancelled (subitem window)',
-      JSON.stringify(live([at(0, 5), at(5, 5)])) === '[]',
-      JSON.stringify(live([at(0, 5), at(5, 5)])));
-check('NOTICE pair 5s apart -> cancelled (subitem window)',
-      JSON.stringify(live([at(0, 1), at(5, 1)])) === '[]',
-      JSON.stringify(live([at(0, 1), at(5, 1)])));
-check('SCENERY pair 5s apart -> cancelled (subitem window)',
-      JSON.stringify(live([at(0, 2), at(5, 2)])) === '[]',
-      JSON.stringify(live([at(0, 2), at(5, 2)])));
-check('RESUPPLY leaf (WATER) pair 5s apart -> cancelled (subitem window)',
-      JSON.stringify(live([at(0, 3), at(5, 3)])) === '[]',
-      JSON.stringify(live([at(0, 3), at(5, 3)])));
-check('OTHER (direct tile) pair 4s apart -> kept (still just 3s)',
+// Two-tap tiles use the same 3s undo window as direct tiles.
+check('CLOSURE pair 2s apart -> cancelled',
+      JSON.stringify(live([at(0, 5), at(2, 5)])) === '[]',
+      JSON.stringify(live([at(0, 5), at(2, 5)])));
+check('CLOSURE pair 4s apart -> kept (outside 3s window)',
+      JSON.stringify(live([at(0, 5), at(4, 5)])) === '[5,5]',
+      JSON.stringify(live([at(0, 5), at(4, 5)])));
+check('NOTICE pair 2s apart -> cancelled',
+      JSON.stringify(live([at(0, 1), at(2, 1)])) === '[]',
+      JSON.stringify(live([at(0, 1), at(2, 1)])));
+check('SCENERY pair 2s apart -> cancelled',
+      JSON.stringify(live([at(0, 2), at(2, 2)])) === '[]',
+      JSON.stringify(live([at(0, 2), at(2, 2)])));
+check('RESUPPLY leaf (WATER) pair 2s apart -> cancelled',
+      JSON.stringify(live([at(0, 3), at(2, 3)])) === '[]',
+      JSON.stringify(live([at(0, 3), at(2, 3)])));
+check('OTHER (direct tile) pair 4s apart -> kept',
       JSON.stringify(live([at(0, 4), at(4, 4)])) === '[4,4]',
       JSON.stringify(live([at(0, 4), at(4, 4)])));
 // SURFACE is exempt from undo entirely — surface tags are segment transitions,

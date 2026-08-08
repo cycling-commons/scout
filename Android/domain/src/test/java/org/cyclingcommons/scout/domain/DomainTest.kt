@@ -26,27 +26,19 @@ class TagTalliesTest {
     }
 
     @Test
-    fun dangerGetsDoubleWindow() {
+    fun subitemUndoWithinWindow() {
         val t = TagTallies()
         t.countTap(PoiType.DANGER, Danger.POTHOLES, 1000)
-        assertTrue(t.countTap(PoiType.DANGER, Danger.CORNER, 1000 + Timings.UNDO_MS + 500))
+        assertTrue(t.countTap(PoiType.DANGER, Danger.CORNER, 2000))
         assertEquals(0, t.tileCount(PoiType.DANGER))
     }
 
     @Test
-    fun closureGetsDoubleWindow() {
+    fun subitemKeptOutsideWindow() {
         val t = TagTallies()
         t.countTap(PoiType.CLOSURE, Duration.TODAY, 1000)
-        assertTrue(t.countTap(PoiType.CLOSURE, Duration.DAYS, 1000 + Timings.UNDO_MS + 500))
-        assertEquals(0, t.tileCount(PoiType.CLOSURE))
-    }
-
-    @Test
-    fun sceneryGetsDoubleWindow() {
-        val t = TagTallies()
-        t.countTap(PoiType.SCENERY, Scenery.VIEW, 1000)
-        assertTrue(t.countTap(PoiType.SCENERY, Scenery.NATURE, 1000 + Timings.UNDO_MS + 500))
-        assertEquals(0, t.tileCount(PoiType.SCENERY))
+        assertFalse(t.countTap(PoiType.CLOSURE, Duration.DAYS, 1000 + Timings.UNDO_MS + 1))
+        assertEquals(2, t.tileCount(PoiType.CLOSURE))
     }
 
     @Test
@@ -75,7 +67,7 @@ class TagTalliesTest {
     @Test
     fun closureDetailTalliesKeptSeparately() {
         val t = TagTallies()
-        val gap = Timings.UNDO_MS * 2 + 1 // outside closure undo window
+        val gap = Timings.UNDO_MS + 1 // outside undo window
         t.countTap(PoiType.CLOSURE, Duration.MONTHS, 1000)
         t.countTap(PoiType.CLOSURE, Duration.MONTHS, 1000 + gap)
         t.countTap(PoiType.CLOSURE, Duration.TODAY, 1000 + gap * 2)
@@ -97,7 +89,7 @@ class TagTalliesTest {
     @Test
     fun sceneryDetailTalliesKeptSeparately() {
         val t = TagTallies()
-        val gap = Timings.UNDO_MS * 2 + 1
+        val gap = Timings.UNDO_MS + 1
         t.countTap(PoiType.SCENERY, Scenery.VIEW, 1000)
         t.countTap(PoiType.SCENERY, Scenery.VIEW, 1000 + gap)
         t.countTap(PoiType.SCENERY, Scenery.NATURE, 1000 + gap * 2)

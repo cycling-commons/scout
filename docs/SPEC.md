@@ -234,7 +234,7 @@ Surface is a **segment channel**, not a point channel (see §7).
 | 2 | HISTORY |
 | 3 | CULTURE |
 | 4 | VIEW |
-| 5 | ARCH (architecture) |
+| 5 | ARCHITECT (architecture) |
 | 6 | UNKNOWN |
 
 ### 5.6 Resupply encoding
@@ -331,7 +331,7 @@ no header (tiles name themselves).
 
 ### 6.6 Scenery picker
 
-`NATURE · HISTORY · CULTURE · VIEW · ARCH · UNKNOWN · BACK`
+`NATURE · HISTORY · CULTURE · VIEW · ARCHITECT · UNKNOWN · BACK`
 
 ### 6.7 Resupply picker
 
@@ -385,7 +385,7 @@ change tallies.
 | Tag class | Window |
 | --- | --- |
 | Direct (OTHER) | 3 s |
-| Two-tap leaves (NOTICE, SCENERY, CLOSURE, WATER, FOOD, MECHANICAL) | 6 s |
+| Two-tap leaves (NOTICE, SCENERY, CLOSURE, WATER, FOOD, MECHANICAL) | 3 s |
 | SURFACE | **Exempt** — second surface tag is a transition, never an undo |
 
 ### 6.11 Confirmation feedback

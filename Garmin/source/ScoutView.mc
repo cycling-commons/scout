@@ -68,7 +68,7 @@ enum {
     SCEN_HISTORY = 2,
     SCEN_CULTURE = 3,
     SCEN_VIEW    = 4,
-    SCEN_ARCH    = 5,   // architecture — shortened for the tile
+    SCEN_ARCH    = 5,   // architecture
     SCEN_UNKNOWN = 6
 }
 
@@ -182,8 +182,8 @@ class ScoutView extends WatchUi.DataField {
 
     hidden var _w as Number = 0;
     hidden var _h as Number = 0;
-    hidden var _stripH as Number = 0;   // radar readout along the bottom
-    hidden var _gridH as Number = 0;    // tiles live above the strip
+    hidden var _stripH as Number = 0;   // one-line strip height (surface banner or radar)
+    hidden var _openSurfaceDetail as Number = SURF_NONE;  // §7.1 open-stretch indicator
 
     hidden var _radarLive as Boolean = false;  // radar actually TRACKING
     hidden var _lastCarSpeed as Number = -1;   // kph, car ground speed, most recent car
@@ -243,7 +243,7 @@ class ScoutView extends WatchUi.DataField {
         [SCEN_HISTORY, "HISTORY", 0x8E44AD],
         [SCEN_CULTURE, "CULTURE", 0xE67E22],
         [SCEN_VIEW,    "VIEW",    0x1E7FC0],
-        [SCEN_ARCH,    "ARCH",    0xB58900],
+        [SCEN_ARCH,    "ARCHITECT", 0xB58900],
         [SCEN_UNKNOWN, "UNKNOWN", 0x777777],
         [UI_BACK,      "BACK",    0x444444]
     ];
@@ -398,8 +398,39 @@ class ScoutView extends WatchUi.DataField {
         }
         _lastTapType = POI_NONE;
         _lastTapAt = 0;
+        _openSurfaceDetail = SURF_NONE;
         _queue = [];
         closePage();
+    }
+
+    // Bottom strip: open-surface banner while a stretch is active; otherwise the
+    // optional radar tally (SHOW_RADAR_STRIP). Surface wins when both apply.
+    hidden function stripVisible() as Boolean {
+        return (_openSurfaceDetail != SURF_NONE) || SHOW_RADAR_STRIP;
+    }
+
+    hidden function effectiveGridH() as Number {
+        if (!stripVisible() || _stripH <= 0) { return _h; }
+        return _h - _stripH;
+    }
+
+    hidden function surfaceLabel(detail as Number) as String {
+        for (var i = 0; i < _surfButtons.size(); i++) {
+            var b = _surfButtons[i] as Array;
+            if ((b[0] as Number) == detail) { return b[1] as String; }
+        }
+        return "SURFACE";
+    }
+
+    // One-tap END for the open stretch (strip banner shortcut, §7.1).
+    hidden function endOpenSurface() as Void {
+        if (_openSurfaceDetail == SURF_NONE) { return; }
+        var idx = -1;
+        for (var i = 0; i < _buttons.size(); i++) {
+            if ((_buttons[i][0] as Number) == POI_SURFACE) { idx = i; break; }
+        }
+        if (idx < 0) { idx = 0; }
+        tag(POI_SURFACE, SURF_END, idx);
     }
 
     // Logs what the radar sees this second and nothing more. Identifying which
@@ -516,13 +547,9 @@ class ScoutView extends WatchUi.DataField {
     function onLayout(dc as Dc) as Void {
         _w = dc.getWidth();
         _h = dc.getHeight();
-        // Size the radar strip from the device's own font metrics rather than a
-        // fixed pixel count: this field runs on screens from 240 to 480 wide.
-        // Sized for the largest font the strip may use, so a narrow screen that
-        // falls back to a smaller one just leaves slack rather than clipping.
-        // When SHOW_RADAR_STRIP is false the grid takes the full field height.
-        _stripH = SHOW_RADAR_STRIP ? (dc.getFontHeight(Graphics.FONT_MEDIUM) + 4) : 0;
-        _gridH = _h - _stripH;
+        // Sized for the largest font the strip may use. The strip itself is drawn
+        // only while a surface stretch is open or SHOW_RADAR_STRIP is on.
+        _stripH = dc.getFontHeight(Graphics.FONT_MEDIUM) + 4;
         // The strip speed follows the rider's unit setting; the logged FIT field
         // stays kph either way, so only this readout switches. Read once here —
         // the setting doesn't change mid-ride, and onLayout re-runs on wake.
@@ -594,16 +621,9 @@ class ScoutView extends WatchUi.DataField {
     // only — both taps still go to the FIT. Counts are per poi_type so each tile
     // can show its own tally. Returns true when this tap cancelled a pair (an
     // undo), so the caller can sound it differently.
-    // Two-tap tiles (closure, and resupply's water/food/repair) commit only after
-    // the picker, and undoing one means re-navigating that picker, so they get
-    // double the cancel window. Direct tiles keep the base UNDO_MS. SURFACE is NOT
-    // here — it's a segment channel, exempt from double-tap undo (see countTap).
+    // SURFACE is exempt — it's a segment channel, not double-tap undo (see countTap).
     // MUST stay in step with undoWindowFor() in the parser.
     hidden function undoMsFor(type as Number) as Number {
-        if (type == POI_DANGER || type == POI_WATER || type == POI_CLOSURE || type == POI_SCENERY ||
-            type == POI_FOOD  || type == POI_MECHANICAL) {
-            return UNDO_MS * 2;
-        }
         return UNDO_MS;
     }
 
@@ -629,6 +649,13 @@ class ScoutView extends WatchUi.DataField {
             undone = true;
         } else {
             if (tileCounts(type, detail)) { _counts[type]++; }
+            if (type == POI_SURFACE) {
+                if (detail >= SURF_ASPHALT && detail <= SURF_SAND) {
+                    _openSurfaceDetail = detail;
+                } else if (detail == SURF_END || detail == SURF_NONE) {
+                    _openSurfaceDetail = SURF_NONE;
+                }
+            }
             _lastTapType = type;
         }
         _lastTapAt = now;
@@ -679,7 +706,8 @@ class ScoutView extends WatchUi.DataField {
     // of the grid.
     hidden function cellAt(x as Number, y as Number, rows as Number) as Number {
         var col = (x < _w / 2) ? 0 : 1;
-        var h = (_gridH > 0) ? _gridH : _h;
+        var gridH = effectiveGridH();
+        var h = (gridH > 0) ? gridH : _h;
         var row = y * rows / h;
         if (row < 0) { row = 0; }
         if (row > rows - 1) { row = rows - 1; }
@@ -690,6 +718,11 @@ class ScoutView extends WatchUi.DataField {
     // coords == field coords.
     function onScreenTap(x as Number, y as Number) as Void {
         if (_w <= 0 || _h <= 0) { return; }
+        if (_openSurfaceDetail != SURF_NONE && y >= effectiveGridH()) {
+            endOpenSurface();
+            WatchUi.requestUpdate();
+            return;
+        }
         var set = currentSet();
         var i = cellAt(x, y, rowsOf(set));
         if (i >= set.size()) { return; }    // odd-sized page: trailing gap
@@ -732,8 +765,9 @@ class ScoutView extends WatchUi.DataField {
         dc.clear();
 
         var set = currentSet();
+        var gridH = effectiveGridH();
         var cw = _w / COLS;
-        var ch = ((_gridH > 0) ? _gridH : _h) / rowsOf(set);
+        var ch = ((gridH > 0) ? gridH : _h) / rowsOf(set);
         var flashing = (_mode == MODE_GRID) && (System.getTimer() < _flashUntil);
 
         for (var i = 0; i < set.size(); i++) {
@@ -743,10 +777,14 @@ class ScoutView extends WatchUi.DataField {
             var bx = (i % COLS) * cw;
             var by = (i / COLS) * ch;
 
-            // Fill a tile when it's the grid tag just placed, or the subitem held
-            // for correction in a picker — both mean "this is the current choice".
+            // Fill a tile when it's the grid tag just placed, the subitem held
+            // for correction in a picker, or the SURFACE tile while a stretch is
+            // open (§7.1 — mirrors the Android open-stretch indicator).
+            var code = b[0] as Number;
+            var openHere = (_mode == MODE_GRID) && (code == POI_SURFACE) &&
+                           (_openSurfaceDetail != SURF_NONE);
             var pendingHere = (_mode != MODE_GRID) && (_pendingType != POI_NONE) && (_pendingIdx == i);
-            if ((flashing && _flashIdx == i) || pendingHere) {
+            if ((flashing && _flashIdx == i) || pendingHere || openHere) {
                 dc.setColor(rgb, Graphics.COLOR_TRANSPARENT);
                 dc.fillRectangle(bx + 2, by + 2, cw - 4, ch - 4);
                 dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
@@ -760,8 +798,12 @@ class ScoutView extends WatchUi.DataField {
             // count is dropped once it hits 0 so an untouched tile stays clean.
             var text = label;
             if (_mode == MODE_GRID) {
-                var n = tileCount(b[0] as Number);
-                if (n > 0) { text = label + " " + n.toString(); }
+                if (code == POI_SURFACE && _openSurfaceDetail != SURF_NONE) {
+                    text = surfaceLabel(_openSurfaceDetail);
+                } else {
+                    var n = tileCount(code);
+                    if (n > 0) { text = label + " " + n.toString(); }
+                }
             }
             dc.drawText(bx + cw / 2, by + ch / 2, Graphics.FONT_SMALL, text,
                         Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
@@ -779,7 +821,7 @@ class ScoutView extends WatchUi.DataField {
                         Graphics.TEXT_JUSTIFY_CENTER);
         }
 
-        drawRadarStrip(dc, fg, bg);
+        drawBottomStrip(dc, fg, bg);
 
         // Recording indicator: red = timer running (taps will land in the FIT),
         // grey = paused/stopped (taps are shown but nothing is being recorded).
@@ -792,18 +834,43 @@ class ScoutView extends WatchUi.DataField {
         dc.fillCircle(_w - 12, 12, 5);
     }
 
-    // Bottom strip (SHOW_RADAR_STRIP): ride tally and last-pass ground speed —
+    // Bottom strip: open-surface banner (tappable → END) or optional radar tally.
+    hidden function drawBottomStrip(dc as Dc, fg as Number, bg as Number) as Void {
+        if (!stripVisible() || _stripH <= 0) { return; }
+        if (_openSurfaceDetail != SURF_NONE) {
+            drawSurfaceStrip(dc, fg, bg);
+        } else if (SHOW_RADAR_STRIP) {
+            drawRadarStrip(dc, fg, bg);
+        }
+    }
+
+    hidden function drawSurfaceStrip(dc as Dc, fg as Number, bg as Number) as Void {
+        var gridH = effectiveGridH();
+        var y = gridH + (_stripH / 2);
+        var txt = "rec. surface tap to END";
+
+        dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
+        dc.setPenWidth(1);
+        dc.drawLine(2, gridH, _w - 2, gridH);
+
+        dc.setColor(0x8E5A2B, bg);   // surface tile brown — stands out from radar grey
+        dc.drawText(_w / 2, y, stripFont(dc, txt), txt,
+                    Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+    }
+
+    // Optional radar strip (SHOW_RADAR_STRIP): ride tally and last-pass ground speed —
     // shown after a car has already gone by, for checking the count against the
     // FIT later. Counting and FIT writes always run in writeRadar(). "no radar"
     // is shown deliberately rather than a zero — the same distinction the FIT
     // makes, since a disconnected Varia and an empty road must never look alike.
     hidden function drawRadarStrip(dc as Dc, fg as Number, bg as Number) as Void {
         if (!SHOW_RADAR_STRIP || _stripH <= 0) { return; }
-        var y = _gridH + (_stripH / 2);
+        var gridH = effectiveGridH();
+        var y = gridH + (_stripH / 2);
 
         dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
         dc.setPenWidth(1);
-        dc.drawLine(2, _gridH, _w - 2, _gridH);
+        dc.drawLine(2, gridH, _w - 2, gridH);
 
         var txt;
         if (!_radarLive) {

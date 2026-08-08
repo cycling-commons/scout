@@ -29,7 +29,7 @@ const NA = 0xFF;                       // uint8 invalid — radar not tracking /
 
 // The scenario, one entry per second. Fields default to "untagged, no radar".
 // [poi_type, poi_detail] tags and [count, near, speed] radar are set where noted.
-// Same-type point tags are spaced > 6 s apart so the undo rule doesn't eat them;
+// Same-type point tags are spaced > 3 s apart so the undo rule doesn't eat them;
 // the one deliberate undo is the DANGER pair at the end.
 export const SCENARIO = (() => {
   const N = 60;

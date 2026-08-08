@@ -75,12 +75,7 @@ object Timings {
     const val TALKBACK_TIMEOUT_SCALE = 2
 }
 
-fun undoMsFor(type: Int): Long =
-    when (type) {
-        PoiType.DANGER, PoiType.WATER, PoiType.CLOSURE, PoiType.SCENERY, PoiType.FOOD,
-        PoiType.MECHANICAL -> Timings.UNDO_MS * 2
-        else -> Timings.UNDO_MS
-    }
+fun undoMsFor(type: Int): Long = Timings.UNDO_MS
 
 fun scaledMs(baseMs: Long, scale: Int): Long = baseMs * scale.coerceAtLeast(1)
 

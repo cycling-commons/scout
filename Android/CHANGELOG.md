@@ -5,6 +5,10 @@ truth. Tag releases **`android/vX.Y.Z`** (see root [README](../README.md#release
 
 ## Unreleased
 
+## 1.2.0 — 2026-08-08
+- Scenery picker label **ARCHITECT** (was ARCH); FIT code unchanged.
+- Undo window unified to **3 s** for all tiles (was 6 s for two-tap tiles).
+
 ## 1.1.0 — 2026-08-08
 - Tile label **NOTICE** (was BEWARE); FIT type code 1 stays `DANGER`.
 - **NOTICE** and **SCENERY** detail pickers (two-tap, same flow as closure and

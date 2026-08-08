@@ -18,8 +18,7 @@ record in the FIT file.
   CLOSURE sums all duration commits. Duration and resupply submenu leaves
   keep their own counts too (e.g. MONTHS `2` on `CLOSED FOR?`; COBBLES on the
   surface picker) — see [SPEC §6.7](../docs/SPEC.md#67-per-tile-tallies).
-- Tapped the wrong tile? Tap the same one again within the cancel window (3 s, or
-  6 s for the two-tap tiles) and the tag is retracted — the tile stays lit for that
+- Tapped the wrong tile? Tap the same one again within the **3 s** cancel window and the tag is retracted — the tile stays lit for that
   whole window and its count ticks back down.
 - CLOSURE / SURFACE / RESUPPLY open a follow-up page instead. Picked the wrong
   subitem? Just tap the right one — for **3 s** after a pick the page stays open

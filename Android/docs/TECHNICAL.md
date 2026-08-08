@@ -284,7 +284,7 @@ padding — if a value is missing, add a token rather than a literal.
 ### 8.2 Tagging UI
 
 - Full-screen (immersive enough for bar mount): 2-column grid + bottom radar strip + recording dot.
-- Timings exact to SPEC §6 (`PICK_MS` 12s, `CORRECT_MS` 3s, undo 3s/6s, queue ≥ 16).
+- Timings exact to SPEC §6 (`PICK_MS` 12s, `CORRECT_MS` 3s, undo 3s, queue ≥ 16).
 - Colours and labels per SPEC (English v1). The hues are normative and identical
   in both appearances; only the treatment moves. Unlit is the hue washed over the
   page at `tileIdleAlpha` and labelled in page ink, lit is the hue itself labelled

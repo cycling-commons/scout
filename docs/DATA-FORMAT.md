@@ -38,7 +38,7 @@ before they commit; the other one tags on the spot.
       CLOSURE  →  CLOSED FOR?   TODAY · DAYS · WEEKS · MONTHS · UNKNOWN
       SURFACE  →  WHICH?        ASPHALT · CONCRETE · PAVING · SETT · COBBLES · GRAVEL · DIRT · SAND · END
       RESUPPLY →  WHAT KIND?    WATER · FOOD · REPAIR
-      SCENERY  →  SCENERY?      NATURE · HISTORY · CULTURE · VIEW · ARCH · UNKNOWN
+      SCENERY  →  SCENERY?      NATURE · HISTORY · CULTURE · VIEW · ARCHITECT · UNKNOWN
 
 The pickers look alike but encode differently. DANGER, CLOSURE, SCENERY, and SURFACE each
 write **one** `poi_type` with a qualifier in `poi_detail`. RESUPPLY is a menu
@@ -59,7 +59,7 @@ may overlap numerically.
 - `poi_type == 5` (CLOSURE) — duration: 1=TODAY · 2=DAYS · 3=WEEKS · 4=MONTHS ·
   5=UNKNOWN.
 - `poi_type == 2` (SCENERY) — kind: 1=NATURE · 2=HISTORY · 3=CULTURE · 4=VIEW ·
-  5=ARCH (architecture) · 6=UNKNOWN. 0 = legacy bare tap or unspecified.
+  5=ARCHITECT (architecture) · 6=UNKNOWN. 0 = legacy bare tap or unspecified.
 - `poi_type == 6` (SURFACE) — surface type, smooth→rough, aligned to OSM
   `surface=`: 1=asphalt · 2=concrete · 3=paving_stones · 4=sett ·
   5=cobblestone · 6=gravel · 7=ground (dirt) · 8=sand · **9=END** (stretch ends,
@@ -211,9 +211,7 @@ does nothing about this — it queues both taps and writes both to the FIT. The
 *parser* cancels the pair. Tags of any other type never interact, at any
 spacing, so burst-tagging one spot with two categories is unaffected.
 
-The window is **3 s** for a direct tile, **6 s** for a two-tap tile (DANGER,
-SCENERY, CLOSURE, RESUPPLY): those commit only after their picker and take longer to re-open and
-re-pick for an undo, so they get double the time. `undoMsFor()` on the device and
+The window is **3 s** for every tile (direct and two-tap). `undoMsFor()` on the device and
 `undoWindowFor()` in the parser must stay in step.
 
 **SURFACE is exempt** — a second surface tag is a segment *transition*, not a

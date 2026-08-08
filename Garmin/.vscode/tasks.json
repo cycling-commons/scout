@@ -1,0 +1,24 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Build Scout",
+			"type": "monkeyc",
+			"device": "edge1030plus",
+			"outputFile": "Scout",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Export Scout (store)",
+			"type": "monkeyc",
+			"device": "edge1030plus",
+			"outputFile": "Scout",
+			"compilerArgs": "-e -r",
+			"problemMatcher": []
+		}
+	]
+}

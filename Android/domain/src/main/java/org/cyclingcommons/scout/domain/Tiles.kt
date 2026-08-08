@@ -69,7 +69,7 @@ object Tiles {
         Tile(Scenery.HISTORY, "HISTORY", 0x8E44AD),
         Tile(Scenery.CULTURE, "CULTURE", 0xE67E22),
         Tile(Scenery.VIEW, "VIEW", 0x1E7FC0),
-        Tile(Scenery.ARCH, "ARCH", 0xB58900),
+        Tile(Scenery.ARCH, "ARCHITECT", 0xB58900),
         Tile(Scenery.UNKNOWN, "UNKNOWN", 0x777777),
         Tile(PoiType.UI_BACK, "BACK", 0x444444),
     )

@@ -325,20 +325,17 @@ function findDevKey(devFields, name) {
 // Marks rather than removes, so the viewer can show what was retracted.
 // Assumes `tags` is in ascending time order (record order in the FIT).
 //
-// Two-tap tiles (closure, resupply's water/food/repair) commit only after their
-// picker and take longer to re-navigate for an undo, so they get double the
-// window. SURFACE is exempt entirely — a second surface tag is a segment
-// transition, not a retraction (see buildSurfaceSegments). MUST stay in step with
-// undoMsFor() on the device.
+// Two-tap tiles commit after their picker; SURFACE is exempt entirely — a second
+// surface tag is a segment transition, not a retraction (see buildSurfaceSegments).
+// MUST stay in step with undoMsFor() on the device.
 const UNDO_WINDOW_S = 3;
-const SUBITEM_TYPES = new Set([1, 2, 3, 5, 7, 8]); // DANGER, SCENERY, WATER, CLOSURE, FOOD, MECHANICAL
-const undoWindowFor = (type) => SUBITEM_TYPES.has(type) ? UNDO_WINDOW_S * 2 : UNDO_WINDOW_S;
+const undoWindowFor = () => UNDO_WINDOW_S;
 
 function applyUndoRule(tags, baseWindowS = UNDO_WINDOW_S) {
   const out = tags.map(t => ({ ...t, cancelled: false }));
   for (let i = 0; i < out.length; i++) {
     if (out[i].cancelled || !out[i].time || out[i].type === SURF_TYPE) continue;
-    const windowS = SUBITEM_TYPES.has(out[i].type) ? baseWindowS * 2 : baseWindowS;
+    const windowS = baseWindowS;
     for (let j = i + 1; j < out.length; j++) {
       if (!out[j].time) continue;
       const dt = (out[j].time - out[i].time) / 1000;
