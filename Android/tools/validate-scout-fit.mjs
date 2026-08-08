@@ -1,5 +1,5 @@
 // Validates a Scout .fit against the shipped fit-viewer parser.
-//   node Android/tools/validate-scout-fit.mjs Garmin/tools/fit-viewer.html path/to/file.fit
+//   node Android/tools/validate-scout-fit.mjs tools/fit-viewer.html path/to/file.fit
 import { readFileSync } from 'node:fs';
 
 const htmlPath = process.argv[2];

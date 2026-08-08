@@ -9,7 +9,7 @@ import kotlin.math.pow
 import kotlin.math.roundToLong
 
 /**
- * Mirrors Garmin/tools/make-test-fit.mjs SCENARIO so the Node parser can validate
+ * Mirrors tools/make-test-fit.mjs SCENARIO so the Node parser can validate
  * Kotlin output the same way as the reference encoder.
  */
 class ScoutFitWriterTest {

@@ -64,7 +64,7 @@ updating every client.
 Anything the UI shows as a live tally (grid undo counts, **picker/submenu
 leaf counts**, car count, open-surface hint later) **must** use the same rule
 as the reference parser in
-[`Garmin/tools/fit-viewer.html`](../Garmin/tools/fit-viewer.html). Change both;
+[`tools/fit-viewer.html`](../tools/fit-viewer.html). Change both;
 add a test.
 
 ### 2.3 Codes are append-only
@@ -702,8 +702,8 @@ in that platform’s folder; keep a one-line pointer below when a delta exists.
 Reuse / port:
 
 - Code tables and timings from this spec
-- Parser tests from [`Garmin/tools/test-fit-parser.mjs`](../Garmin/tools/test-fit-parser.mjs)
-- Scenario FIT from [`Garmin/tools/make-test-fit.mjs`](../Garmin/tools/make-test-fit.mjs)
+- Parser tests from [`tools/test-fit-parser.mjs`](../tools/test-fit-parser.mjs)
+- Scenario FIT from [`tools/make-test-fit.mjs`](../tools/make-test-fit.mjs)
 
 A port is “done” for v1 when its files pass the reference parser assertions for
 tags, undo, surfaces, and radar coverage/counting.
@@ -731,7 +731,7 @@ tags, undo, surfaces, and radar coverage/counting.
 | Spec version | 1.0 |
 | Parity baseline | Garmin Scout 1.0.0 (2026-07-22) |
 | Normative data format | [DATA-FORMAT.md](DATA-FORMAT.md) |
-| Reference parser | [`Garmin/tools/fit-viewer.html`](../Garmin/tools/fit-viewer.html) (`===PARSER-*===` block) |
+| Reference parser | [`tools/fit-viewer.html`](../tools/fit-viewer.html) (`===PARSER-*===` block) |
 
 Changes that affect codes, timings, or interpretation rules require a spec
 bump and coordinated parser/device updates.

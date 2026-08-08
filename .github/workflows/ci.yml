@@ -14,7 +14,7 @@ jobs:
         with:
           node-version: '24'
       - name: Run parser + E2E tests
-        run: node Garmin/tools/test-fit-parser.mjs Garmin/tools/fit-viewer.html
+        run: node tools/test-fit-parser.mjs tools/fit-viewer.html
 
   android-tests:
     name: Android unit tests

@@ -37,4 +37,4 @@ entered in the Connect IQ store at upload time.
 - Everything written to the FIT as developer fields, in an open, documented format.
 - Compatible with touch Edge units (1030/1030 Plus/1040/1050, 830/840/850, 820,
   Explore/Explore 2).
-- Companion FIT inspector (`tools/fit-viewer.html`) with a ride map of all tags.
+- Companion FIT inspector (`../tools/fit-viewer.html`) with a ride map of all tags.

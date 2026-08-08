@@ -58,15 +58,15 @@ from that snapshot.
 
 ## Reference tools
 
-The FIT viewer and parser tests currently live with the Garmin tree (first
-implementation):
+Shared FIT viewer and parser tests at the repo root (used by Garmin, Android, and CI):
 
-- [`Garmin/tools/fit-viewer.html`](Garmin/tools/fit-viewer.html)
-- [`Garmin/tools/test-fit-parser.mjs`](Garmin/tools/test-fit-parser.mjs)
+- [`tools/fit-viewer.html`](tools/fit-viewer.html)
+- [`tools/test-fit-parser.mjs`](tools/test-fit-parser.mjs)
+- [`tools/radar-sim.html`](tools/radar-sim.html)
 - Android FIT smoke: [`Android/tools/validate-scout-fit.mjs`](Android/tools/validate-scout-fit.mjs)
 
 ```sh
-node Garmin/tools/test-fit-parser.mjs Garmin/tools/fit-viewer.html
+node tools/test-fit-parser.mjs tools/fit-viewer.html
 ```
 
 ## License

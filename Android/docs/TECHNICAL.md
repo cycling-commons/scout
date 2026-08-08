@@ -16,7 +16,7 @@ stay in the root docs — do not fork them here. For installing tools, see
 
 - Full Scout tagging + optional radar parity with Garmin v1.0 behaviour.
 - Multi-hour rides with **battery use as low as practical** on a phone.
-- Original **FIT** output readable by `Garmin/tools/fit-viewer.html` / Atlas ingest.
+- Original **FIT** output readable by `tools/fit-viewer.html` / Atlas ingest.
 - Works with **no radar**; radar via **ANT+ if the device has it, else BLE**.
 - No account, no analytics, no required network.
 
@@ -346,7 +346,7 @@ they follow a link returned after upload.
   `position_long`, `speed` (when available), plus the five Scout developer fields.
   No HR, cadence, altitude, device serials, or other extras.
 - File location: app-private `files/rides/scout-….fit`. Settings lists history with **Share** / **Delete**; share sheet after Stop as well.
-- Acceptance: drop output on `Garmin/tools/fit-viewer.html` and pass the same expectations as Garmin rides (tags, undo pairs, surfaces, radar coverage).
+- Acceptance: drop output on `tools/fit-viewer.html` and pass the same expectations as Garmin rides (tags, undo pairs, surfaces, radar coverage).
 
 ---
 
@@ -390,7 +390,7 @@ Full plan: **[TESTING.md](TESTING.md)** (unit, FIT viewer, device smoke, field r
 | Layer | What |
 | --- | --- |
 | Domain / fit unit tests | Undo, pickers, queue, vehicle corroboration, BLE/ANT+ decode, FIT CRC |
-| FIT golden | `Android/tools/validate-scout-fit.mjs` + `Garmin/tools/fit-viewer.html` |
+| FIT golden | `Android/tools/validate-scout-fit.mjs` + `tools/fit-viewer.html` |
 | Manual ride | Real device, bar mount, with/without radar, pause/resume |
 | Battery | §5 measure checklist |
 

@@ -1,6 +1,6 @@
 package org.cyclingcommons.scout.fit
 
-/** FIT CRC-16 — same table as Garmin/tools/make-test-fit.mjs / fit-viewer. */
+/** FIT CRC-16 — same table as tools/make-test-fit.mjs / fit-viewer. */
 object FitCrc {
     private val TABLE = intArrayOf(
         0x0000, 0xCC01, 0xD801, 0x1400, 0xF001, 0x3C00, 0x2800, 0xE401,

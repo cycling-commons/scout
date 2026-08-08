@@ -43,7 +43,7 @@ analytics, no upload. What happens after the ride is entirely your choice:
 1. **Finish the ride.** Your tags and surface stretches are in the activity's FIT
    file, alongside your normal ride data.
 2. **Read it yourself** — drop the file on
-   [`tools/fit-viewer.html`](tools/fit-viewer.html) to see every tagged point and
+   [`../tools/fit-viewer.html`](../tools/fit-viewer.html) to see every tagged point and
    surface stretch drawn on the track, or hand it to any tool that reads FIT
    developer fields ([DATA-FORMAT](../docs/DATA-FORMAT.md) is the shared spec).
 3. **Or contribute it** to a project that ingests Scout data.
@@ -64,14 +64,14 @@ drops them. See [FIT gotchas for integrators](../docs/DATA-FORMAT.md#fit-gotchas
 ## Verify the parser
 The reference parser is self-contained and needs no Garmin SDK:
 
-    node tools/test-fit-parser.mjs tools/fit-viewer.html
+    node ../tools/test-fit-parser.mjs ../tools/fit-viewer.html
 
 It builds a full binary FIT in memory covering every option and asserts the whole
-pipeline. To eyeball a real ride, open [`tools/fit-viewer.html`](tools/fit-viewer.html)
+pipeline. To eyeball a real ride, open [`../tools/fit-viewer.html`](../tools/fit-viewer.html)
 in a browser and drop a `.fit` on it.
 
 ## Radar tally simulator
-Open [`tools/radar-sim.html`](tools/radar-sim.html) in a browser to queue virtual
+Open [`../tools/radar-sim.html`](../tools/radar-sim.html) in a browser to queue virtual
 cars, watch them pass, and see the live car count / speed strip update with the
 same 1&nbsp;Hz `VehicleCounter` rule as the head unit and Android app.
 
@@ -86,5 +86,5 @@ same 1&nbsp;Hz `VehicleCounter` rule as the head unit and Android app.
 ## License
 [MIT](LICENSE) © BikeCoders, current steward of the Cycling Commons project.
 Permissive on purpose: the FIT format and the reference parser (`applyUndoRule` /
-`buildSurfaceSegments` in [`tools/fit-viewer.html`](tools/fit-viewer.html)) are
+`buildSurfaceSegments` in [`../tools/fit-viewer.html`](../tools/fit-viewer.html)) are
 meant to be ported freely into whatever ingests these rides.

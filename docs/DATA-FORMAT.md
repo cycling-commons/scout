@@ -6,7 +6,7 @@ own tooling). Behavioural product rules (UI, timings, radar transport) are in
 **[SPEC.md](SPEC.md)**; this document is the **on-disk / parser contract**.
 
 The reference parser currently ships in
-[`Garmin/tools/fit-viewer.html`](../Garmin/tools/fit-viewer.html); port its logic,
+[`tools/fit-viewer.html`](../tools/fit-viewer.html); port its logic,
 don't reinvent it.
 
 **Canonical encoding:** FIT developer fields on each `record` message — no
@@ -194,7 +194,7 @@ be changed later and applied to rides already recorded, and it can be fixed
 without reflashing the device. If you change it, change it in **both** places
 (the platform’s live radar mirror — e.g. `writeRadar()` in
 `Garmin/source/ScoutView.mc` — and `countVehicles()` in
-[`Garmin/tools/fit-viewer.html`](../Garmin/tools/fit-viewer.html)) or the screen
+[`tools/fit-viewer.html`](../tools/fit-viewer.html)) or the screen
 and the parser will disagree.
 
 **It only sees behind you.** The count is *vehicles that overtook you* — not
@@ -226,7 +226,7 @@ This is deliberate:
 - the FIT stays a faithful log of what the rider actually did.
 
 The cost: a consumer that doesn't implement the rule sees both tags instead of
-neither. `applyUndoRule()` in [`Garmin/tools/fit-viewer.html`](../Garmin/tools/fit-viewer.html)
+neither. `applyUndoRule()` in [`tools/fit-viewer.html`](../tools/fit-viewer.html)
 is the reference implementation — port it wherever the FIT is ingested.
 
 ### Live UI tallies (all ports)
@@ -309,11 +309,11 @@ tag / radar not tracking. A handful of seconds from a real ride:
 Note how the three picker patterns look on disk: CLOSURE and SURFACE are one
 `poi_type` carrying a `poi_detail` qualifier, while the RESUPPLY leaf (WATER) is
 just its own `poi_type` with detail 0. This is the exact output of
-`Garmin/tools/make-test-fit.mjs`, so `node Garmin/tools/make-test-fit.mjs out.fit`
+`tools/make-test-fit.mjs`, so `node tools/make-test-fit.mjs out.fit`
 writes the file these rows came from — drop it on the viewer to see them plotted.
 
 ## Checking a FIT file (the viewer + tests)
-Open [`Garmin/tools/fit-viewer.html`](../Garmin/tools/fit-viewer.html) in any
+Open [`tools/fit-viewer.html`](../tools/fit-viewer.html) in any
 browser (just double-click it) and drop a `.fit` file on it. No install, no
 server, and the file never leaves your machine — it's parsed in the page. It shows:
 
@@ -329,19 +329,19 @@ The two failure modes it's built to tell apart: *no developer fields at all*
 *fields declared but poi_type is 0 everywhere* (nothing tapped, or tapped while
 the timer was paused).
 
-`Garmin/tools/test-fit-parser.mjs` exercises the parser (extracted from the
+`tools/test-fit-parser.mjs` exercises the parser (extracted from the
 marker block in the HTML, so it's the shipping code). It's **self-contained** —
 it builds a full binary FIT in memory covering every option and asserts the whole
 pipeline (parse → tags → surface segments → vehicle count → CRC/bad input), so it
 needs no Garmin SDK:
 
-    node Garmin/tools/test-fit-parser.mjs Garmin/tools/fit-viewer.html
+    node tools/test-fit-parser.mjs tools/fit-viewer.html
 
 Pass a real FIT as an optional third argument to also smoke-test against it (the
 SDK sample, or your own ride). To get a real `.fit` covering every option to open
-in the viewer, generate one with `Garmin/tools/make-test-fit.mjs`:
+in the viewer, generate one with `tools/make-test-fit.mjs`:
 
-    node Garmin/tools/make-test-fit.mjs out.fit    # then drop out.fit on the viewer
+    node tools/make-test-fit.mjs out.fit    # then drop out.fit on the viewer
 
 ## Platform deltas
 

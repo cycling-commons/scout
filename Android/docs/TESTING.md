@@ -67,20 +67,20 @@ After `:fit:test` (writes `fit/build/scout-scenario.fit`):
 
 ```sh
 # from Scout repo root
-node Android/tools/validate-scout-fit.mjs Garmin/tools/fit-viewer.html Android/fit/build/scout-scenario.fit
-node Android/tools/validate-scout-fit.mjs Garmin/tools/fit-viewer.html Android/fit/build/scout-scenario-streamed.fit
+node Android/tools/validate-scout-fit.mjs tools/fit-viewer.html Android/fit/build/scout-scenario.fit
+node Android/tools/validate-scout-fit.mjs tools/fit-viewer.html Android/fit/build/scout-scenario-streamed.fit
 ```
 
 **Expect (both files):** CRC ok, 60 records, tags/undo, surface segments, 2 vehicles.
 The second file is written the way the app writes — append plus periodic flush — so
 run it whenever `ScoutFitWriter` changes.
 
-Optional: open `Garmin/tools/fit-viewer.html` in a browser and drop the same file.
+Optional: open `tools/fit-viewer.html` in a browser and drop the same file.
 
 Shared CI-style parser suite (Garmin reference):
 
 ```sh
-node Garmin/tools/test-fit-parser.mjs Garmin/tools/fit-viewer.html
+node tools/test-fit-parser.mjs tools/fit-viewer.html
 ```
 
 ### 2.3 Lint
@@ -161,7 +161,7 @@ The app writes to app-private storage, so pull it through `run-as`. Redirect fro
 adb emu geo fix 4.895 52.370          # emulator only: give it a fix to record
 adb shell run-as org.cyclingcommons.scout ls -l files/rides
 cmd /c "adb exec-out run-as org.cyclingcommons.scout cat files/rides/<name>.fit > ride.fit"
-node Android/tools/validate-scout-fit.mjs Garmin/tools/fit-viewer.html ride.fit
+node Android/tools/validate-scout-fit.mjs tools/fit-viewer.html ride.fit
 ```
 
 The record/tag/surface expectations in `validate-scout-fit.mjs` are pinned to the

@@ -44,7 +44,7 @@ Debug APK output:
 Validate a FIT against the shipped viewer parser (after `:fit:test` writes the scenario file):
 
 ```sh
-node Android/tools/validate-scout-fit.mjs Garmin/tools/fit-viewer.html Android/fit/build/scout-scenario.fit
+node Android/tools/validate-scout-fit.mjs tools/fit-viewer.html Android/fit/build/scout-scenario.fit
 ```
 
 ---
@@ -86,7 +86,7 @@ In Studio: **Settings → Build Tools → Gradle → Gradle JDK → Embedded JDK
 
 | Tool | When you need it |
 | --- | --- |
-| **Node.js 20+** | Shared FIT parser / viewer under `Garmin/tools/` |
+| **Node.js 20+** | Shared FIT parser / viewer under `tools/` |
 | **Bike radar** (e.g. Garmin Varia) | BLE and/or ANT+ radar testing |
 | **[ANT Radio Service](https://play.google.com/store/apps/details?id=com.dsi.ant.service.socket)** (or USB ANT stick) | ANT+ radar path on phones without built-in ANT |
 | **ANT+ capable phone or USB ANT stick** | Hardware for the ANT+ transport |
@@ -216,10 +216,10 @@ Domain-only tests:
 From the **Scout repo root** (needs Node 20+):
 
 ```sh
-node Garmin/tools/test-fit-parser.mjs Garmin/tools/fit-viewer.html
+node tools/test-fit-parser.mjs tools/fit-viewer.html
 ```
 
-Open `Garmin/tools/fit-viewer.html` in a browser and drop a `.fit` on it (stays
+Open `tools/fit-viewer.html` in a browser and drop a `.fit` on it (stays
 local). No Android SDK required for this step.
 
 ---

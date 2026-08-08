@@ -1,8 +1,8 @@
 # Contributing to Scout (Garmin)
 
-Thanks for helping out. This folder is the Garmin Connect IQ data field plus the
-reference FIT parser (browser viewer and Node test suite). Shared product and
-data contracts live at the repo root:
+Thanks for helping out. This folder is the Garmin Connect IQ data field. The shared
+reference FIT parser (browser viewer and Node test suite) lives at the repo root in
+`tools/`. Shared product and data contracts:
 [SPEC](../docs/SPEC.md) · [DATA-FORMAT](../docs/DATA-FORMAT.md).
 
 ## Ground rules
@@ -14,7 +14,7 @@ data contracts live at the repo root:
   device. If you're adding "smarts", they almost certainly belong in the parser.
 - **The device and the parser must agree.** Anything the device mirrors for live
   display (the undo rule, the tallies) has a reference implementation in
-  `tools/fit-viewer.html`. Change both, and add a test.
+  `../tools/fit-viewer.html`. Change both, and add a test.
 - **The FIT is a contract.** `poi_type` / `poi_detail` / `SURF_*` / `DUR_*` codes
   are append-only — old rides must keep parsing. Add new codes; don't renumber.
   Spec changes belong in the root docs, not only here.
@@ -22,26 +22,26 @@ data contracts live at the repo root:
 ## Parser changes (no Garmin SDK required)
 
 The parser lives between the `// ===PARSER-START===` / `===PARSER-END===` markers
-in [`tools/fit-viewer.html`](tools/fit-viewer.html). The test suite extracts that
+in [`../tools/fit-viewer.html`](../tools/fit-viewer.html). The test suite extracts that
 exact block and exercises it, so what's tested is what ships.
 
 ```sh
 # Self-contained — builds a full binary FIT in-memory and parses it. No SDK needed.
-node tools/test-fit-parser.mjs tools/fit-viewer.html
+node ../tools/test-fit-parser.mjs ../tools/fit-viewer.html
 
 # Optionally also smoke-test against a real SDK sample (3rd arg):
-node tools/test-fit-parser.mjs tools/fit-viewer.html path/to/sample.FIT
+node ../tools/test-fit-parser.mjs ../tools/fit-viewer.html path/to/sample.FIT
 ```
 
 CI runs the first form on every push (see `.github/workflows/ci.yml`).
 
 - Add a test for any parser change. The end-to-end fixture is
-  [`tools/make-test-fit.mjs`](tools/make-test-fit.mjs) — it writes a real binary
+  [`../tools/make-test-fit.mjs`](../tools/make-test-fit.mjs) — it writes a real binary
   `.fit` covering every option (all POI types, closure durations, a surface
   segment sequence, an undo pair, two radar passes). Extend its `SCENARIO` and
   assert in section `[2]` of the test.
-- Want a real file to open in the viewer? `node tools/make-test-fit.mjs out.fit`,
-  then drop `out.fit` on `tools/fit-viewer.html`. (`.fit` files are git-ignored —
+- Want a real file to open in the viewer? `node ../tools/make-test-fit.mjs out.fit`,
+  then drop `out.fit` on `../tools/fit-viewer.html`. (`.fit` files are git-ignored —
   never commit a real ride; it contains a GPS track.)
 
 ## Device (Connect IQ) changes
