@@ -4,6 +4,8 @@ How Scout records tags into the activity file, and how to read them back. This i
 the reference for anyone ingesting Scout rides (the Cycling Commons Atlas, or your
 own tooling). Behavioural product rules (UI, timings, radar transport) are in
 **[SPEC.md](SPEC.md)**; this document is the **on-disk / parser contract**.
+Tag codes and picker layout are normative in **[SPEC §5–§6](SPEC.md#5-tag-taxonomy)**;
+this page focuses on how those codes appear in FIT and how parsers read them back.
 
 The reference parser currently ships in
 [`tools/fit-viewer.html`](../tools/fit-viewer.html); port its logic,
@@ -22,60 +24,72 @@ Everything below is stored as those developer fields on the `record` message.
 
 ## The tags: `poi_type` / `poi_detail`
 
-The watch grid — six tiles, one tap each. Five (★) open a second page
-before they commit; the other one tags on the spot.
+The ride grid — six tiles, one tap each. Five (★) open a second page
+before they commit; **OTHER** tags on the spot.
 
-    ┌──────────┬───────────┐
-    │RESUPPLY ★│  CLOSURE ★│
-    ├──────────┼───────────┤
-    │ SURFACE ★│ DANGER ★  │
-    ├──────────┼───────────┤
-    │ SCENERY ★│  OTHER    │
-    └──────────┴───────────┘
+FIT field name for code **1** is **`DANGER`** (historic developer-field name).
+Every UI labels that tile **NOTICE** — see [SPEC §5.1](SPEC.md#51-poi_type-append-only).
 
-    ★ second page:
-      DANGER   →  NOTICE?     POTHOLES · CROSSING · CORNER · OTHER
-      CLOSURE  →  CLOSED FOR?   TODAY · DAYS · WEEKS · MONTHS · UNKNOWN
-      SURFACE  →  WHICH?        ASPHALT · CONCRETE · PAVING · SETT · COBBLES · GRAVEL · DIRT · SAND · END
-      RESUPPLY →  WHAT KIND?    WATER · FOOD · REPAIR
-      SCENERY  →  SCENERY?      NATURE · HISTORY · CULTURE · VIEW · ARCHITECT · UNKNOWN
+    ┌───────────┬───────────┐
+    │ RESUPPLY ★│  CLOSURE ★│
+    ├───────────┼───────────┤
+    │ SURFACE ★ │  NOTICE ★ │
+    ├───────────┼───────────┤
+    │ SCENERY ★ │  OTHER    │
+    └───────────┴───────────┘
 
-The pickers look alike and encode the same way: DANGER, CLOSURE, SCENERY, SURFACE,
-and RESUPPLY each write **one** `poi_type` with a qualifier in `poi_detail`.
+    ★ second page (UI prompt → choices):
+      NOTICE   →  NOTICE?       POTHOLES · CROSSING · CORNER · OTHER · BACK
+      CLOSURE  →  CLOSED FOR?   TODAY · DAYS · WEEKS · MONTHS · UNKNOWN · BACK
+      SCENERY  →  SCENERY?      NATURE · HISTORY · CULTURE · VIEW · ARCHITECT · UNKNOWN · BACK
+      RESUPPLY →  WHAT KIND?    WATER · FOOD · REPAIR · BACK
+      SURFACE  →  (no header)   ASPHALT · CONCRETE · PAVING · SETT · COBBLES · GRAVEL · DIRT · SAND · END · BACK
 
-`poi_type`: 1=DANGER · 2=SCENERY · 3=WATER · 4=OTHER · 5=CLOSURE · 6=SURFACE ·
-7=FOOD · 8=MECHANICAL · **9=RESUPPLY**. Codes are **append-only** — add new ones,
-never renumber. Types **3, 7, 8** are **legacy writers** (resupply leaves written
-as their own type with detail 0); parsers and the viewer still read them and
-display them as RESUPPLY + kind.
+NOTICE, CLOSURE, SCENERY, SURFACE, and RESUPPLY each write **one** `poi_type` with a
+qualifier in `poi_detail`.
+
+`poi_type` (append-only — add new codes, never renumber):
+
+| Code | FIT / code name | UI label | Notes |
+| --- | --- | --- | --- |
+| 0 | NONE | — | No tag this second |
+| 1 | DANGER | NOTICE | Notice picker |
+| 2 | SCENERY | SCENERY | Scenery picker |
+| 3 | WATER | — | **Legacy** resupply leaf → read as RESUPPLY + WATER |
+| 4 | OTHER | OTHER | Direct tag |
+| 5 | CLOSURE | CLOSURE | Duration picker |
+| 6 | SURFACE | SURFACE | Surface picker (segments) |
+| 7 | FOOD | — | **Legacy** resupply leaf → read as RESUPPLY + FOOD |
+| 8 | MECHANICAL | — | **Legacy** resupply leaf → read as RESUPPLY + MECHANICAL |
+| 9 | RESUPPLY | RESUPPLY | Resupply picker (**new recordings write this only**) |
 
 `poi_detail` carries a qualifier for the type on the same record; it is 0 wherever
-no qualifier applies. The reader keys off `poi_type`, so the two code sets below
+no qualifier applies. The reader keys off `poi_type`, so the detail code sets below
 may overlap numerically.
 
-- `poi_type == 1` (DANGER) — hazard: 1=POTHOLES · 2=CROSSING · 3=CORNER ·
-  4=OTHER · 5=UNKNOWN. 0 = legacy bare tap or unspecified.
+- `poi_type == 1` (NOTICE / FIT `DANGER`) — hazard: 1=POTHOLES · 2=CROSSING ·
+  3=CORNER · 4=OTHER · 5=UNKNOWN. 0 = legacy bare tap or unspecified.
 - `poi_type == 5` (CLOSURE) — duration: 1=TODAY · 2=DAYS · 3=WEEKS · 4=MONTHS ·
   5=UNKNOWN.
 - `poi_type == 2` (SCENERY) — kind: 1=NATURE · 2=HISTORY · 3=CULTURE · 4=VIEW ·
-  5=ARCHITECT (architecture) · 6=UNKNOWN. 0 = legacy bare tap or unspecified.
-- `poi_type == 9` (RESUPPLY) — kind: 1=WATER · 2=FOOD · 3=MECHANICAL (REPAIR).
-  0 = legacy / unspecified. Legacy rides may instead use `poi_type` 3 / 7 / 8 with
-  detail 0 — treat as the same kinds when parsing or displaying.
+  5=ARCHITECT · 6=UNKNOWN. 0 = legacy bare tap or unspecified.
+- `poi_type == 9` (RESUPPLY) — kind: 1=WATER · 2=FOOD · 3=MECHANICAL (UI **REPAIR**).
+  0 = legacy / unspecified. **Legacy rides** may use `poi_type` 3 / 7 / 8 with
+  detail 0 — parsers and the viewer map those to RESUPPLY + the same kinds.
 - `poi_type == 6` (SURFACE) — surface type, smooth→rough, aligned to OSM
-  `surface=`: 1=asphalt · 2=concrete · 3=paving_stones · 4=sett ·
-  5=cobblestone · 6=gravel · 7=ground (dirt) · 8=sand · **9=END** (stretch ends,
+  `surface=`: 1=ASPHALT · 2=CONCRETE · 3=PAVING · 4=SETT ·
+  5=COBBLES · 6=GRAVEL · 7=DIRT · 8=SAND · **9=END** (stretch ends,
   road back to normal). 0 = unspecified (a bare SURFACE tap or a timed-out picker).
   Surface is recorded as **stretches, not points** (see below).
 
-CLOSURE, DANGER, SCENERY, SURFACE and RESUPPLY are two-tap: they repaint the field with a follow-up
+NOTICE, CLOSURE, SCENERY, SURFACE and RESUPPLY are two-tap: they repaint the field with a follow-up
 page rather than tagging immediately. Both codes land on the *same* record. Picking
 a subitem doesn't commit at once — it's **held for 3 s** and the chosen tile stays
 lit; picking a different subitem in that window replaces it (only the last choice
 is ever written, so a corrected mistake leaves no trace in the FIT). When the 3 s
 lapse the tag is committed, the device beeps, and it drops back to the grid — so
 the fix lands a few seconds past the sign. BACK during the window aborts with no
-tag. With no pick at all, DANGER, CLOSURE, SCENERY and SURFACE still tag on the 12 s picker timeout
+tag. With no pick at all, NOTICE, CLOSURE, SCENERY and SURFACE still tag on the 12 s picker timeout
 (as UNKNOWN / unspecified), since the point is worth recording even without the
 qualifier; RESUPPLY drops, because a resupply with no kind says nothing.
 
@@ -238,10 +252,10 @@ they do not change the FIT. Every Scout port must show them the same way
 ([SPEC §6.9](SPEC.md#69-per-tile-tallies)):
 
 - **Main grid:** per-`poi_type` counts; RESUPPLY folder = sum of WATER+FOOD+MECHANICAL;
-  DANGER = sum of all hazard commits; CLOSURE = sum of all duration commits;
+  NOTICE (`poi_type` 1) = sum of all hazard commits; CLOSURE = sum of all duration commits;
   SCENERY = sum of all kind commits; SURFACE = stretch starts only.
 - **Notice submenu:** per-`poi_detail` counts (`POTHOLES`…`UNKNOWN`). Same
-  code-overlap caveat — separate danger detail buckets.
+  code-overlap caveat — separate notice detail buckets.
 - **Duration submenu:** per-`poi_detail` counts (`TODAY`…`UNKNOWN`). Duration codes
   numerically overlap `poi_type` — keep a **separate** detail bucket array.
 - **Scenery submenu:** per-`poi_detail` counts (`NATURE`…`UNKNOWN`). Same
@@ -254,7 +268,7 @@ they do not change the FIT. Every Scout port must show them the same way
   rise until stop.
 - **Open stretch:** while last surface commit was `ASPHALT`…`SAND`, show that type
   as active until `END` / unspecified / ride stop ([SPEC §7.1](SPEC.md#71-open-stretch-indicator-all-ports)).
-- Undo of a DANGER, CLOSURE or SCENERY decrements the detail bucket of the **first** tap in the pair.
+- Undo of a NOTICE, CLOSURE or SCENERY decrements the detail bucket of the **first** tap in the pair.
 - Reset tallies when the ride stops; do not tally while idle/paused.
 
 It also means the **FIFO queue is load-bearing**. One tap per `compute()` is
@@ -297,7 +311,7 @@ tag / radar not tracking. A handful of seconds from a real ride:
 
     timestamp   lat       lon      poi_type poi_detail  count near speed  meaning
     1000000004  52.0016   4.0024      0        0         255  255  255    untagged second — still written, poi_type 0
-    1000000005  52.0020   4.0030      1        1         255  255  255    DANGER + detail 1 = POTHOLES
+    1000000005  52.0020   4.0030      1        1         255  255  255    NOTICE (poi_type 1) + detail 1 = POTHOLES
     1000000006  52.0024   4.0036      0        0          1    40   28    no tag; radar picks up a car (1 target, 40 m, +28 kph)
     1000000007  52.0028   4.0042      0        0          1    25   30    same car still tracked → parser counts it
     1000000008  52.0032   4.0048      0        0          0   255  255    count back to 0; near/speed invalid again
@@ -306,10 +320,10 @@ tag / radar not tracking. A handful of seconds from a real ride:
     1000000024  52.0096   4.0144      6        5         255  255  255    SURFACE + detail 5 = cobbles — stretch STARTS here
     1000000027  52.0108   4.0162      6        6         255  255  255    SURFACE + detail 6 = gravel — cobbles ends, gravel starts
     1000000033  52.0132   4.0198      6        9         255  255  255    SURFACE + detail 9 = END — road back to normal
-    1000000057  52.0228   4.0342      1        0         255  255  255    DANGER …
+    1000000057  52.0228   4.0342      1        0         255  255  255    NOTICE (poi_type 1) …
     1000000058  52.0232   4.0348      1        0         255  255  255    … again 1 s later → parser cancels the pair (undo)
 
-Two-tap pickers (CLOSURE, SCENERY, RESUPPLY, SURFACE, NOTICE) each write one
+Two-tap pickers (NOTICE, CLOSURE, SCENERY, RESUPPLY, SURFACE) each write one
 `poi_type` with a `poi_detail` qualifier on the same record. This is the exact
 output of `tools/make-test-fit.mjs`, so `node tools/make-test-fit.mjs out.fit`
 writes the file these rows came from — drop it on the viewer to see them plotted.
@@ -347,8 +361,13 @@ in the viewer, generate one with `tools/make-test-fit.mjs`:
 
 ## Platform deltas
 
-None yet. If a port cannot emit FIT developer fields byte-for-byte, document the
-mapping under that platform and link it from this section.
+| Platform | Delta |
+| --- | --- |
+| **Hammerhead Karoo** | Same five developer fields and semantics. `radar_speed` is often **255** when Karoo’s RADAR stream exposes ranges only (no closing speed). See [`Hammerhead-Karoo/docs/TECHNICAL.md`](../Hammerhead-Karoo/docs/TECHNICAL.md) §8. |
+
+Other ports should document any byte-level differences here. If a port cannot emit FIT
+developer fields byte-for-byte, document the mapping under that platform and link it
+from this table.
 
 ## FIT gotchas for integrators
 - **The tags travel inside the raw `.FIT`.** Any path that hands you the

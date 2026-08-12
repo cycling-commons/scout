@@ -1,6 +1,6 @@
 package org.cyclingcommons.scout.domain
 
-/** Append-only poi_type codes — must match docs/DATA-FORMAT.md */
+/** Append-only poi_type codes — must match docs/SPEC.md §5 and docs/DATA-FORMAT.md */
 object PoiType {
     const val NONE = 0
     const val DANGER = 1
