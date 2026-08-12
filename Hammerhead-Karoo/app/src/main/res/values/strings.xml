@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Scout</string>
+    <string name="extension_name">Scout</string>
+    <string name="tagging_title">Scout — tag ride</string>
+    <string name="action_tag">Tag ride</string>
+    <string name="main_subtitle">Karoo extension for in-ride tagging into your activity FIT file.</string>
+    <string name="main_open_tagging">Open tagging</string>
+    <string name="main_ride_state">Karoo ride: %1$s</string>
+    <string name="main_extension_ready">Add the Scout data field to a ride profile page, then assign the Tag ride bonus action to a button.</string>
+    <string name="main_setup_steps">1. Ride profile → edit page → add Scout field.\n2. Controller → assign Tag ride.\n3. Start ride on Karoo (no Scout start/stop).</string>
+    <string name="datatype_scout_status">Scout</string>
+    <string name="datatype_scout_status_description">Tag tally, radar cars, and ride status. FIT records on all pages while riding.</string>
+    <string name="field_open_tagging_hint">Bonus: Tag ride</string>
+    <string name="field_surface_strip">rec. surface tap to END</string>
+    <string name="tagging_idle_prompt">Start a ride on Karoo before tagging.</string>
+    <string name="tagging_tag_count">%1$d tags</string>
+    <string name="ride_state_idle">idle</string>
+    <string name="ride_state_recording">recording</string>
+    <string name="ride_state_paused">paused</string>
+    <string name="radar_label">Radar</string>
+    <string name="radar_none">no radar</string>
+    <string name="radar_cars">%1$d cars</string>
+    <string name="radar_speed_kph">%1$d ±5 kph</string>
+    <string name="surface_open_banner">Surface open: %1$s</string>
+    <string name="surface_open_action">End</string>
+</resources>

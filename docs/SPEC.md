@@ -696,7 +696,7 @@ in that platform’s folder; keep a one-line pointer below when a delta exists.
 | --- | --- | --- |
 | Garmin Connect IQ | [`Garmin/`](../Garmin/) | Reference implementation. Data field + FitContributor; ANT+ via `Toybox.AntPlus.BikeRadar`; touch Edge only; picker pages are field repaints (no `pushView`). Publishing: [`Garmin/docs/PUBLISHING.md`](../Garmin/docs/PUBLISHING.md). |
 | Android phone | [`Android/`](../Android/) | Standalone ride app (**P0–P6**). Tech: [`Android/docs/TECHNICAL.md`](../Android/docs/TECHNICAL.md) · setup: [`Android/docs/SETUP.md`](../Android/docs/SETUP.md) · sharing contract: [SHARING.md](SHARING.md). Radar: ANT+ if present, else BLE (§8). Original FIT (SPEC §4.2 fields only). Battery: §12.1. UI: light/dark, help template, instance `.env` template, stop confirm, idle-tap guard (§9). Sharing to Atlas: specified, not yet shipped. **No on-disk delta** vs this SPEC / DATA-FORMAT for recording. |
-| Hammerhead Karoo | [`Hammerhead-Karoo/`](../Hammerhead-Karoo/) | *(not started — no deltas yet)* |
+| Hammerhead Karoo | [`Hammerhead-Karoo/`](../Hammerhead-Karoo/) | karoo-ext extension (K0–K1 shipped); FIT via `WriteToRecordMesg`; ride timer = Karoo `RideState`; radar = native ANT+ stream; `radar_speed` often invalid — see [`Hammerhead-Karoo/docs/TECHNICAL.md`](../Hammerhead-Karoo/docs/TECHNICAL.md). Tagging UI = K2. |
 | iPhone | [`iPhone/`](../iPhone/) | *(not started — no deltas yet)* |
 
 ### Shared test assets

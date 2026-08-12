@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ExtensionInfo
+
+    id="scout"
+
+    displayName="@string/extension_name"
+
+    icon="@drawable/ic_scout_extension"
+
+    scansDevices="false"
+
+    fitFile="true">
+
+    <DataType
+
+        typeId="scout-status"
+
+        description="@string/datatype_scout_status_description"
+
+        displayName="@string/datatype_scout_status"
+
+        graphical="true"
+
+        icon="@drawable/ic_scout_extension" />
+
+    <BonusAction
+
+        actionId="open-tagging"
+
+        displayName="@string/action_tag" />
+
+</ExtensionInfo>
+

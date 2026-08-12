@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Scout mark: pin + ripple for in-app use (tinted brand colour). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:fillType="evenOdd"
+        android:pathData="M10,78.5 a44,16 0 1,0 88,0 a44,16 0 1,0 -88,0 Z
+                          M17,78.5 a37,13.5 0 1,0 74,0 a37,13.5 0 1,0 -74,0 Z" />
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:fillType="evenOdd"
+        android:pathData="M21,78.5 a33,12 0 1,0 66,0 a33,12 0 1,0 -66,0 Z
+                          M27,78.5 a27,9.8 0 1,0 54,0 a27,9.8 0 1,0 -54,0 Z" />
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:fillType="evenOdd"
+        android:pathData="M31,78.5 a23,8.4 0 1,0 46,0 a23,8.4 0 1,0 -46,0 Z
+                          M37,78.5 a17,6.2 0 1,0 34,0 a17,6.2 0 1,0 -34,0 Z" />
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:fillType="evenOdd"
+        android:pathData="M54,73 C54,73 35,56 33,34.5 A21,21 0 1,1 75,34.5 C75,56 54,73 54,73 Z
+                          M42.4,33 a11.6,11.6 0 1,0 23.2,0 a11.6,11.6 0 1,0 -23.2,0 Z" />
+</vector>
