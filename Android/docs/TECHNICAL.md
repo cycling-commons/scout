@@ -228,6 +228,8 @@ Only `TRACKING` writes real `radar_*` values; everything else → `255` (SPEC §
 
 Same leave-gate as SPEC / Garmin `writeRadar` (count + speed on pass after ≥2 s). Domain module owns the math; UI only renders.
 
+Start/Resume seeks the saved device for 45 s, then stops if it never tracked. Tap **No radar** (or **Connecting…**) to open another 45 s seek — same as Garmin. A drop after `TRACKING` still auto-retries with backoff. No mid-ride scan.
+
 ---
 
 ## 8. UI

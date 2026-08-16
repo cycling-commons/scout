@@ -253,6 +253,15 @@ class RideViewModel(app: Application) : AndroidViewModel(app) {
 
     fun forgetRadar() = radar.forget()
 
+    /** Tap on the dead radar strip — same as Garmin `openRadar()`. */
+    fun retryRadar() {
+        if (controller.timer != TimerState.RUNNING) return
+        radar.searchFromTap()
+        feedback.confirm(undone = false)
+        publish()
+        wake()
+    }
+
     fun startRide() {
         controller.start()
         vehicles.resetRide()

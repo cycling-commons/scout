@@ -46,6 +46,7 @@
     <string name="a11y_tile_confirm">Erneut tippen zum Bestätigen</string>
     <string name="a11y_picker_heading">%1$s-Auswahl</string>
     <string name="a11y_radar_status">Radar, %1$s</string>
+    <string name="a11y_radar_retry_button">%1$s. Nach Radar suchen, Schaltfläche</string>
     <string name="a11y_radar_live">Radar live, %1$s</string>
     <string name="a11y_radar_live_speed">Radar live, %1$s, %2$s</string>
     <string name="a11y_surface_end_button">Oberfläche offen %1$s. Offenes Stück beenden, Schaltfläche</string>

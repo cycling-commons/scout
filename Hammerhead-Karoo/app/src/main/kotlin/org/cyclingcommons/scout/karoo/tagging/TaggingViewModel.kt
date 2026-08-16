@@ -28,6 +28,7 @@ import kotlinx.coroutines.launch
 
 import kotlinx.coroutines.withTimeoutOrNull
 
+import org.cyclingcommons.scout.domain.RadarLinkState
 import org.cyclingcommons.scout.domain.ScoutUiState
 
 import org.cyclingcommons.scout.domain.TimerState
@@ -41,6 +42,8 @@ import org.cyclingcommons.scout.karoo.session.ScoutSession
 data class TaggingUiModel(
 
     val scout: ScoutUiState = ScoutUiState(),
+
+    val radarSeeking: Boolean = false,
 
     val riderMessage: String? = null,
 
@@ -207,6 +210,9 @@ class TaggingViewModel(app: Application) : AndroidViewModel(app) {
                         lastCarSpeedKph = ScoutExtensionRuntime.liveCarSpeedKph(),
 
                     ),
+
+                radarSeeking = radar.state == RadarLinkState.SCANNING ||
+                    radar.state == RadarLinkState.CONNECTING,
 
             )
 

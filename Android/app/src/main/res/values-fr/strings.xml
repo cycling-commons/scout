@@ -46,6 +46,7 @@
     <string name="a11y_tile_confirm">Appuyez à nouveau pour confirmer</string>
     <string name="a11y_picker_heading">Sélecteur %1$s</string>
     <string name="a11y_radar_status">Radar, %1$s</string>
+    <string name="a11y_radar_retry_button">%1$s. Rechercher le radar, bouton</string>
     <string name="a11y_radar_live">Radar en direct, %1$s</string>
     <string name="a11y_radar_live_speed">Radar en direct, %1$s, %2$s</string>
     <string name="a11y_surface_end_button">Surface ouverte %1$s. Terminer le tronçon ouvert, bouton</string>

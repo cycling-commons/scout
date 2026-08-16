@@ -20,6 +20,7 @@
     <string name="ride_state_paused">paused</string>
     <string name="radar_label">Radar</string>
     <string name="radar_none">no radar</string>
+    <string name="radar_connecting">Connecting…</string>
     <string name="radar_cars">%1$d cars</string>
     <string name="radar_speed_kph">%1$d ±5 kph</string>
     <string name="surface_open_banner">Surface open: %1$s</string>

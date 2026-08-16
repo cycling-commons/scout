@@ -13,6 +13,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import org.cyclingcommons.scout.domain.RadarLinkState
 import org.cyclingcommons.scout.domain.TimerState
 import org.cyclingcommons.scout.karoo.R
 import org.cyclingcommons.scout.karoo.session.ScoutSession
@@ -80,13 +81,16 @@ class ScoutStatusDataType(
         if (openSurfaceLabel == null) {
             val radarText =
                 when {
-                    !radar.tracking -> context.getString(R.string.radar_none)
-                    ScoutExtensionRuntime.liveCarCount() > 0 ->
+                    radar.tracking && ScoutExtensionRuntime.liveCarCount() > 0 ->
                         context.getString(
                             R.string.radar_cars,
                             ScoutExtensionRuntime.liveCarCount(),
                         )
-                    else -> context.getString(R.string.radar_label)
+                    radar.tracking -> context.getString(R.string.radar_label)
+                    radar.state == RadarLinkState.SCANNING ||
+                        radar.state == RadarLinkState.CONNECTING ->
+                        context.getString(R.string.radar_connecting)
+                    else -> context.getString(R.string.radar_none)
                 }
             views.setTextViewText(R.id.scout_radar, radarText)
         }

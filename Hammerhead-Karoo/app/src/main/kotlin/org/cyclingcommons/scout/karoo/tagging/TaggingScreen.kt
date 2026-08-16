@@ -110,6 +110,7 @@ fun TaggingScreen(
             }
             RadarStrip(
                 live = scout.radarLive,
+                seeking = model.radarSeeking,
                 carCount = scout.carCount,
                 speedKph = scout.lastCarSpeedKph,
             )
@@ -180,6 +181,7 @@ private fun TaggingHeader(timer: TimerState, tagTotal: Int) {
 @Composable
 private fun RadarStrip(
     live: Boolean,
+    seeking: Boolean,
     carCount: Int,
     speedKph: Int,
 ) {
@@ -199,13 +201,7 @@ private fun RadarStrip(
             color = ScoutKarooColors.TextSecondary,
         )
         Spacer(Modifier.weight(1f))
-        if (!live) {
-            Text(
-                text = stringResource(R.string.radar_none),
-                style = MaterialTheme.typography.bodyLarge,
-                color = ScoutKarooColors.TextSecondary,
-            )
-        } else {
+        if (live) {
             Text(
                 text = stringResource(R.string.radar_cars, carCount),
                 style = ScoutType.metric,
@@ -218,6 +214,12 @@ private fun RadarStrip(
                     color = ScoutKarooColors.TextSecondary,
                 )
             }
+        } else {
+            Text(
+                text = stringResource(if (seeking) R.string.radar_connecting else R.string.radar_none),
+                style = MaterialTheme.typography.bodyLarge,
+                color = ScoutKarooColors.TextSecondary,
+            )
         }
     }
 }

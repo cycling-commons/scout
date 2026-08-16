@@ -4,6 +4,9 @@ Semantic versioning; `versionName` in `app/build.gradle.kts` is the source of
 truth. Tag releases **`android/vX.Y.Z`** (see root [README](../README.md#release-tags)).
 
 ## Unreleased
+- Tap **No radar** (or **Connecting…**) while recording to start a new 45 s seek
+  for the saved Varia — same as Garmin. Start still seeks once; a drop after
+  TRACKING still auto-retries with backoff.
 
 ## 1.3.0 — 2026-08-08
 - **Resupply FIT encoding** unified: `poi_type` 9 + detail (WATER / FOOD /

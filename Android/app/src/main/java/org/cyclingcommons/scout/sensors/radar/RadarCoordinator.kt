@@ -29,7 +29,8 @@ data class RadarStatus(
 /**
  * Radar connection policy for a ride (SPEC §8, TECHNICAL §5): connect only while
  * RUNNING or on the pair screen, never scan mid-ride, and back off between retries
- * instead of hammering the radio at a fixed interval.
+ * instead of hammering the radio at a fixed interval. A tap on "No radar" opens a
+ * fresh 45 s seek (Garmin parity) when the Varia was off at Start.
  *
  * Capability probes (ANT service present, Bluetooth on, permissions granted) are
  * cached here — they are binder calls and must not run on the sampling tick.
@@ -109,11 +110,17 @@ class RadarCoordinator(context: Context) {
     fun onRideStart() {
         rideActive = true
         hadTracking = false
-        retryGapMs = RETRY_GAP_MIN_MS
-        lastRetryAtMs = 0L
-        seekUntilMs = now() + SEEK_MS
-        session.connectForRide()
-        publishLink()
+        beginSeek()
+    }
+
+    /**
+     * Garmin parity: a tap on "No radar" opens a fresh seek. The first Start/Resume
+     * window is 45 s and then stops; without this, a Varia powered on later never
+     * connects. Does not scan — reconnects the saved device only.
+     */
+    fun searchFromTap() {
+        if (!rideActive || !hasSavedRadar()) return
+        beginSeek()
     }
 
     fun onRideStop() {
@@ -212,6 +219,14 @@ class RadarCoordinator(context: Context) {
     fun setTransport(transport: RadarTransport) {
         session.setTransportPreference(transport)
         refreshCapabilities()
+    }
+
+    private fun beginSeek() {
+        retryGapMs = RETRY_GAP_MIN_MS
+        lastRetryAtMs = 0L
+        seekUntilMs = now() + SEEK_MS
+        session.connectForRide()
+        publishLink()
     }
 
     private fun publishLink() {

@@ -46,6 +46,7 @@
     <string name="a11y_tile_confirm">Tik opnieuw om te bevestigen</string>
     <string name="a11y_picker_heading">%1$s keuze</string>
     <string name="a11y_radar_status">Radar, %1$s</string>
+    <string name="a11y_radar_retry_button">%1$s. Zoek naar radar, knop</string>
     <string name="a11y_radar_live">Radar live, %1$s</string>
     <string name="a11y_radar_live_speed">Radar live, %1$s, %2$s</string>
     <string name="a11y_surface_end_button">Oppervlak open %1$s. Open stuk beëindigen, knop</string>

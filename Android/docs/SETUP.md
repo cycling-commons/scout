@@ -153,7 +153,7 @@ export JAVA_HOME="…/Android Studio…/jbr…"        # Studio’s JBR
 - Tag grid + pickers, tallies, haptics
 - ~1 Hz GPS + FIT under `files/rides/`; Share FIT after Stop
 - **Settings** (idle): km/h|mph, keep-screen-on (default off), pair radar (Auto/ANT+/BLE), list past rides (**Share** / **Delete**)
-- Radar reconnects on Start while TRACKING; strip + FIT `radar_*`
+- Radar reconnects on Start while TRACKING; tap **No radar** to seek again; strip + FIT `radar_*`
 - Battery: GPS only while RUNNING; no radar/scan while paused; measure checklist in TECHNICAL §5
 
 How to verify: **[TESTING.md](TESTING.md)**.

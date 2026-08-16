@@ -331,6 +331,8 @@ Reference implementation: [eiRadar RadarEngine.kt](https://github.com/yrkan/eira
 | Scout field | Karoo source |
 | --- | --- |
 | `TRACKING` | `StreamState.Streaming` and no `RADAR_ERROR` |
+| `SCANNING` | `StreamState.Searching` — strip shows Connecting…, FIT still 255 |
+| `DISCONNECTED` | `NotAvailable` / `Idle` / `RADAR_ERROR` — strip shows no radar |
 | `targets[].occupied` | range field present and > 0 |
 | `targets[].rangeM` | `RADAR_TARGET_n_RANGE` |
 | `targets[].closingSpeedMps` | **Not exposed** by karoo-ext RADAR fields |

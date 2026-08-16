@@ -49,8 +49,9 @@ class KarooRadarAdapter(
     private fun handleStreamState(state: StreamState) {
         when (state) {
             is StreamState.Streaming -> ScoutSession.updateRadar(mapValues(state.dataPoint.values))
+            is StreamState.Searching ->
+                ScoutSession.updateRadar(RadarObservation(state = RadarLinkState.SCANNING))
             is StreamState.NotAvailable,
-            is StreamState.Searching,
             is StreamState.Idle,
             -> ScoutSession.updateRadar(RadarObservation(state = RadarLinkState.DISCONNECTED))
         }

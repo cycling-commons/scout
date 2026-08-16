@@ -150,6 +150,7 @@ class MainActivity : ComponentActivity() {
                                 onStop = rideVm::stopRide,
                                 onTileTap = rideVm::onTileTap,
                                 onEndOpenSurface = rideVm::endOpenSurface,
+                                onRetryRadar = rideVm::retryRadar,
                                 onShareFit = { share(rideVm.shareLastFit()) },
                                 onSettings = rideVm::openSettings,
                                 onHelp = { rideVm.openHelp(Screen.RIDE) },

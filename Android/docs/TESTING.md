@@ -144,7 +144,8 @@ testing BLE radar).
 
 | # | Step | Pass if |
 | --- | --- | --- |
-| 1 | Not paired / not TRACKING | Strip: `no radar` (never `0 cars`) |
+| 1 | Not paired / not TRACKING | Strip: `No radar` (never `0 cars`) |
+| 1b | Paired, start with radar off, wait past Connecting…, turn radar on, tap **No radar** | Strip: Connecting… then live tally |
 | 2 | TRACKING, empty road | Strip live; FIT `radar_count=0`, near/speed 255 |
 | 3 | Car overtakes | Count rises after corroboration; speed ±5 kph / ±3 mph |
 | 4 | Pause | Radar disconnects; strip back to `no radar` |

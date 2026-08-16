@@ -46,6 +46,7 @@
     <string name="a11y_tile_confirm">Tap again to confirm</string>
     <string name="a11y_picker_heading">%1$s picker</string>
     <string name="a11y_radar_status">Radar, %1$s</string>
+    <string name="a11y_radar_retry_button">%1$s. Search for radar, button</string>
     <string name="a11y_radar_live">Radar live, %1$s</string>
     <string name="a11y_radar_live_speed">Radar live, %1$s, %2$s</string>
     <string name="a11y_surface_end_button">Surface open %1$s. End open stretch, button</string>

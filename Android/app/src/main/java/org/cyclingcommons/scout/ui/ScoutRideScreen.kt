@@ -91,6 +91,7 @@ fun ScoutRideScreen(
     onStop: () -> Unit,
     onTileTap: (Int) -> Unit,
     onEndOpenSurface: () -> Unit,
+    onRetryRadar: () -> Unit,
     onShareFit: () -> Unit,
     onSettings: () -> Unit,
     onHelp: () -> Unit,
@@ -170,6 +171,7 @@ fun ScoutRideScreen(
             carCount = scout.carCount,
             speedKph = scout.lastCarSpeedKph,
             imperial = scout.imperial,
+            onRetry = onRetryRadar,
         )
         RideControls(
             timer = scout.timer,
@@ -490,6 +492,7 @@ private fun RadarStrip(
     carCount: Int,
     speedKph: Int,
     imperial: Boolean,
+    onRetry: () -> Unit,
 ) {
     val detail = when {
         live -> null
@@ -497,6 +500,7 @@ private fun RadarStrip(
         hasRadar && recording && seeking -> stringResource(R.string.radar_connecting)
         else -> stringResource(R.string.radar_none)
     }
+    val canRetry = hasRadar && recording && !live
     val radarA11y = when {
         live -> {
             val cars = pluralStringResource(R.plurals.radar_cars, carCount, carCount)
@@ -511,23 +515,38 @@ private fun RadarStrip(
                 stringResource(R.string.a11y_radar_live, cars)
             }
         }
+        canRetry -> stringResource(R.string.a11y_radar_retry_button, detail!!)
         else -> stringResource(R.string.a11y_radar_status, detail!!)
     }
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .semantics(mergeDescendants = true) {
-                contentDescription = radarA11y
-                if (live) {
-                    liveRegion = LiveRegionMode.Polite
-                }
-            }
+            .clip(RoundedCornerShape(ScoutDimens.cardCorner))
             .background(ScoutColors.Surface, RoundedCornerShape(ScoutDimens.cardCorner))
             .border(
                 width = 1.dp,
                 color = if (live) ScoutColors.Recording else ScoutColors.Outline,
                 shape = RoundedCornerShape(ScoutDimens.cardCorner),
             )
+            .then(
+                if (canRetry) {
+                    Modifier.clickable(role = Role.Button, onClick = onRetry)
+                } else {
+                    Modifier
+                },
+            )
+            .semantics(mergeDescendants = true) {
+                contentDescription = radarA11y
+                if (live) {
+                    liveRegion = LiveRegionMode.Polite
+                }
+                if (canRetry) {
+                    onClick {
+                        onRetry()
+                        true
+                    }
+                }
+            }
             .padding(horizontal = ScoutSpacing.lg, vertical = ScoutSpacing.md),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(ScoutSpacing.md),
