@@ -136,7 +136,7 @@ class ScoutView extends WatchUi.DataField {
     // car has already gone by (not a live approaching warning). Radar is always
     // polled and written to FIT; this only controls whether the strip is drawn.
     // Default false; set true for a personal sideload if you want the readout.
-    hidden const SHOW_RADAR_STRIP = false;
+    hidden const SHOW_RADAR_STRIP = true;
 
     hidden const FLASH_MS = 1500;       // confirmation flash duration
     hidden const PICK_MS  = 12000;      // sub-page gives up (no pick) after this
@@ -196,6 +196,7 @@ class ScoutView extends WatchUi.DataField {
     hidden var _openSurfaceDetail as Number = SURF_NONE;  // §7.1 open-stretch indicator
 
     hidden var _radarLive as Boolean = false;  // radar actually TRACKING
+    hidden var _radarSearching as Boolean = false;  // channel open, waiting for a Varia
     hidden var _lastCarSpeed as Number = -1;   // kph, car ground speed, most recent car
     hidden var _riderKph as Number = 0;        // rider ground speed this compute, kph
     hidden var _imperial as Boolean = false;   // display mph, following device settings
@@ -300,10 +301,22 @@ class ScoutView extends WatchUi.DataField {
         _radarNearField.setData(RADAR_NA);
         _radarSpeedField.setData(RADAR_NA);
 
-        // Throws if the Ant permission is missing or the device has no radar
-        // support. Swallow it: the tagger must keep working without a Varia.
+        // First search only. A Connect IQ BikeRadar that misses the Varia goes
+        // DEAD and will not hunt again — tap "no radar" to open a new channel
+        // rather than reconstructing every second.
+        openRadar();
+    }
+
+    // Drop any existing channel and start a fresh ANT+ search. Throws if the
+    // Ant permission is missing or the device has no radar support; swallow
+    // that so the tagger still runs without a Varia.
+    hidden function openRadar() as Void {
+        _radar = null;
+        _radarLive = false;
+        _radarSearching = false;
         try {
             _radar = new AntPlus.BikeRadar(null);   // null listener => poll only
+            _radarSearching = true;
         } catch (ex instanceof Lang.Exception) {
             _radar = null;
         }
@@ -454,6 +467,7 @@ class ScoutView extends WatchUi.DataField {
             // so a demo build still records honest (invalid) radar data if
             // someone forgets to flip DEMO_RADAR back and records a real ride.
             _radarLive = true;
+            _radarSearching = false;
             _carCount = 3;
             _lastCarSpeed = 42;
             return;
@@ -529,17 +543,23 @@ class ScoutView extends WatchUi.DataField {
 
                 _prevCount = count;
                 _radarLive = true;
+                _radarSearching = false;
             } else {
                 // Dropping out mid-pass discards the pending arrival rather than
                 // crediting it on reconnect, where "still a target present" would
-                // be meaningless across the gap.
+                // be meaningless across the gap. Do not reconstruct here — a
+                // DEAD channel stays dead until the rider taps "no radar".
                 _prevCount = 0;
                 _heldClosing = -1;
                 _heldRange = -1;
                 _minRange = 10000;
                 _stretchLen = 0;
                 _radarLive = false;
+                _radarSearching = (st != null && st.state == AntPlus.DEVICE_STATE_SEARCHING);
             }
+        } else {
+            _radarLive = false;
+            _radarSearching = false;
         }
 
         if (_radarCountField != null) { _radarCountField.setData(count); }
@@ -557,9 +577,10 @@ class ScoutView extends WatchUi.DataField {
     function onLayout(dc as Dc) as Void {
         _w = dc.getWidth();
         _h = dc.getHeight();
-        // Sized for the largest font the strip may use. The strip itself is drawn
-        // only while a surface stretch is open or SHOW_RADAR_STRIP is on.
-        _stripH = dc.getFontHeight(Graphics.FONT_MEDIUM) + 4;
+        // Font plus padding so the surface END / no-radar strip is a usable
+        // tap target. Drawn only while a surface stretch is open or
+        // SHOW_RADAR_STRIP is on.
+        _stripH = dc.getFontHeight(Graphics.FONT_MEDIUM) + 24;
         // The strip speed follows the rider's unit setting; the logged FIT field
         // stays kph either way, so only this readout switches. Read once here —
         // the setting doesn't change mid-ride, and onLayout re-runs on wake.
@@ -711,9 +732,9 @@ class ScoutView extends WatchUi.DataField {
         _pendingUntil = System.getTimer() + CORRECT_MS;
     }
 
-    // Hit-tests against _gridH, not _h: the bottom strip is a readout, and a tap
-    // landing on it must still resolve to the tile above rather than off the end
-    // of the grid.
+    // Hit-tests against the grid, not the full field. The live radar tally is a
+    // readout, so a tap there still hits the tile above; surface END and a
+    // "no radar" retry are intercepted in onScreenTap before this runs.
     hidden function cellAt(x as Number, y as Number, rows as Number) as Number {
         var col = (x < _w / 2) ? 0 : 1;
         var gridH = effectiveGridH();
@@ -728,10 +749,20 @@ class ScoutView extends WatchUi.DataField {
     // coords == field coords.
     function onScreenTap(x as Number, y as Number) as Void {
         if (_w <= 0 || _h <= 0) { return; }
-        if (_openSurfaceDetail != SURF_NONE && y >= effectiveGridH()) {
-            endOpenSurface();
-            WatchUi.requestUpdate();
-            return;
+        if (y >= effectiveGridH()) {
+            if (_openSurfaceDetail != SURF_NONE) {
+                endOpenSurface();
+                WatchUi.requestUpdate();
+                return;
+            }
+            // Dead/searching strip: open a new ANT+ channel. A BikeRadar that
+            // missed the Varia will not resume searching on its own.
+            if (SHOW_RADAR_STRIP && !_radarLive) {
+                openRadar();
+                confirmTap(false);
+                WatchUi.requestUpdate();
+                return;
+            }
         }
         var set = currentSet();
         var i = cellAt(x, y, rowsOf(set));
@@ -875,6 +906,7 @@ class ScoutView extends WatchUi.DataField {
     // FIT later. Counting and FIT writes always run in writeRadar(). "no radar"
     // is shown deliberately rather than a zero — the same distinction the FIT
     // makes, since a disconnected Varia and an empty road must never look alike.
+    // Tap it (or "searching...") to start a new ANT+ search.
     hidden function drawRadarStrip(dc as Dc, fg as Number, bg as Number) as Void {
         if (!SHOW_RADAR_STRIP || _stripH <= 0) { return; }
         var gridH = effectiveGridH();
@@ -887,7 +919,7 @@ class ScoutView extends WatchUi.DataField {
         var txt;
         if (!_radarLive) {
             dc.setColor(Graphics.COLOR_DK_GRAY, bg);
-            txt = "no radar";
+            txt = _radarSearching ? "searching..." : "no radar";
         } else {
             dc.setColor(fg, bg);
             txt = _carCount.toString() + " cars";
