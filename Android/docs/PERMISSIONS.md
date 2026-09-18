@@ -78,7 +78,22 @@ notification in v1 is that recording status line so:
 
 ---
 
-## 4. Quick “what should I tap?”
+## 4. Camera
+
+**Dialog wording (typical):** allow Scout to take pictures and record video.
+
+Scout uses **Camera** only when you tap **Take photo** during a running ride. Choosing an existing picture uses the system photo picker and does **not** need this permission (or Photos/Media access).
+
+| Choice | Effect |
+| --- | --- |
+| **Allow** | You can photograph from the ride screen |
+| **Don’t allow** | Tagging still works; you can still **Choose from phone** |
+
+Scout does not record video.
+
+---
+
+## 5. Quick “what should I tap?”
 
 First launch / first Start:
 
@@ -91,11 +106,12 @@ those are not system permission dialogs.
 
 ---
 
-## 5. Privacy summary
+## 6. Privacy summary
 
 | Data | Where it goes |
 | --- | --- |
 | GPS track + tags + optional radar samples | Local `.fit` under app `files/rides/` |
-| Share | Only if **you** use Share (Files, Drive, etc.) |
+| Photos you add during a ride + optional caption | Local sidecar next to that FIT (`files/rides/<stem>/`) |
+| Share | Only if **you** use Share (FIT, or a zip of FIT + photos) |
 | Network | Not used in the recording path |
 | Account / ads / analytics | None |

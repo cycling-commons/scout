@@ -116,12 +116,12 @@ fun IntroScreen(
 
     ) {
 
-        Spacer(Modifier.height(ScoutSpacing.xxl))
+        Spacer(Modifier.height(ScoutSpacing.lg))
 
         ScoutLogo(
-            markSize = 112.dp,
+            markSize = 88.dp,
             layout = ScoutLogoLayout.Vertical,
-            lockupWidthFraction = 0.56f,
+            lockupWidthFraction = 0.48f,
             modifier = Modifier.clip(RoundedCornerShape(IntroLogoCornerRadius)),
         )
 
@@ -144,6 +144,8 @@ fun IntroScreen(
         Column(verticalArrangement = Arrangement.spacedBy(ScoutSpacing.lg)) {
 
             IntroPoint(stringResource(R.string.intro_point_tag))
+
+            IntroPoint(stringResource(R.string.intro_point_photo))
 
             IntroPoint(stringResource(R.string.intro_point_radar))
 
@@ -174,6 +176,8 @@ fun IntroScreen(
             IntroPoint(stringResource(R.string.intro_permission_notifications))
 
             IntroPoint(stringResource(R.string.intro_permission_bluetooth))
+
+            IntroPoint(stringResource(R.string.intro_permission_camera))
 
         }
 

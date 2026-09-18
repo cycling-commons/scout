@@ -129,6 +129,7 @@ object ScoutDimens {
     val controlHeight = 52.dp
     val tileCorner = 14.dp
     val cardCorner = 18.dp
+    val photoThumb = 72.dp
 }
 
 private val Quicksand = FontFamily(
@@ -166,6 +167,7 @@ object ScoutType {
         fontWeight = FontWeight.Bold,
         fontSize = 30.sp,
         letterSpacing = 1.sp,
+        fontFeatureSettings = "tnum",
     )
     val metric = TextStyle(
         fontFamily = BarlowCondensed,

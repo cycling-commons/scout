@@ -10,6 +10,9 @@ data class InstanceConfig(
 ) {
     /** Base URL with no trailing slash — safe to append `/.well-known/scout-upload.json`. */
     val baseUrl: String get() = instanceUrl.trimEnd('/')
+
+    /** Browser review page: choose or drop a FIT / Scout zip. */
+    val reviewUrl: String get() = "$baseUrl/scout/review"
 }
 
 /** Loads `assets/instance.json` (see Android/.env.example). */

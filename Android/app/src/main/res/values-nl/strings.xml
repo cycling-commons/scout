@@ -18,10 +18,12 @@
     <string name="ride_action_cancel">Annuleren</string>
     <string name="ride_stop_confirm_title">Rit stoppen?</string>
     <string name="ride_stop_confirm_message">Je rit wordt opgeslagen als FIT-bestand op deze telefoon.</string>
+    <string name="ride_stop_confirm_message_with_photos">Je rit wordt op deze telefoon opgeslagen als FIT-bestand plus de foto\'s en notities die je hebt toegevoegd.</string>
     <string name="ride_stop_confirm_action">Rit stoppen</string>
     <string name="ride_action_settings">Instellingen</string>
     <string name="ride_action_help">Hoe Scout werkt</string>
     <string name="ride_action_share">Deel laatste rit</string>
+    <string name="ride_action_rides">Ritten</string>
     <string name="ride_permission_needed">Locatietoestemming vereist</string>
     <string name="ride_waiting_for_fix">Wachten op GPS</string>
     <string name="ride_start_to_tag">Start je rit voordat je tegels kunt markeren.</string>
@@ -32,6 +34,24 @@
     <string name="ride_tags_label">Tags</string>
     <string name="ride_clock_label">Verstreken</string>
     <string name="ride_last_file">Opgeslagen %1$s</string>
+    <string name="ride_action_photo">Foto toevoegen</string>
+    <string name="ride_start_to_photo">Start je rit voordat je een foto kunt toevoegen.</string>
+    <string name="ride_photo_title">Foto toevoegen</string>
+    <string name="ride_photo_chooser_hint">De foto wordt getagd op je huidige GPS-positie.</string>
+    <string name="ride_photo_take">Foto maken</string>
+    <string name="ride_photo_pick">Kiezen van telefoon</string>
+    <string name="ride_photo_caption_title">Fototitel</string>
+    <string name="ride_photo_caption_hint">Optionele tekst</string>
+    <string name="ride_photo_preview">Ritfoto</string>
+    <string name="ride_photo_save">Opslaan</string>
+    <string name="ride_photo_discard">Verwerpen</string>
+    <string name="ride_photo_saved">Foto opgeslagen</string>
+    <string name="ride_photo_failed">Die foto kon niet worden toegevoegd</string>
+    <string name="ride_photo_camera_denied">Cameratoestemming nodig om een foto te maken</string>
+    <string name="ride_share_failed">Deze rit kon niet worden gedeeld</string>
+    <string name="share_ride_title">Rit delen</string>
+    <string name="share_ride_hint">%1$s opent de reviewpagina in je browser. Scout slaat het FIT- of zipbestand eerst op in Downloads, zodat je het daar kunt kiezen of neerzetten.</string>
+    <string name="share_other_apps">Andere apps</string>
     <string name="surface_open_banner">Oppervlak open: %1$s</string>
     <string name="surface_open_action">Tik om te BEËINDIGEN</string>
 
@@ -92,6 +112,15 @@
     <string name="settings_rides_hint">Bewaard op deze telefoon tot je ze verwijdert — delen kan altijd.</string>
     <string name="settings_rides_empty">Nog geen ritten opgenomen</string>
     <string name="settings_ride_meta">%1$s · %2$s</string>
+    <plurals name="settings_ride_photo_count">
+        <item quantity="one">%1$d foto — tik om te bekijken</item>
+        <item quantity="other">%1$d foto\'s — tik om te bekijken</item>
+    </plurals>
+    <string name="settings_ride_photos_title">Ritfoto\'s</string>
+    <string name="settings_ride_photos_empty">Geen foto\'s bij deze rit</string>
+    <string name="settings_ride_photo_no_caption">Geen bijschrift</string>
+    <string name="settings_ride_photo_gps">%1$.5f, %2$.5f</string>
+    <string name="settings_ride_photo_no_gps">Geen GPS bij opslaan</string>
     <string name="settings_share">Delen</string>
     <string name="settings_delete">Verwijderen</string>
     <string name="settings_about">Over</string>
@@ -138,12 +167,14 @@
     <!-- Intro -->
     <string name="intro_powering">die de</string>
     <string name="intro_point_tag">Tik op een tegel om gevaren, afsluitingen, oppervlakken en bevoorrading op je rit te plaatsen.</string>
+    <string name="intro_point_photo">Tijdens het opnemen kun je een foto maken of kiezen en een korte notitie toevoegen. Optioneel — markeren werkt zonder.</string>
     <string name="intro_point_radar">Koppel een fietsradar om inhalend verkeer te loggen — optioneel, en uit tot je het aanzet.</string>
-    <string name="intro_point_private">Alles blijft in een FIT-bestand op deze telefoon. Geen account, geen upload — tenminste niet automatisch.</string>
+    <string name="intro_point_private">Tags blijven in een FIT-bestand op deze telefoon; foto\'s en notities ernaast. Geen account, geen upload — tenminste niet automatisch.</string>
     <string name="intro_permissions_title">Toestemmingen</string>
     <string name="intro_permission_location">Locatie (nauwkeurig): je GPS-track en waar tags op de kaart komen.</string>
     <string name="intro_permission_notifications">Meldingen: de indicator voor een actieve rit.</string>
     <string name="intro_permission_bluetooth">Apparaten in de buurt: alleen als je later een BLE-radar koppelt — markeren werkt zonder.</string>
+    <string name="intro_permission_camera">Camera: alleen als je tijdens een rit een foto maakt. Een foto uit de galerij gebruikt de systeemkiezer en heeft dit niet nodig.</string>
     <string name="intro_permissions_when">Android vraagt dit na je tik op Aan de slag. Je kunt dit altijd wijzigen in systeeminstellingen.</string>
     <string name="intro_legal_title">Veiligheid &amp; juridisch</string>
     <string name="intro_legal_summary">Scout is een ritlogger, geen navigatie of crashbescherming. Je rit blijft op dit apparaat tot je hem deelt.</string>

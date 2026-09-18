@@ -20,6 +20,7 @@ class InstanceConfigTest {
             ),
         )
         assertEquals("https://example.com", config.baseUrl)
+        assertEquals("https://example.com/scout/review", config.reviewUrl)
         assertEquals("Your Atlas", config.instanceName)
     }
 

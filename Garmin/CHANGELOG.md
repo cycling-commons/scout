@@ -4,6 +4,8 @@ Semantic versioning; this file is the source of truth for the version string
 entered in the Connect IQ store at upload time.
 
 ## Unreleased
+- Data-field settings to show/hide each main-grid tile. Remaining tiles fill the
+  page so a small Edge can drop unused categories for larger tap targets.
 
 ## 1.3.0 — 2026-08-08
 - **Resupply FIT encoding** unified: writes `poi_type` 9 (RESUPPLY) with

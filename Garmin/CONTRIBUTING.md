@@ -77,9 +77,11 @@ the field fills the screen).
   but there's no runtime check for it: on a button-only unit the tiles silently do
   nothing. Keep `<iq:products>` **touch-only** and only add devices you've actually
   tested (button units like the 540 won't receive `onTap`).
-- `AppBase.getSettingsView()` gives a real menu flow (API 3.2+), but it's only
-  reachable by stopping and entering the data field's settings — no good for
-  tagging while riding.
+- `AppBase.getSettingsView()` gives a real menu flow (API 3.2+), but a data field
+  has no on-device app to open, so it is the wrong tool here. Tile show/hide uses
+  `properties.xml` / `settings.xml`: Garmin Connect (or Express) → device →
+  Connect IQ → Scout → Settings, then sync. `onSettingsChanged()` rebuilds the
+  grid after the sync.
 
 ## Pull requests
 

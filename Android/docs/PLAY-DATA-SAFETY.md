@@ -68,11 +68,26 @@ as a product feature (precise location is needed), geofencing, or location for a
 - Speed (when available)  
 - Scout tag codes (POI type/detail, optional radar fields)
 
-No photos, contacts, or arbitrary user documents.
+Optional photos you add during a ride (plus captions and the GPS stamp at save) live in a sidecar folder next to that FIT — not inside the FIT. Delete a ride to remove both.
 
 ---
 
-### 3. App activity — **Collected** (in-app events only)
+### 3. Photos / videos — **Collected** (optional, rider-initiated)
+
+| Field | Answer |
+| --- | --- |
+| Collected? | **Yes** (only if the rider adds a photo) |
+| Shared? | **No** (unless the rider uses Share) |
+| Required or optional? | **Optional** |
+| Purpose | **App functionality** |
+
+**What:** JPEGs the rider takes or picks while a ride is RUNNING, stored in app-private storage with an optional caption and the GPS fix at save. Not uploaded automatically.
+
+**What is NOT collected:** the camera roll as a whole, contacts, or unrelated files. The system photo picker grants one-shot access to the chosen image.
+
+---
+
+### 4. App activity — **Collected** (in-app events only)
 
 | Field | Answer |
 | --- | --- |
@@ -89,7 +104,7 @@ events, advertising IDs, or funnel analytics.
 
 ---
 
-### 4. Device or other IDs — **Collected** (optional radar pairing)
+### 5. Device or other IDs — **Collected** (optional radar pairing)
 
 | Field | Answer |
 | --- | --- |
@@ -116,7 +131,6 @@ Declare **No** for these unless you add them in a future version:
 | Financial info | No payments in app |
 | Health & fitness (Google’s HR/calories categories) | Scout does not read HR or body sensors |
 | Messages | None |
-| Photos / videos | None |
 | Audio | None |
 | Calendar / contacts | None |
 | Web browsing | None |
@@ -146,13 +160,13 @@ Declare **No** for these unless you add them in a future version:
      (explain in store listing / policy: data stays on device; share is user-initiated)  
    - “Do you provide a way for users to request that their data is deleted?” → **Yes**
 
-2. **Data types** — add the four sections above (Location, Files, App activity,
+2. **Data types** — add the sections above (Location, Files, Photos, App activity,
    Device IDs). For each:
    - **Collected:** Yes  
    - **Shared:** No  
    - **Processed ephemerally:** No  
    - **Required:** Location + files + app activity = required for core recording;
-     device IDs = optional (radar only)  
+     photos = optional; device IDs = optional (radar only)  
    - **Purpose:** App functionality only (not advertising, not analytics)
 
 3. **Account deletion**  
@@ -174,7 +188,8 @@ Keep these consistent with the form and [PERMISSIONS.md](PERMISSIONS.md):
 - **Privacy policy:** `https://cyclingcommons.org/privacy`  
 - **Permissions justification** (if asked): location for ride track and tags;
   nearby devices / Bluetooth for optional radar pairing; notifications for the
-  recording foreground service only.
+  recording foreground service only; camera only when the rider takes an in-ride
+  photo (gallery pick uses the system picker).
 
 ---
 

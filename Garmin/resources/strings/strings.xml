@@ -15,4 +15,11 @@
     <string id="radarNearUnits">m</string>
     <string id="radarSpeedLabel">Closing Speed</string>
     <string id="radarSpeedUnits">kph</string>
+    <!-- Data-field settings: which main-grid tiles to show. -->
+    <string id="settingShowResupply">Show RESUPPLY</string>
+    <string id="settingShowClosure">Show CLOSURE</string>
+    <string id="settingShowSurface">Show SURFACE</string>
+    <string id="settingShowNotice">Show NOTICE</string>
+    <string id="settingShowScenery">Show SCENERY</string>
+    <string id="settingShowOther">Show OTHER</string>
 </resources>

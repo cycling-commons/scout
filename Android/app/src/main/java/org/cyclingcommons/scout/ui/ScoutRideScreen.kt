@@ -1,5 +1,8 @@
 package org.cyclingcommons.scout.ui
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -13,17 +16,27 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.Help
+import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
@@ -43,6 +56,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
@@ -56,17 +71,27 @@ import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import kotlinx.coroutines.delay
+import android.Manifest
+import android.content.pm.PackageManager
+import android.net.Uri
+import androidx.core.content.ContextCompat
 import org.cyclingcommons.scout.R
 import org.cyclingcommons.scout.RideUiModel
 import org.cyclingcommons.scout.domain.PoiType
 import org.cyclingcommons.scout.domain.Tile
 import org.cyclingcommons.scout.domain.TimerState
 import org.cyclingcommons.scout.domain.UiMode
+import org.cyclingcommons.scout.recording.RideFiles
+import org.cyclingcommons.scout.recording.RidePhotoStore
+import org.cyclingcommons.scout.recording.RideShareTarget
 import org.cyclingcommons.scout.ui.components.ScoutButton
 import org.cyclingcommons.scout.ui.components.ScoutLogo
 import org.cyclingcommons.scout.ui.components.StatusPill
@@ -74,6 +99,7 @@ import org.cyclingcommons.scout.ui.theme.ScoutColors
 import org.cyclingcommons.scout.ui.theme.ScoutDimens
 import org.cyclingcommons.scout.ui.theme.ScoutSpacing
 import org.cyclingcommons.scout.ui.theme.ScoutType
+import java.io.File
 import kotlin.math.ceil
 
 private const val GRID_COLUMNS = 2
@@ -92,13 +118,51 @@ fun ScoutRideScreen(
     onTileTap: (Int) -> Unit,
     onEndOpenSurface: () -> Unit,
     onRetryRadar: () -> Unit,
-    onShareFit: () -> Unit,
+    onShareFit: (RideShareTarget) -> Unit,
+    onOpenRides: () -> Unit,
     onSettings: () -> Unit,
     onHelp: () -> Unit,
     onDismissMessage: () -> Unit,
+    onAddPhoto: () -> Unit,
+    onDismissPhotoChooser: () -> Unit,
+    onPrepareCameraUri: () -> Uri,
+    onCameraCaptured: (Boolean) -> Unit,
+    onPhotoPicked: (Uri?) -> Unit,
+    onCameraPermissionDenied: () -> Unit,
+    onSavePhoto: (String) -> Unit,
+    onDiscardPhoto: () -> Unit,
 ) {
     val scout = model.scout
     val snackbarHostState = remember { SnackbarHostState() }
+    var showShare by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    val hasCamera = remember {
+        context.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)
+    }
+    val takePicture = rememberLauncherForActivityResult(
+        ActivityResultContracts.TakePicture(),
+    ) { success -> onCameraCaptured(success) }
+    val pickPhoto = rememberLauncherForActivityResult(
+        ActivityResultContracts.PickVisualMedia(),
+    ) { uri -> onPhotoPicked(uri) }
+    val requestCamera = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission(),
+    ) { granted ->
+        if (granted) {
+            takePicture.launch(onPrepareCameraUri())
+        } else {
+            onCameraPermissionDenied()
+        }
+    }
+    fun launchCamera() {
+        val granted = ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) ==
+            PackageManager.PERMISSION_GRANTED
+        if (granted) {
+            takePicture.launch(onPrepareCameraUri())
+        } else {
+            requestCamera.launch(Manifest.permission.CAMERA)
+        }
+    }
     val startLabel = stringResource(R.string.ride_action_start)
     val resumeLabel = stringResource(R.string.ride_action_resume)
     LaunchedEffect(model.userMessage) {
@@ -140,7 +204,15 @@ fun ScoutRideScreen(
             hasLocationPermission = model.hasLocationPermission,
             fixLabel = model.fixLabel,
             lastFitPath = model.lastFitPath,
-            onShareFit = onShareFit,
+            onShareFit = {
+                if (model.atlasReviewUrl != null && model.atlasName != null) {
+                    showShare = true
+                } else {
+                    onShareFit(RideShareTarget.FILE)
+                }
+            },
+            onOpenRides = onOpenRides,
+            onAddPhoto = onAddPhoto,
             onSettings = onSettings,
             onHelp = onHelp,
         )
@@ -175,6 +247,7 @@ fun ScoutRideScreen(
         )
         RideControls(
             timer = scout.timer,
+            photoCount = model.ridePhotoCount,
             onStart = onStart,
             onPause = onPause,
             onResume = onResume,
@@ -198,6 +271,40 @@ fun ScoutRideScreen(
                 actionColor = ScoutColors.Brand,
             )
         }
+        val atlasName = model.atlasName
+        if (showShare && atlasName != null) {
+            ShareRideDialog(
+                atlasName = atlasName,
+                onAtlas = {
+                    showShare = false
+                    onShareFit(RideShareTarget.ATLAS)
+                },
+                onFile = {
+                    showShare = false
+                    onShareFit(RideShareTarget.FILE)
+                },
+                onDismiss = { showShare = false },
+            )
+        }
+        if (model.showPhotoChooser) {
+            PhotoSourceDialog(
+                hasCamera = hasCamera,
+                onTakePhoto = ::launchCamera,
+                onPickPhoto = {
+                    pickPhoto.launch(
+                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly),
+                    )
+                },
+                onDismiss = onDismissPhotoChooser,
+            )
+        }
+        model.photoDraftPath?.let { draftPath ->
+            PhotoCaptionDialog(
+                draftPath = draftPath,
+                onSave = onSavePhoto,
+                onDiscard = onDiscardPhoto,
+            )
+        }
     }
 }
 
@@ -210,6 +317,8 @@ private fun RideHeader(
     fixLabel: String?,
     lastFitPath: String?,
     onShareFit: () -> Unit,
+    onOpenRides: () -> Unit,
+    onAddPhoto: () -> Unit,
     onSettings: () -> Unit,
     onHelp: () -> Unit,
 ) {
@@ -242,6 +351,15 @@ private fun RideHeader(
                     contentDescription = timerLabel
                 },
             )
+            if (timer != TimerState.RUNNING) {
+                IconButton(onClick = onOpenRides) {
+                    Icon(
+                        imageVector = Icons.Filled.Folder,
+                        contentDescription = stringResource(R.string.ride_action_rides),
+                        tint = ScoutColors.TextSecondary,
+                    )
+                }
+            }
             if (timer == TimerState.IDLE && lastFitPath != null) {
                 IconButton(onClick = onShareFit) {
                     Icon(
@@ -272,29 +390,61 @@ private fun RideHeader(
             formatElapsed(elapsedSec),
             pluralStringResource(R.plurals.a11y_ride_tag_total, tagCount, tagCount),
         )
-        Row(
+        val clockStyle = ScoutType.rideClock
+        val textMeasurer = rememberTextMeasurer()
+        val clockWidth = with(LocalDensity.current) {
+            textMeasurer.measure(
+                text = "00:00:00",
+                style = clockStyle,
+                maxLines = 1,
+            ).size.width.toDp()
+        }
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(ScoutColors.Surface, RoundedCornerShape(ScoutDimens.cardCorner))
-                .padding(horizontal = ScoutSpacing.lg, vertical = ScoutSpacing.md)
-                .semantics(mergeDescendants = true) {
-                    contentDescription = metricsA11y
-                },
-            verticalAlignment = Alignment.CenterVertically,
+                .padding(start = ScoutSpacing.lg, end = ScoutSpacing.lg, top = ScoutSpacing.sm, bottom = ScoutSpacing.sm),
         ) {
-            Metric(
-                label = stringResource(R.string.ride_clock_label),
-                value = formatElapsed(elapsedSec),
-                style = ScoutType.rideClock,
-            )
-            Spacer(Modifier.weight(1f))
-            Metric(
-                label = stringResource(R.string.ride_tags_label),
-                value = tagCount.toString(),
-                style = ScoutType.metric,
-                alignEnd = true,
-            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .semantics(mergeDescendants = true) {
+                        contentDescription = metricsA11y
+                    },
+                verticalAlignment = Alignment.Bottom,
+            ) {
+                Metric(
+                    label = stringResource(R.string.ride_clock_label),
+                    value = formatElapsed(elapsedSec),
+                    style = clockStyle,
+                    valueWidth = clockWidth,
+                )
+                Spacer(Modifier.weight(1f))
+                Metric(
+                    label = stringResource(R.string.ride_tags_label),
+                    value = tagCount.toString(),
+                    style = ScoutType.metric,
+                    alignEnd = true,
+                )
+            }
+            if (timer == TimerState.RUNNING) {
+                Icon(
+                    imageVector = Icons.Filled.PhotoCamera,
+                    contentDescription = stringResource(R.string.ride_action_photo),
+                    tint = ScoutColors.TextPrimary,
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .offset(x = 28.dp, y = 5.dp)
+                        .size(52.dp)
+                        .clip(CircleShape)
+                        .clickable(onClick = onAddPhoto)
+                        .semantics {
+                            role = Role.Button
+                        },
+                )
+            }
         }
+        val canOpenRides = timer == TimerState.IDLE && lastFitPath != null
         Text(
             text = when {
                 !hasLocationPermission -> stringResource(R.string.ride_permission_needed)
@@ -302,7 +452,7 @@ private fun RideHeader(
                 timer != TimerState.IDLE -> stringResource(R.string.ride_waiting_for_fix)
                 lastFitPath != null -> stringResource(
                     R.string.ride_last_file,
-                    lastFitPath.substringAfterLast('/'),
+                    RideFiles.displayName(File(lastFitPath)),
                 )
                 else -> stringResource(R.string.ride_waiting_for_fix)
             },
@@ -314,7 +464,15 @@ private fun RideHeader(
             },
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.padding(horizontal = ScoutSpacing.xs),
+            modifier = Modifier
+                .padding(horizontal = ScoutSpacing.xs)
+                .then(
+                    if (canOpenRides) {
+                        Modifier.clickable(onClick = onOpenRides)
+                    } else {
+                        Modifier
+                    },
+                ),
         )
     }
 }
@@ -325,6 +483,7 @@ private fun Metric(
     value: String,
     style: TextStyle,
     alignEnd: Boolean = false,
+    valueWidth: Dp? = null,
 ) {
     Column(
         horizontalAlignment = if (alignEnd) Alignment.End else Alignment.Start,
@@ -335,13 +494,140 @@ private fun Metric(
             style = ScoutType.overline,
             color = ScoutColors.TextSecondary,
         )
-        Text(text = value, style = style, color = ScoutColors.TextPrimary)
+        Text(
+            text = value,
+            style = style,
+            color = ScoutColors.TextPrimary,
+            maxLines = 1,
+            modifier = if (valueWidth != null) Modifier.width(valueWidth) else Modifier,
+        )
     }
+}
+
+@Composable
+private fun PhotoSourceDialog(
+    hasCamera: Boolean,
+    onTakePhoto: () -> Unit,
+    onPickPhoto: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                text = stringResource(R.string.ride_photo_title),
+                color = ScoutColors.TextPrimary,
+            )
+        },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(ScoutSpacing.sm)) {
+                Text(
+                    text = stringResource(R.string.ride_photo_chooser_hint),
+                    color = ScoutColors.TextSecondary,
+                )
+                if (hasCamera) {
+                    ScoutButton(
+                        label = stringResource(R.string.ride_photo_take),
+                        onClick = onTakePhoto,
+                        primary = true,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
+                ScoutButton(
+                    label = stringResource(R.string.ride_photo_pick),
+                    onClick = onPickPhoto,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
+        },
+        confirmButton = {},
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(
+                    text = stringResource(R.string.ride_action_cancel),
+                    color = ScoutColors.TextPrimary,
+                )
+            }
+        },
+        containerColor = ScoutColors.Surface,
+        titleContentColor = ScoutColors.TextPrimary,
+        textContentColor = ScoutColors.TextSecondary,
+    )
+}
+
+@Composable
+private fun PhotoCaptionDialog(
+    draftPath: String,
+    onSave: (String) -> Unit,
+    onDiscard: () -> Unit,
+) {
+    var caption by remember(draftPath) { mutableStateOf("") }
+    AlertDialog(
+        onDismissRequest = onDiscard,
+        title = {
+            Text(
+                text = stringResource(R.string.ride_photo_caption_title),
+                color = ScoutColors.TextPrimary,
+            )
+        },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(ScoutSpacing.md)) {
+                AsyncImage(
+                    model = java.io.File(draftPath),
+                    contentDescription = stringResource(R.string.ride_photo_preview),
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(max = 220.dp)
+                        .clip(RoundedCornerShape(ScoutDimens.cardCorner)),
+                )
+                OutlinedTextField(
+                    value = caption,
+                    onValueChange = { caption = it.take(RidePhotoStore.CAPTION_MAX) },
+                    modifier = Modifier.fillMaxWidth(),
+                    label = { Text(stringResource(R.string.ride_photo_caption_hint)) },
+                    keyboardOptions = KeyboardOptions(
+                        capitalization = KeyboardCapitalization.Sentences,
+                    ),
+                    maxLines = 3,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedTextColor = ScoutColors.TextPrimary,
+                        unfocusedTextColor = ScoutColors.TextPrimary,
+                        focusedBorderColor = ScoutColors.Brand,
+                        unfocusedBorderColor = ScoutColors.OutlineStrong,
+                        focusedLabelColor = ScoutColors.Brand,
+                        unfocusedLabelColor = ScoutColors.TextSecondary,
+                        cursorColor = ScoutColors.Brand,
+                    ),
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = { onSave(caption) }) {
+                Text(
+                    text = stringResource(R.string.ride_photo_save),
+                    color = ScoutColors.Brand,
+                )
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDiscard) {
+                Text(
+                    text = stringResource(R.string.ride_photo_discard),
+                    color = ScoutColors.TextPrimary,
+                )
+            }
+        },
+        containerColor = ScoutColors.Surface,
+        titleContentColor = ScoutColors.TextPrimary,
+        textContentColor = ScoutColors.TextSecondary,
+    )
 }
 
 @Composable
 private fun RideControls(
     timer: TimerState,
+    photoCount: Int,
     onStart: () -> Unit,
     onPause: () -> Unit,
     onResume: () -> Unit,
@@ -359,7 +645,13 @@ private fun RideControls(
             },
             text = {
                 Text(
-                    text = stringResource(R.string.ride_stop_confirm_message),
+                    text = stringResource(
+                        if (photoCount > 0) {
+                            R.string.ride_stop_confirm_message_with_photos
+                        } else {
+                            R.string.ride_stop_confirm_message
+                        },
+                    ),
                     color = ScoutColors.TextSecondary,
                 )
             },

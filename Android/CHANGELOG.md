@@ -7,6 +7,9 @@ truth. Tag releases **`android/vX.Y.Z`** (see root [README](../README.md#release
 - Tap **No radar** (or **Connecting…**) while recording to start a new 45 s seek
   for the saved Varia — same as Garmin. Start still seeks once; a drop after
   TRACKING still auto-retries with backoff.
+- In-ride **photos**: take or pick a picture while recording, optional caption,
+  tagged to the current GPS fix. Stored next to the FIT. Share exports a Scout
+  ride bundle (`ride.fit` + `scout.json` + `photos/`) when a ride has pictures.
 
 ## 1.3.0 — 2026-08-08
 - **Resupply FIT encoding** unified: `poi_type` 9 + detail (WATER / FOOD /

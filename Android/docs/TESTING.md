@@ -118,7 +118,7 @@ testing BLE radar).
 | 7 | RESUPPLY → leave 12 s | No resupply tag |
 | 8 | **Pause** | Grey dot; GPS stops; taps do not enqueue |
 | 9 | **Stop** | Notification gone; “saved scout-….fit”; confirm dialog shown first |
-| 10 | **Share FIT** or Settings → ride → Share | Share sheet opens |
+| 10 | **Share FIT** or folder → ride → Share | Share sheet opens (`.fit`; `.zip` if the ride has photos) |
 | 11 | Drop `.fit` on fit-viewer | Track + tags visible; radar coverage ~0 / all 255 |
 
 ### 3.2 Settings
@@ -128,8 +128,11 @@ testing BLE radar).
 | 1 | Settings → mph | Strip uses mph (±3) when radar live later |
 | 2 | Keep screen on **off** (default) | Screen can sleep while recording |
 | 3 | Keep screen on **on** → Start | Screen stays awake while RUNNING only |
-| 4 | Rides list | Past FITs listed without sharing first |
+| 4 | Folder icon (not recording) → Rides | Past FITs listed without sharing first |
 | 5 | Delete a ride | Gone from list; file removed |
+| 5b | While recording: camera icon → Take or pick → optional caption → Save | “Photo saved”; Rides row shows photo count; tap opens thumbnails |
+| 5c | Share a ride that has photos | Share sheet offers a `.zip` (`ride.fit` + `scout.json` + `photos/`) |
+| 5d | Delete a ride that has photos | FIT and photo folder both gone |
 | 6 | Appearance → **Light**, then **Dark** | Every screen flips, including the status-bar glyphs; no white or black flash on the way |
 | 7 | Appearance → **Auto**, flip the phone's system theme | App follows |
 | 8 | Force **Light**, kill the app, relaunch on a phone in dark mode | App comes up light (the API 31+ system splash still follows the phone — known, §8.1) |

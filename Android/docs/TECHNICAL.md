@@ -62,9 +62,9 @@ Android/
     instance/                ← InstanceConfig loader (sharing, when implemented)
     ui/theme/                ← design tokens + MaterialTheme wiring (§8.1)
     ui/components/           ← shared Scout chrome (page, section, card, button, pill, mark)
-    ui/                      ← one file per screen (intro, ride, settings, pair radar, help)
+    ui/                      ← one file per screen (intro, ride, settings, ride photos, pair radar, help)
     sensors/                 ← LocationSampler + radar/ (transports, coordinator, prefs)
-    recording/               ← foreground service, FIT session, ride files
+    recording/               ← foreground service, FIT session, ride files, photo sidecar, zip share
   domain/                    ← pure Kotlin: codes, queue, undo tallies, radar decode / counters
   fit/                       ← FIT encode/flush (JVM; no Android deps)
   tools/validate-scout-fit.mjs
@@ -347,7 +347,12 @@ they follow a link returned after upload.
 - **Android record payload (SPEC §4.2 only — privacy):** `timestamp`, `position_lat`,
   `position_long`, `speed` (when available), plus the five Scout developer fields.
   No HR, cadence, altitude, device serials, or other extras.
-- File location: app-private `files/rides/scout-….fit`. Settings lists history with **Share** / **Delete**; share sheet after Stop as well.
+- File location: app-private `files/rides/scout-….fit`. Optional photos live in
+  `files/rides/scout-…/photos.json` + JPEGs (not FIT developer fields). The
+  **folder** icon on the ride screen (when not recording) lists history with
+  **Share** / **Delete**; share sheet after Stop as well. Share is the FIT file,
+  or a [Scout ride bundle](../../docs/SCOUT-BUNDLE.md)
+  (`ride.fit` + `scout.json` + `photos/`) when the ride has photos.
 - Acceptance: drop output on `tools/fit-viewer.html` and pass the same expectations as Garmin rides (tags, undo pairs, surfaces, radar coverage).
 
 ---
@@ -362,6 +367,7 @@ Declare only what we use:
 - Location (**fine** / precise) + FGS location while recording — approximate alone is not enough for tags  
 - Bluetooth Connect / Scan (API 31+; system copy often says “nearby devices”) for BLE radar  
 - Notifications (API 33+) for the **recording** foreground-service notification only  
+- Camera — only when the rider taps **Take photo** during a running ride; not required for tagging or picking a gallery image  
 - ANT+ via ANT Radio Service when present (no extra Play “nearby” dialog for ANT itself)  
 - Vibrate (optional)
 

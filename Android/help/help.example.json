@@ -5,7 +5,7 @@
       "heading": "Recording",
       "body": [
         "Tap Start when you set off. Scout writes a FIT file on this device — no account needed.",
-        "Pause stops GPS and radar to save battery. Stop finishes the file and saves it under Settings."
+        "Pause stops GPS and radar to save battery. Stop finishes the file. Open the folder icon on the ride screen to find past rides.",
       ]
     },
     {
@@ -13,7 +13,8 @@
       "body": [
         "Tap a tile to stamp hazards, closures, surfaces and resupply onto your GPS track.",
         "Tap the same tile again within a few seconds to undo.",
-        "Surface mode keeps tagging until you tap END on the banner or the END tile."
+        "Surface mode keeps tagging until you tap END on the banner or the END tile.",
+        "While recording, the camera icon adds a photo tagged to your current position. You can type a short note. Photos stay on this device with the ride."
       ]
     },
     {
@@ -26,8 +27,8 @@
     {
       "heading": "Your ride file",
       "body": [
-        "Finished rides stay on this device until you delete them. Share the FIT to any app.",
-        "Scout never phones home."
+        "Finished rides stay on this device until you delete them. Open the folder icon (when you are not recording) to share or delete them.",
+        "Share can open Cycling Commons in the browser, or send the FIT (or zip, if you added photos) to another app. Choose or drop the file on the review page. Scout never uploads by itself."
       ]
     },
     {
@@ -36,14 +37,15 @@
         "Location (precise): records your GPS track and where each tag lands.",
         "Notifications: the ongoing ride indicator while a session is open.",
         "Nearby devices: only for pairing a BLE radar — tagging works without it.",
+        "Camera: only if you take a photo during a ride. Choosing an existing picture uses the system picker.",
         "Change these anytime in Android Settings → Apps → Scout → Permissions."
       ]
     },
     {
       "heading": "Sharing (optional)",
       "body": [
-        "This build can send a finished ride to your Atlas instance as a private draft.",
-        "Preview it on the web before you submit it for curation. The app cannot publish for you.",
+        "Share can open this instance's review page in the browser, or send the FIT (or zip) to another app.",
+        "Choose or drop the file on the review page. The app cannot publish for you.",
         "Copy help/help.example.json to help/help.json and edit this section for your instance."
       ],
       "links": [

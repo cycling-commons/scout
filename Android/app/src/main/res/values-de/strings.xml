@@ -18,10 +18,12 @@
     <string name="ride_action_cancel">Abbrechen</string>
     <string name="ride_stop_confirm_title">Fahrt beenden?</string>
     <string name="ride_stop_confirm_message">Deine Fahrt wird als FIT-Datei auf diesem Telefon gespeichert.</string>
+    <string name="ride_stop_confirm_message_with_photos">Deine Fahrt wird auf diesem Telefon als FIT-Datei plus die Fotos und Notizen gespeichert, die du hinzugefügt hast.</string>
     <string name="ride_stop_confirm_action">Fahrt beenden</string>
     <string name="ride_action_settings">Einstellungen</string>
     <string name="ride_action_help">So funktioniert Scout</string>
     <string name="ride_action_share">Letzte Fahrt teilen</string>
+    <string name="ride_action_rides">Fahrten</string>
     <string name="ride_permission_needed">Standortberechtigung erforderlich</string>
     <string name="ride_waiting_for_fix">Warte auf GPS</string>
     <string name="ride_start_to_tag">Starte deine Fahrt, bevor du Kacheln markieren kannst.</string>
@@ -32,6 +34,24 @@
     <string name="ride_tags_label">Tags</string>
     <string name="ride_clock_label">Verstrichen</string>
     <string name="ride_last_file">Gespeichert %1$s</string>
+    <string name="ride_action_photo">Foto hinzufügen</string>
+    <string name="ride_start_to_photo">Starte deine Fahrt, bevor du ein Foto hinzufügen kannst.</string>
+    <string name="ride_photo_title">Foto hinzufügen</string>
+    <string name="ride_photo_chooser_hint">Es wird mit deiner aktuellen GPS-Position markiert.</string>
+    <string name="ride_photo_take">Foto aufnehmen</string>
+    <string name="ride_photo_pick">Vom Telefon wählen</string>
+    <string name="ride_photo_caption_title">Fotonotiz</string>
+    <string name="ride_photo_caption_hint">Optionaler Text</string>
+    <string name="ride_photo_preview">Fahrtfoto</string>
+    <string name="ride_photo_save">Speichern</string>
+    <string name="ride_photo_discard">Verwerfen</string>
+    <string name="ride_photo_saved">Foto gespeichert</string>
+    <string name="ride_photo_failed">Foto konnte nicht hinzugefügt werden</string>
+    <string name="ride_photo_camera_denied">Kameraberechtigung nötig, um ein Foto aufzunehmen</string>
+    <string name="ride_share_failed">Diese Fahrt konnte nicht geteilt werden</string>
+    <string name="share_ride_title">Fahrt teilen</string>
+    <string name="share_ride_hint">%1$s öffnet die Prüfseite im Browser. Scout speichert die FIT- oder Zip-Datei zuerst in Downloads, damit du sie dort auswählen oder ablegen kannst.</string>
+    <string name="share_other_apps">Andere Apps</string>
     <string name="surface_open_banner">Oberfläche offen: %1$s</string>
     <string name="surface_open_action">Tippen zum BEENDEN</string>
 
@@ -92,6 +112,15 @@
     <string name="settings_rides_hint">Auf diesem Telefon gespeichert, bis du sie löschst — jederzeit teilen.</string>
     <string name="settings_rides_empty">Noch keine Fahrten aufgezeichnet</string>
     <string name="settings_ride_meta">%1$s · %2$s</string>
+    <plurals name="settings_ride_photo_count">
+        <item quantity="one">%1$d Foto — tippen zum Anzeigen</item>
+        <item quantity="other">%1$d Fotos — tippen zum Anzeigen</item>
+    </plurals>
+    <string name="settings_ride_photos_title">Fahrtfotos</string>
+    <string name="settings_ride_photos_empty">Keine Fotos bei dieser Fahrt</string>
+    <string name="settings_ride_photo_no_caption">Keine Bildunterschrift</string>
+    <string name="settings_ride_photo_gps">%1$.5f, %2$.5f</string>
+    <string name="settings_ride_photo_no_gps">Kein GPS beim Speichern</string>
     <string name="settings_share">Teilen</string>
     <string name="settings_delete">Löschen</string>
     <string name="settings_about">Über</string>
@@ -138,12 +167,14 @@
     <!-- Intro -->
     <string name="intro_powering">die die</string>
     <string name="intro_point_tag">Tippe auf eine Kachel, um Gefahren, Sperrungen, Oberflächen und Verpflegung auf deiner Fahrt zu markieren.</string>
+    <string name="intro_point_photo">Während der Aufnahme kannst du ein Foto machen oder wählen und eine kurze Notiz hinzufügen. Optional — Markieren geht auch ohne.</string>
     <string name="intro_point_radar">Koppel ein Fahrradradar, um überholenden Verkehr zu protokollieren — optional und aus, bis du es aktivierst.</string>
-    <string name="intro_point_private">Alles bleibt in einer FIT-Datei auf diesem Telefon. Kein Konto, kein Upload — zumindest nicht automatisch.</string>
+    <string name="intro_point_private">Markierungen bleiben in einer FIT-Datei auf diesem Telefon; Fotos und Notizen liegen daneben. Kein Konto, kein Upload — zumindest nicht automatisch.</string>
     <string name="intro_permissions_title">Berechtigungen</string>
     <string name="intro_permission_location">Standort (genau): deine GPS-Spur und wo Markierungen auf der Karte landen.</string>
     <string name="intro_permission_notifications">Benachrichtigungen: der Hinweis auf eine laufende Fahrt.</string>
     <string name="intro_permission_bluetooth">Geräte in der Nähe: nur wenn du später ein BLE-Radar koppelst — Markieren funktioniert auch ohne.</string>
+    <string name="intro_permission_camera">Kamera: nur wenn du während einer Fahrt ein Foto aufnimmst. Ein Bild aus der Galerie nutzt den Systemwähler und braucht das nicht.</string>
     <string name="intro_permissions_when">Android fragt nach dem Tippen auf Los geht\'s. Du kannst das jederzeit in den Systemeinstellungen ändern.</string>
     <string name="intro_legal_title">Sicherheit &amp; Rechtliches</string>
     <string name="intro_legal_summary">Scout ist ein Fahrtprotokoll, keine Navigation und kein Unfallschutz. Deine Fahrt bleibt auf diesem Gerät, bis du sie teilst.</string>

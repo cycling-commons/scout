@@ -34,7 +34,10 @@ record in the FIT file.
 
 Setup: for the biggest tap target, give Scout a data page to itself — it uses
 whatever area it's given for tapping, so sharing a page shrinks the hit zone.
-Build & sideload steps are in [CONTRIBUTING.md](CONTRIBUTING.md).
+On a small screen, hide unused tiles in **Garmin Connect** (or Express): the
+device → Connect IQ → Scout → Settings, then sync. Scout is only a data field,
+so there is no on-device app menu. Remaining tiles fill the grid. Build &
+sideload steps are in [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Getting the tags off your ride
 Scout only *records* into your FIT. It has **no network access** — no account, no

@@ -18,10 +18,12 @@
     <string name="ride_action_cancel">Annuler</string>
     <string name="ride_stop_confirm_title">Arrêter la sortie ?</string>
     <string name="ride_stop_confirm_message">Votre sortie sera enregistrée en fichier FIT sur ce téléphone.</string>
+    <string name="ride_stop_confirm_message_with_photos">Votre sortie sera enregistrée sur ce téléphone : fichier FIT plus les photos et notes que vous avez ajoutées.</string>
     <string name="ride_stop_confirm_action">Arrêter la sortie</string>
     <string name="ride_action_settings">Paramètres</string>
     <string name="ride_action_help">Comment Scout fonctionne</string>
     <string name="ride_action_share">Partager la dernière sortie</string>
+    <string name="ride_action_rides">Sorties</string>
     <string name="ride_permission_needed">Autorisation de localisation requise</string>
     <string name="ride_waiting_for_fix">En attente du GPS</string>
     <string name="ride_start_to_tag">Démarrez votre sortie avant de pouvoir marquer des tuiles.</string>
@@ -32,6 +34,24 @@
     <string name="ride_tags_label">Tags</string>
     <string name="ride_clock_label">Écoulé</string>
     <string name="ride_last_file">Enregistré %1$s</string>
+    <string name="ride_action_photo">Ajouter une photo</string>
+    <string name="ride_start_to_photo">Démarrez votre sortie avant d\'ajouter une photo.</string>
+    <string name="ride_photo_title">Ajouter une photo</string>
+    <string name="ride_photo_chooser_hint">Elle sera marquée à votre position GPS actuelle.</string>
+    <string name="ride_photo_take">Prendre une photo</string>
+    <string name="ride_photo_pick">Choisir sur le téléphone</string>
+    <string name="ride_photo_caption_title">Note de photo</string>
+    <string name="ride_photo_caption_hint">Texte facultatif</string>
+    <string name="ride_photo_preview">Photo de sortie</string>
+    <string name="ride_photo_save">Enregistrer</string>
+    <string name="ride_photo_discard">Ignorer</string>
+    <string name="ride_photo_saved">Photo enregistrée</string>
+    <string name="ride_photo_failed">Impossible d\'ajouter cette photo</string>
+    <string name="ride_photo_camera_denied">Autorisation caméra nécessaire pour photographier</string>
+    <string name="ride_share_failed">Impossible de partager cette sortie</string>
+    <string name="share_ride_title">Partager la sortie</string>
+    <string name="share_ride_hint">%1$s ouvre la page de relecture dans le navigateur. Scout enregistre d’abord le fichier FIT ou zip dans Téléchargements, pour que vous puissiez le choisir ou le déposer là.</string>
+    <string name="share_other_apps">Autres applis</string>
     <string name="surface_open_banner">Surface ouverte : %1$s</string>
     <string name="surface_open_action">Appuyez pour TERMINER</string>
 
@@ -92,6 +112,15 @@
     <string name="settings_rides_hint">Conservées sur ce téléphone jusqu\'à suppression — partagez à tout moment.</string>
     <string name="settings_rides_empty">Aucune sortie enregistrée</string>
     <string name="settings_ride_meta">%1$s · %2$s</string>
+    <plurals name="settings_ride_photo_count">
+        <item quantity="one">%1$d photo — appuyez pour voir</item>
+        <item quantity="other">%1$d photos — appuyez pour voir</item>
+    </plurals>
+    <string name="settings_ride_photos_title">Photos de la sortie</string>
+    <string name="settings_ride_photos_empty">Aucune photo sur cette sortie</string>
+    <string name="settings_ride_photo_no_caption">Pas de légende</string>
+    <string name="settings_ride_photo_gps">%1$.5f, %2$.5f</string>
+    <string name="settings_ride_photo_no_gps">Pas de GPS à l\'enregistrement</string>
     <string name="settings_share">Partager</string>
     <string name="settings_delete">Supprimer</string>
     <string name="settings_about">À propos</string>
@@ -138,12 +167,14 @@
     <!-- Intro -->
     <string name="intro_powering">qui alimente</string>
     <string name="intro_point_tag">Appuyez sur une tuile pour marquer dangers, fermetures, surfaces et ravitaillement sur votre sortie.</string>
+    <string name="intro_point_photo">Pendant l\'enregistrement, vous pouvez prendre ou choisir une photo et ajouter une courte note. Facultatif — le marquage fonctionne sans.</string>
     <string name="intro_point_radar">Associez un radar vélo pour enregistrer les dépassements — optionnel, et désactivé jusqu\'à activation.</string>
-    <string name="intro_point_private">Tout reste dans un fichier FIT sur ce téléphone. Pas de compte, pas d\'envoi — du moins pas automatiquement.</string>
+    <string name="intro_point_private">Les marqueurs restent dans un fichier FIT sur ce téléphone ; photos et notes à côté. Pas de compte, pas d\'envoi — du moins pas automatiquement.</string>
     <string name="intro_permissions_title">Autorisations</string>
     <string name="intro_permission_location">Localisation (précise) : votre trace GPS et l\'emplacement des marqueurs sur la carte.</string>
     <string name="intro_permission_notifications">Notifications : l\'indicateur de sortie en cours.</string>
     <string name="intro_permission_bluetooth">Appareils à proximité : uniquement si vous associez un radar BLE plus tard — le marquage fonctionne sans.</string>
+    <string name="intro_permission_camera">Appareil photo : uniquement si vous prenez une photo pendant une sortie. Choisir une image dans la galerie utilise le sélecteur système et n\'en a pas besoin.</string>
     <string name="intro_permissions_when">Android demande cela après avoir appuyé sur Commencer. Vous pouvez modifier ces choix dans les paramètres système.</string>
     <string name="intro_legal_title">Sécurité &amp; mentions légales</string>
     <string name="intro_legal_summary">Scout enregistre vos sorties ; ce n\'est pas une navigation ni une protection en cas d\'accident. Votre sortie reste sur cet appareil jusqu\'à ce que vous la partagiez.</string>

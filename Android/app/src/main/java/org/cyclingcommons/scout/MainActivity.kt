@@ -35,6 +35,8 @@ import org.cyclingcommons.scout.ui.HelpScreen
 import org.cyclingcommons.scout.ui.IntroScreen
 import org.cyclingcommons.scout.ui.PairRadarScreen
 import org.cyclingcommons.scout.ui.RecoveryScreen
+import org.cyclingcommons.scout.ui.RidePhotosScreen
+import org.cyclingcommons.scout.ui.RidesScreen
 import org.cyclingcommons.scout.ui.ScoutRideScreen
 import org.cyclingcommons.scout.ui.SettingsScreen
 import org.cyclingcommons.scout.ui.theme.ScoutColors
@@ -118,7 +120,6 @@ class MainActivity : ComponentActivity() {
                                         ?: getString(R.string.radar_none),
                                     model.radar.transport.name.lowercase(),
                                 ),
-                                rides = model.rides,
                                 onImperial = rideVm::setImperial,
                                 onKeepScreenOn = rideVm::setKeepScreenOn,
                                 onThemeMode = rideVm::setThemeMode,
@@ -128,9 +129,23 @@ class MainActivity : ComponentActivity() {
                                 },
                                 onHelp = { rideVm.openHelp() },
                                 onReplayIntro = rideVm::replayIntro,
-                                onShareRide = { ride -> share(rideVm.shareRide(ride)) },
-                                onDeleteRide = rideVm::deleteRide,
                                 onBack = rideVm::closeSettings,
+                            )
+                            Screen.RIDES -> RidesScreen(
+                                rides = model.rides,
+                                atlasName = model.atlasName,
+                                atlasReviewUrl = model.atlasReviewUrl,
+                                onShareRide = { ride, target ->
+                                    rideVm.shareRide(ride, target) { share(it) }
+                                },
+                                onDeleteRide = rideVm::deleteRide,
+                                onOpenRidePhotos = rideVm::openRidePhotos,
+                                onBack = rideVm::closeRides,
+                            )
+                            Screen.RIDE_PHOTOS -> RidePhotosScreen(
+                                rideName = model.viewingRideName.orEmpty(),
+                                photos = model.viewingPhotos,
+                                onBack = rideVm::closeRidePhotos,
                             )
                             Screen.HELP -> HelpScreen(
                                 onBack = rideVm::closeHelp,
@@ -151,10 +166,19 @@ class MainActivity : ComponentActivity() {
                                 onTileTap = rideVm::onTileTap,
                                 onEndOpenSurface = rideVm::endOpenSurface,
                                 onRetryRadar = rideVm::retryRadar,
-                                onShareFit = { share(rideVm.shareLastFit()) },
+                                onShareFit = { target -> rideVm.shareLastFit(target) { share(it) } },
+                                onOpenRides = rideVm::openRides,
                                 onSettings = rideVm::openSettings,
                                 onHelp = { rideVm.openHelp(Screen.RIDE) },
                                 onDismissMessage = rideVm::clearUserMessage,
+                                onAddPhoto = rideVm::openPhotoChooser,
+                                onDismissPhotoChooser = rideVm::dismissPhotoChooser,
+                                onPrepareCameraUri = rideVm::cameraCaptureUri,
+                                onCameraCaptured = rideVm::onCameraCaptured,
+                                onPhotoPicked = rideVm::onPhotoPicked,
+                                onCameraPermissionDenied = rideVm::onCameraPermissionDenied,
+                                onSavePhoto = rideVm::savePhoto,
+                                onDiscardPhoto = rideVm::discardPhotoDraft,
                             )
                         }
                     }
@@ -221,7 +245,12 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun share(intent: Intent?) {
-        intent?.let { startActivity(Intent.createChooser(it, getString(R.string.settings_share))) }
+        if (intent == null) return
+        if (intent.action == Intent.ACTION_VIEW) {
+            startActivity(intent)
+        } else {
+            startActivity(Intent.createChooser(intent, getString(R.string.settings_share)))
+        }
     }
 
     private fun openLink(url: String) {

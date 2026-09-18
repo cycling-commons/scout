@@ -1,0 +1,10 @@
+<properties>
+    <!-- All on by default — same six-tile grid as SPEC §6.1. Hide unused ones
+         in the data-field settings so a small Edge gets bigger tap targets. -->
+    <property id="showResupply" type="boolean">true</property>
+    <property id="showClosure" type="boolean">true</property>
+    <property id="showSurface" type="boolean">true</property>
+    <property id="showNotice" type="boolean">true</property>
+    <property id="showScenery" type="boolean">true</property>
+    <property id="showOther" type="boolean">true</property>
+</properties>

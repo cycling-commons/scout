@@ -2,6 +2,7 @@ package org.cyclingcommons.scout
 
 import android.app.Application
 import android.content.Intent
+import android.net.Uri
 import android.view.accessibility.AccessibilityManager
 import androidx.core.content.FileProvider
 import androidx.lifecycle.AndroidViewModel
@@ -26,7 +27,13 @@ import org.cyclingcommons.scout.recording.RideFile
 import org.cyclingcommons.scout.recording.RideFiles
 import org.cyclingcommons.scout.recording.RideFitSession
 import org.cyclingcommons.scout.recording.RideForegroundService
+import org.cyclingcommons.scout.recording.RideImagePrep
+import org.cyclingcommons.scout.recording.RidePhoto
+import org.cyclingcommons.scout.recording.RidePhotoStore
 import org.cyclingcommons.scout.recording.RideRecoveryStore
+import org.cyclingcommons.scout.recording.RideShare
+import org.cyclingcommons.scout.recording.RideShareTarget
+import org.cyclingcommons.scout.instance.InstanceConfigLoader
 import org.cyclingcommons.scout.R
 import org.cyclingcommons.scout.sensors.LocationSampler
 import org.cyclingcommons.scout.sensors.radar.RadarCoordinator
@@ -44,6 +51,8 @@ enum class Screen {
     SETTINGS,
     HELP,
     PAIR_RADAR,
+    RIDE_PHOTOS,
+    RIDES,
 }
 
 data class RecoveryPrompt(
@@ -70,6 +79,15 @@ data class RideUiModel(
     /** Transient rider hint (e.g. tapped a tile before recording). */
     val userMessage: String? = null,
     val recovery: RecoveryPrompt? = null,
+    val showPhotoChooser: Boolean = false,
+    /** Absolute path of a compressed JPEG waiting for a caption. */
+    val photoDraftPath: String? = null,
+    val viewingPhotos: List<RidePhoto> = emptyList(),
+    val viewingRideName: String? = null,
+    /** Photos saved on the in-progress ride FIT. */
+    val ridePhotoCount: Int = 0,
+    val atlasName: String? = null,
+    val atlasReviewUrl: String? = null,
 )
 
 /**
@@ -89,6 +107,7 @@ class RideViewModel(app: Application) : AndroidViewModel(app) {
     private val appPrefs = AppPrefs(app)
     private val feedback = RideFeedback(app)
     private val recoveryStore = RideRecoveryStore(app)
+    private val instance = InstanceConfigLoader.load(app)
 
     private var fitSession: RideFitSession? = null
     private var pendingRecovery: RideRecoveryStore.PendingRecovery? = null
@@ -104,6 +123,7 @@ class RideViewModel(app: Application) : AndroidViewModel(app) {
     private var sampleCount = 0L
     private var rideStartedAtMs = 0L
     private var elapsedBeforePauseMs = 0L
+    private var cameraCaptureFile: File? = null
 
     private val accessibilityManager =
         app.getSystemService(AccessibilityManager::class.java)
@@ -201,10 +221,16 @@ class RideViewModel(app: Application) : AndroidViewModel(app) {
     fun openSettings() {
         show(Screen.SETTINGS)
         refreshPermissions()
-        loadRides()
     }
 
     fun closeSettings() = show(Screen.RIDE)
+
+    fun openRides() {
+        loadRides()
+        show(Screen.RIDES)
+    }
+
+    fun closeRides() = show(Screen.RIDE)
 
     fun openHelp(returnTo: Screen = Screen.SETTINGS) {
         helpReturnScreen = returnTo
@@ -308,7 +334,12 @@ class RideViewModel(app: Application) : AndroidViewModel(app) {
         elapsedBeforePauseMs = 0L
         sampleCount = 0L
         recoveryStore.clear()
-        fitSession?.finish { saved ->
+        val session = fitSession
+        val outFile = session?.outFile
+        session?.finish { saved ->
+            if (saved == null && outFile != null) {
+                RidePhotoStore.deleteCompanion(outFile)
+            }
             _ui.update { it.copy(lastFitPath = saved?.absolutePath) }
             loadRides()
         }
@@ -357,7 +388,7 @@ class RideViewModel(app: Application) : AndroidViewModel(app) {
         recoveryStore.clear()
         viewModelScope.launch {
             pending?.file?.let { file ->
-                withContext(Dispatchers.IO) { file.delete() }
+                withContext(Dispatchers.IO) { RideFiles.deleteFitAndPhotos(file) }
             }
             _ui.update { it.copy(screen = initialScreenAfterRecovery(), recovery = null) }
         }
@@ -405,9 +436,121 @@ class RideViewModel(app: Application) : AndroidViewModel(app) {
         wake()
     }
 
-    fun shareLastFit(): Intent? = _ui.value.lastFitPath?.let { shareFitPath(it) }
+    fun openPhotoChooser() {
+        if (controller.timer != TimerState.RUNNING) {
+            val res = when (controller.timer) {
+                TimerState.PAUSED -> R.string.ride_resume_to_tag
+                else -> R.string.ride_start_to_photo
+            }
+            showUserMessage(getApplication<Application>().getString(res))
+            return
+        }
+        _ui.update { it.copy(showPhotoChooser = true) }
+    }
 
-    fun shareRide(ride: RideFile): Intent? = shareFitPath(ride.file.absolutePath)
+    fun dismissPhotoChooser() {
+        _ui.update { it.copy(showPhotoChooser = false) }
+    }
+
+    fun onCameraPermissionDenied() {
+        _ui.update { it.copy(showPhotoChooser = false) }
+        showUserMessage(getApplication<Application>().getString(R.string.ride_photo_camera_denied))
+    }
+
+    fun cameraCaptureUri(): Uri {
+        val app = getApplication<Application>()
+        val file = File(app.cacheDir, "camera/capture.jpg")
+        file.parentFile?.mkdirs()
+        if (file.exists()) file.delete()
+        file.createNewFile()
+        cameraCaptureFile = file
+        return FileProvider.getUriForFile(app, "${app.packageName}.fileprovider", file)
+    }
+
+    fun onCameraCaptured(success: Boolean) {
+        val file = cameraCaptureFile
+        cameraCaptureFile = null
+        if (!success || file == null || !file.isFile || file.length() == 0L) {
+            file?.delete()
+            _ui.update { it.copy(showPhotoChooser = false) }
+            return
+        }
+        ingestDraftFile(file)
+    }
+
+    fun onPhotoPicked(uri: Uri?) {
+        if (uri == null) {
+            _ui.update { it.copy(showPhotoChooser = false) }
+            return
+        }
+        ingestDraft(uri)
+    }
+
+    fun discardPhotoDraft() {
+        _ui.value.photoDraftPath?.let { File(it).delete() }
+        _ui.update { it.copy(photoDraftPath = null, showPhotoChooser = false) }
+    }
+
+    fun savePhoto(caption: String) {
+        val draftPath = _ui.value.photoDraftPath ?: return
+        val session = fitSession
+        if (session == null || controller.timer != TimerState.RUNNING) {
+            discardPhotoDraft()
+            showUserMessage(getApplication<Application>().getString(R.string.ride_start_to_photo))
+            return
+        }
+        viewModelScope.launch {
+            val saved = withContext(Dispatchers.IO) {
+                runCatching {
+                    val jpeg = File(draftPath).readBytes()
+                    val fix = location.latest
+                    RidePhotoStore.addPreparedJpeg(
+                        fitFile = session.outFile,
+                        jpegBytes = jpeg,
+                        capturedAtMs = System.currentTimeMillis(),
+                        lat = fix?.latitude,
+                        lon = fix?.longitude,
+                        accuracyM = fix?.accuracyM?.toDouble(),
+                        caption = caption,
+                    )
+                }.getOrNull()
+            }
+            File(draftPath).delete()
+            _ui.update { it.copy(photoDraftPath = null, ridePhotoCount = RidePhotoStore.count(session.outFile)) }
+            if (saved == null) {
+                showUserMessage(getApplication<Application>().getString(R.string.ride_photo_failed))
+            } else {
+                showUserMessage(getApplication<Application>().getString(R.string.ride_photo_saved))
+            }
+        }
+    }
+
+    fun openRidePhotos(ride: RideFile) {
+        _ui.update {
+            it.copy(
+                screen = Screen.RIDE_PHOTOS,
+                viewingPhotos = RidePhotoStore.list(ride.file),
+                viewingRideName = ride.name,
+            )
+        }
+    }
+
+    fun closeRidePhotos() {
+        _ui.update {
+            it.copy(
+                screen = Screen.RIDES,
+                viewingPhotos = emptyList(),
+                viewingRideName = null,
+            )
+        }
+        loadRides()
+    }
+
+    fun shareLastFit(target: RideShareTarget, onReady: (Intent?) -> Unit) =
+        shareRideFile(_ui.value.lastFitPath?.let { File(it) }, target, onReady)
+
+    fun shareRide(ride: RideFile, target: RideShareTarget, onReady: (Intent?) -> Unit) =
+        shareRideFile(ride.file, target, onReady)
 
     fun deleteRide(ride: RideFile) {
         val path = ride.file.absolutePath
@@ -493,7 +636,12 @@ class RideViewModel(app: Application) : AndroidViewModel(app) {
             !appPrefs.introSeen -> Screen.INTRO
             else -> Screen.RIDE
         }
-        return RideUiModel(screen = screen, recovery = recoveryPrompt)
+        return RideUiModel(
+            screen = screen,
+            recovery = recoveryPrompt,
+            atlasName = instance?.instanceName,
+            atlasReviewUrl = instance?.reviewUrl,
+        )
     }
 
     private fun initialScreenAfterRecovery(): Screen =
@@ -521,6 +669,7 @@ class RideViewModel(app: Application) : AndroidViewModel(app) {
                 pendingTags = controller.queueSize(),
                 fixLabel = if (timer == TimerState.IDLE) it.fixLabel else fixLabel(),
                 radar = radar.status.value,
+                ridePhotoCount = fitSession?.outFile?.let { RidePhotoStore.count(it) } ?: 0,
             )
         }
     }
@@ -547,20 +696,80 @@ class RideViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
-    private fun shareFitPath(path: String): Intent? {
-        val file = File(path)
-        if (!file.exists()) return null
-        val uri = FileProvider.getUriForFile(
-            getApplication(),
-            "${getApplication<Application>().packageName}.fileprovider",
-            file,
-        )
+    private fun ingestDraft(uri: Uri) {
+        viewModelScope.launch {
+            val draft = withContext(Dispatchers.IO) {
+                runCatching {
+                    writeDraft(RideImagePrep.compressToJpeg(getApplication(), uri))
+                }.getOrNull()
+            }
+            finishIngest(draft)
+        }
+    }
+
+    private fun ingestDraftFile(file: File) {
+        viewModelScope.launch {
+            val draft = withContext(Dispatchers.IO) {
+                runCatching {
+                    try {
+                        writeDraft(RideImagePrep.compressFile(file))
+                    } finally {
+                        file.delete()
+                    }
+                }.getOrNull()
+            }
+            finishIngest(draft)
+        }
+    }
+
+    private fun writeDraft(jpeg: ByteArray): String {
+        val draft = File(getApplication<Application>().cacheDir, "camera/draft.jpg")
+        draft.parentFile?.mkdirs()
+        draft.writeBytes(jpeg)
+        return draft.absolutePath
+    }
+
+    private fun finishIngest(draft: String?) {
+        if (draft == null) {
+            _ui.update { it.copy(showPhotoChooser = false, photoDraftPath = null) }
+            showUserMessage(getApplication<Application>().getString(R.string.ride_photo_failed))
+        } else {
+            _ui.update { it.copy(showPhotoChooser = false, photoDraftPath = draft) }
+        }
+    }
+
+    private fun shareRideFile(fitFile: File?, target: RideShareTarget, onReady: (Intent?) -> Unit) {
+        if (fitFile == null || !fitFile.isFile) {
+            onReady(null)
+            return
+        }
+        viewModelScope.launch {
+            val app = getApplication<Application>()
+            val intent = withContext(Dispatchers.IO) {
+                runCatching { buildShareIntent(fitFile, target) }.getOrNull()
+            }
+            if (intent == null) {
+                showUserMessage(app.getString(R.string.ride_share_failed))
+            }
+            onReady(intent)
+        }
+    }
+
+    private fun buildShareIntent(fitFile: File, target: RideShareTarget): Intent {
+        val app = getApplication<Application>()
+        val packed = RideShare.packed(app, fitFile)
+        if (target == RideShareTarget.ATLAS) {
+            val url = instance?.reviewUrl ?: error("no atlas")
+            RideShare.copyToDownloads(app, packed)
+            return Intent(Intent.ACTION_VIEW, Uri.parse(url))
+        }
+        val uri = FileProvider.getUriForFile(app, "${app.packageName}.fileprovider", packed.file)
         return Intent(Intent.ACTION_SEND).apply {
-            type = "application/octet-stream"
+            type = packed.mime
             putExtra(Intent.EXTRA_STREAM, uri)
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            putExtra(Intent.EXTRA_SUBJECT, file.name)
-            putExtra(Intent.EXTRA_TITLE, file.name)
+            putExtra(Intent.EXTRA_SUBJECT, packed.file.name)
+            putExtra(Intent.EXTRA_TITLE, packed.file.name)
         }
     }
 

@@ -18,10 +18,12 @@
     <string name="ride_action_cancel">Cancel</string>
     <string name="ride_stop_confirm_title">Stop ride?</string>
     <string name="ride_stop_confirm_message">Your ride will be saved as a FIT file on this phone.</string>
+    <string name="ride_stop_confirm_message_with_photos">Your ride will be saved on this phone as a FIT file plus the photos and notes you added.</string>
     <string name="ride_stop_confirm_action">Stop ride</string>
     <string name="ride_action_settings">Settings</string>
     <string name="ride_action_help">How Scout works</string>
     <string name="ride_action_share">Share last ride</string>
+    <string name="ride_action_rides">Rides</string>
     <string name="ride_permission_needed">Location permission needed</string>
     <string name="ride_waiting_for_fix">Waiting for GPS</string>
     <string name="ride_start_to_tag">Start your ride before you can tag tiles.</string>
@@ -32,6 +34,24 @@
     <string name="ride_tags_label">Tags</string>
     <string name="ride_clock_label">Elapsed</string>
     <string name="ride_last_file">Saved %1$s</string>
+    <string name="ride_action_photo">Add photo</string>
+    <string name="ride_start_to_photo">Start your ride before you can add a photo.</string>
+    <string name="ride_photo_title">Add a photo</string>
+    <string name="ride_photo_chooser_hint">It will be tagged to your current GPS position.</string>
+    <string name="ride_photo_take">Take photo</string>
+    <string name="ride_photo_pick">Choose from phone</string>
+    <string name="ride_photo_caption_title">Photo note</string>
+    <string name="ride_photo_caption_hint">Optional text</string>
+    <string name="ride_photo_preview">Ride photo</string>
+    <string name="ride_photo_save">Save</string>
+    <string name="ride_photo_discard">Discard</string>
+    <string name="ride_photo_saved">Photo saved</string>
+    <string name="ride_photo_failed">Could not add that photo</string>
+    <string name="ride_photo_camera_denied">Camera permission needed to take a photo</string>
+    <string name="ride_share_failed">Could not share this ride</string>
+    <string name="share_ride_title">Share ride</string>
+    <string name="share_ride_hint">%1$s opens the review page in your browser. Scout saves the FIT or zip to Downloads first, so you can choose or drop it there.</string>
+    <string name="share_other_apps">Other apps</string>
     <string name="surface_open_banner">Surface open: %1$s</string>
     <string name="surface_open_action">Tap to END</string>
 
@@ -92,6 +112,15 @@
     <string name="settings_rides_hint">Kept on this phone until you delete them — share anytime.</string>
     <string name="settings_rides_empty">No rides recorded yet</string>
     <string name="settings_ride_meta">%1$s · %2$s</string>
+    <plurals name="settings_ride_photo_count">
+        <item quantity="one">%1$d photo — tap to view</item>
+        <item quantity="other">%1$d photos — tap to view</item>
+    </plurals>
+    <string name="settings_ride_photos_title">Ride photos</string>
+    <string name="settings_ride_photos_empty">No photos on this ride</string>
+    <string name="settings_ride_photo_no_caption">No caption</string>
+    <string name="settings_ride_photo_gps">%1$.5f, %2$.5f</string>
+    <string name="settings_ride_photo_no_gps">No GPS fix when saved</string>
     <string name="settings_share">Share</string>
     <string name="settings_delete">Delete</string>
     <string name="settings_about">About</string>
@@ -138,12 +167,14 @@
     <!-- Intro -->
     <string name="intro_powering">powering the</string>
     <string name="intro_point_tag">Tap a tile to stamp hazards, closures, surfaces and resupply onto your ride.</string>
+    <string name="intro_point_photo">While recording, you can take or pick a photo and add a short note. Optional — tagging works without it.</string>
     <string name="intro_point_radar">Pair a bike radar to log overtaking traffic — optional, and off until you ask.</string>
-    <string name="intro_point_private">Everything stays in a FIT file on this phone. No account, no upload — at least nothing automatically.</string>
+    <string name="intro_point_private">Tags stay in a FIT file on this phone; photos and notes sit next to it. No account, no upload — at least nothing automatically.</string>
     <string name="intro_permissions_title">Permissions</string>
     <string name="intro_permission_location">Location (precise): your GPS track and where tags land on the map.</string>
     <string name="intro_permission_notifications">Notifications: the ride-in-progress indicator while a session is open.</string>
     <string name="intro_permission_bluetooth">Nearby devices: only if you pair a BLE radar later — tagging works without it.</string>
+    <string name="intro_permission_camera">Camera: only if you take a photo during a ride. Picking from the gallery uses the system picker and does not need this.</string>
     <string name="intro_permissions_when">Android asks after you tap Get started. You can change these anytime in system Settings.</string>
     <string name="intro_legal_title">Safety &amp; legal</string>
     <string name="intro_legal_summary">Scout is a ride logger, not navigation or crash protection. Your ride stays on this device until you share it.</string>

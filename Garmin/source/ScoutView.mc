@@ -1,4 +1,5 @@
 import Toybox.Activity;
+import Toybox.Application.Properties;
 import Toybox.AntPlus;
 import Toybox.Attention;
 import Toybox.Graphics;
@@ -305,6 +306,33 @@ class ScoutView extends WatchUi.DataField {
         // DEAD and will not hunt again — tap "no radar" to open a new channel
         // rather than reconstructing every second.
         openRadar();
+        reloadGrid();
+    }
+
+    // Rebuild the main grid from data-field settings. Hidden tiles are omitted
+    // so the rest grow. If every toggle is off, OTHER stays so the field is
+    // never an empty tap area.
+    function reloadGrid() as Void {
+        closePage();
+        var next = [];
+        if (settingOn("showResupply")) { next.add([UI_RESUPPLY, "RESUPPLY", 0x1E7FC0]); }
+        if (settingOn("showClosure"))  { next.add([POI_CLOSURE,  "CLOSURE",  0x8E44AD]); }
+        if (settingOn("showSurface"))  { next.add([POI_SURFACE,  "SURFACE",  0x8E5A2B]); }
+        if (settingOn("showNotice"))   { next.add([POI_DANGER,   "NOTICE",   0xD1421F]); }
+        if (settingOn("showScenery"))  { next.add([POI_SCENERY,  "SCENERY",  0x2E8B57]); }
+        if (settingOn("showOther"))    { next.add([POI_OTHER,    "OTHER",    0xB58900]); }
+        if (next.size() == 0) {
+            next.add([POI_OTHER, "OTHER", 0xB58900]);
+        }
+        _buttons = next as Array<Array>;
+    }
+
+    hidden function settingOn(key as String) as Boolean {
+        try {
+            var v = Properties.getValue(key);
+            if (v instanceof Lang.Boolean) { return v; }
+        } catch (ex instanceof Lang.Exception) { }
+        return true;
     }
 
     // Drop any existing channel and start a fresh ANT+ search. Throws if the
@@ -452,7 +480,6 @@ class ScoutView extends WatchUi.DataField {
         for (var i = 0; i < _buttons.size(); i++) {
             if ((_buttons[i][0] as Number) == POI_SURFACE) { idx = i; break; }
         }
-        if (idx < 0) { idx = 0; }
         tag(POI_SURFACE, SURF_END, idx);
     }
 

@@ -1,0 +1,20 @@
+<settings>
+    <setting propertyKey="@Properties.showResupply" title="@Strings.settingShowResupply">
+        <settingConfig type="boolean"/>
+    </setting>
+    <setting propertyKey="@Properties.showClosure" title="@Strings.settingShowClosure">
+        <settingConfig type="boolean"/>
+    </setting>
+    <setting propertyKey="@Properties.showSurface" title="@Strings.settingShowSurface">
+        <settingConfig type="boolean"/>
+    </setting>
+    <setting propertyKey="@Properties.showNotice" title="@Strings.settingShowNotice">
+        <settingConfig type="boolean"/>
+    </setting>
+    <setting propertyKey="@Properties.showScenery" title="@Strings.settingShowScenery">
+        <settingConfig type="boolean"/>
+    </setting>
+    <setting propertyKey="@Properties.showOther" title="@Strings.settingShowOther">
+        <settingConfig type="boolean"/>
+    </setting>
+</settings>
