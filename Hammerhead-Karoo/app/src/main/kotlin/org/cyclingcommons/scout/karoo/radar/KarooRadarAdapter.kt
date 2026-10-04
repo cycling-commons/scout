@@ -19,6 +19,12 @@ class KarooRadarAdapter(
     private val karooSystem: KarooSystemService,
 ) {
     private val consumerId = AtomicReference<String?>(null)
+    private val estimator = ClosingSpeedEstimator()
+
+    /** Range-derived closing speed of the nearest car (km/h), -1 when unknown. Live tally only. */
+    @Volatile
+    var estimatedClosingKph: Int = -1
+        private set
 
     private val targetRangeFields =
         listOf(
@@ -43,18 +49,42 @@ class KarooRadarAdapter(
 
     fun stop() {
         consumerId.getAndSet(null)?.let { karooSystem.removeConsumer(it) }
+        resetEstimate()
         ScoutSession.updateRadar(RadarObservation())
     }
 
     private fun handleStreamState(state: StreamState) {
         when (state) {
-            is StreamState.Streaming -> ScoutSession.updateRadar(mapValues(state.dataPoint.values))
-            is StreamState.Searching ->
+            is StreamState.Streaming -> {
+                val observation = mapValues(state.dataPoint.values)
+                if (observation.tracking) {
+                    estimatedClosingKph =
+                        estimator.onSample(
+                            nearestRangeM = observation.nearestRangeM(),
+                            count = observation.occupiedCount(),
+                            nowMs = System.currentTimeMillis(),
+                        )
+                } else {
+                    resetEstimate()
+                }
+                ScoutSession.updateRadar(observation)
+            }
+            is StreamState.Searching -> {
+                resetEstimate()
                 ScoutSession.updateRadar(RadarObservation(state = RadarLinkState.SCANNING))
+            }
             is StreamState.NotAvailable,
             is StreamState.Idle,
-            -> ScoutSession.updateRadar(RadarObservation(state = RadarLinkState.DISCONNECTED))
+            -> {
+                resetEstimate()
+                ScoutSession.updateRadar(RadarObservation(state = RadarLinkState.DISCONNECTED))
+            }
         }
+    }
+
+    private fun resetEstimate() {
+        estimator.reset()
+        estimatedClosingKph = -1
     }
 
     private fun mapValues(values: Map<String, Double>): RadarObservation {

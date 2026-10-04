@@ -53,8 +53,6 @@ data class TaggingUiModel(
 
 class TaggingViewModel(app: Application) : AndroidViewModel(app) {
 
-    private val controller = ScoutSession.controller
-
     private val feedback = RideFeedback(app)
 
 
@@ -72,6 +70,22 @@ class TaggingViewModel(app: Application) : AndroidViewModel(app) {
 
 
     init {
+
+        // Hold the runtime for as long as this screen exists; it also ticks picker
+        // deadlines, so a pick still commits after this screen is closed.
+        ScoutExtensionRuntime.acquire(app)
+
+        viewModelScope.launch {
+
+            ScoutSession.feedback.collect {
+
+                feedback.confirm(it.undone)
+
+                wake()
+
+            }
+
+        }
 
         viewModelScope.launch {
 
@@ -105,8 +119,6 @@ class TaggingViewModel(app: Application) : AndroidViewModel(app) {
 
         uiVisible = visible
 
-        ScoutExtensionRuntime.start(getApplication())
-
         if (visible) {
 
             wake()
@@ -121,7 +133,25 @@ class TaggingViewModel(app: Application) : AndroidViewModel(app) {
 
         val now = System.currentTimeMillis()
 
-        if (controller.timer != TimerState.RUNNING) {
+        val result =
+
+            ScoutSession.withController { c ->
+
+                if (c.timer != TimerState.RUNNING) {
+
+                    null
+
+                } else {
+
+                    c.onTileTap(index, now)
+
+                    Result.success(c.takeFeedback())
+
+                }
+
+            }
+
+        if (result == null) {
 
             _ui.update { it.copy(riderMessage = "idle") }
 
@@ -131,9 +161,7 @@ class TaggingViewModel(app: Application) : AndroidViewModel(app) {
 
         }
 
-        controller.onTileTap(index, now)
-
-        controller.takeFeedback()?.let { feedback.confirm(it.undone) }
+        result.getOrNull()?.let { feedback.confirm(it.undone) }
 
         publish(now)
 
@@ -147,9 +175,13 @@ class TaggingViewModel(app: Application) : AndroidViewModel(app) {
 
         val now = System.currentTimeMillis()
 
-        controller.endOpenSurface(now)
+        ScoutSession.withController { c ->
 
-        controller.takeFeedback()?.let { feedback.confirm(it.undone) }
+            c.endOpenSurface(now)
+
+            c.takeFeedback()
+
+        }?.let { feedback.confirm(it.undone) }
 
         publish(now)
 
@@ -171,6 +203,8 @@ class TaggingViewModel(app: Application) : AndroidViewModel(app) {
 
         feedback.release()
 
+        ScoutExtensionRuntime.release()
+
         super.onCleared()
 
     }
@@ -179,12 +213,7 @@ class TaggingViewModel(app: Application) : AndroidViewModel(app) {
 
     private fun tick(nowMs: Long) {
 
-        if (controller.onTick(nowMs)) {
-
-            controller.takeFeedback()?.let { feedback.confirm(it.undone) }
-
-        }
-
+        // Picker deadlines are advanced by ScoutExtensionRuntime; this loop only redraws.
         publish(nowMs)
 
     }
@@ -195,13 +224,15 @@ class TaggingViewModel(app: Application) : AndroidViewModel(app) {
 
         val radar = ScoutSession.latestRadar()
 
+        val snapshot = ScoutSession.withController { it.snapshot(nowMs) }
+
         _ui.update {
 
             it.copy(
 
                 scout =
 
-                    controller.snapshot(nowMs).copy(
+                    snapshot.copy(
 
                         radarLive = radar.tracking,
 
@@ -224,9 +255,13 @@ class TaggingViewModel(app: Application) : AndroidViewModel(app) {
 
     private fun nextTickDelayMs(nowMs: Long): Long? {
 
-        val animating = uiVisible && controller.needsTick(nowMs)
+        val (needsTick, timer) =
 
-        if (controller.timer != TimerState.RUNNING) {
+            ScoutSession.withController { it.needsTick(nowMs) to it.timer }
+
+        val animating = uiVisible && needsTick
+
+        if (timer != TimerState.RUNNING) {
 
             return if (animating) ANIMATION_INTERVAL_MS else null
 

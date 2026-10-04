@@ -343,10 +343,12 @@ When closing speed is unavailable from Karoo's stream:
 
 - Write `radar_count` and `radar_near` from occupied target ranges.
 - Write `radar_speed = 255` (invalid) even when targets are present.
-- Live strip may show car count without speed, or hide speed when invalid — must
-  not invent closing speed.
-- Vehicle corroboration in `VehicleCounter` already tolerates invalid speed for
-  credit gating (same as BLE paths without speed).
+- `VehicleCounter` only credits a pass when it has a valid closing speed, so the
+  live car tally is fed a **range-derived estimate** instead
+  (`radar/ClosingSpeedEstimator.kt`): the nearest target's range delta per second,
+  smoothed, reset whenever the nearest car changes (count drops or range jumps
+  outward). The estimate drives the live tally and car speed on the strip only;
+  it is never written to FIT.
 
 Pairing UX: settings screen explains “pair your radar in Karoo Settings → Sensors”;
 no in-app BLE scan.

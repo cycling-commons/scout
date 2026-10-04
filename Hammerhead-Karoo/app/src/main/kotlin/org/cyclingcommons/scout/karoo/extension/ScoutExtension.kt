@@ -22,13 +22,7 @@ import kotlinx.coroutines.CoroutineScope
 
 import kotlinx.coroutines.Dispatchers
 
-import kotlinx.coroutines.Job
-
-import kotlinx.coroutines.delay
-
 import kotlinx.coroutines.flow.mapNotNull
-
-import kotlinx.coroutines.isActive
 
 import kotlinx.coroutines.launch
 
@@ -52,19 +46,13 @@ class ScoutExtension : KarooExtension(EXTENSION_ID, EXTENSION_VERSION) {
 
     override fun startFit(emitter: Emitter<FitEffect>) {
 
-        ScoutExtensionRuntime.start(this)
+        // onCreate already acquired the runtime. The stream consumer registers
+        // itself once Karoo is connected, so no need to wait for the binder here.
+        val system = ScoutExtensionRuntime.karooOrNull() ?: return
 
         val job =
 
             CoroutineScope(Dispatchers.IO).launch {
-
-                val system = ScoutExtensionRuntime.karooOrNull() ?: return@launch
-
-                while (isActive && !system.connected) {
-
-                    delay(50)
-
-                }
 
                 system
 
@@ -114,7 +102,7 @@ class ScoutExtension : KarooExtension(EXTENSION_ID, EXTENSION_VERSION) {
 
         super.onCreate()
 
-        ScoutExtensionRuntime.start(this)
+        ScoutExtensionRuntime.acquire(this)
 
     }
 
@@ -122,7 +110,7 @@ class ScoutExtension : KarooExtension(EXTENSION_ID, EXTENSION_VERSION) {
 
     override fun onDestroy() {
 
-        ScoutExtensionRuntime.stop()
+        ScoutExtensionRuntime.release()
 
         super.onDestroy()
 
@@ -141,4 +129,3 @@ class ScoutExtension : KarooExtension(EXTENSION_ID, EXTENSION_VERSION) {
     }
 
 }
-

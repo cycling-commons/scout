@@ -51,4 +51,6 @@ dependencies {
     implementation(libs.bundles.compose.ui)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.coroutines.core)
+
+    testImplementation("junit:junit:4.13.2")
 }

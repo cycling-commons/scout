@@ -44,7 +44,7 @@ class ScoutStatusDataType(
     private fun buildRemoteViews(context: Context): RemoteViews {
         val views = RemoteViews(context.packageName, R.layout.scout_status_field)
         val nowMs = System.currentTimeMillis()
-        val scout = ScoutSession.controller.snapshot(nowMs)
+        val scout = ScoutSession.withController { it.snapshot(nowMs) }
         val radar = ScoutSession.latestRadar()
 
         val stateText =
@@ -56,7 +56,7 @@ class ScoutStatusDataType(
         views.setTextViewText(R.id.scout_state, stateText)
 
         val tagsText =
-            if (ScoutSession.controller.timer == TimerState.RUNNING) {
+            if (scout.timer == TimerState.RUNNING) {
                 context.getString(R.string.tagging_tag_count, scout.tagTotal)
             } else {
                 context.getString(R.string.tagging_idle_prompt)
