@@ -1,0 +1,12 @@
+<!-- Generic OSS placeholder — not the Scout / Cycling Commons brand.
+     Put your own lockup in Brand/welcome-logo.svg (gitignored). Outlined paths only. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="160" viewBox="0 0 640 160" fill="none">
+  <rect width="640" height="160" rx="12" fill="#5A5A5A"/>
+  <circle cx="96" cy="80" r="40" fill="#E8E8E8"/>
+  <path fill="#5A5A5A" d="M96 52c-13 0-24 11-24 24 0 18 24 40 24 40s24-22 24-40c0-13-11-24-24-24zm0 34a10 10 0 1 1 0-20 10 10 0 0 1 0 20z"/>
+  <!-- Five bars = “wordmark” stand-in -->
+  <rect x="168" y="56" width="72" height="16" rx="4" fill="#E8E8E8"/>
+  <rect x="256" y="56" width="56" height="16" rx="4" fill="#E8E8E8"/>
+  <rect x="328" y="56" width="64" height="16" rx="4" fill="#E8E8E8"/>
+  <rect x="168" y="88" width="240" height="12" rx="3" fill="#B0B0B0"/>
+</svg>

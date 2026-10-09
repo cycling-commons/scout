@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>en</string>
+	<key>CFBundleDisplayName</key>
+	<string>Scout</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>Scout</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.0.0</string>
+	<key>CFBundleVersion</key>
+	<string>1</string>
+	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>UIFileSharingEnabled</key>
+	<true/>
+	<key>LSSupportsOpeningDocumentsInPlace</key>
+	<true/>
+	<key>UILaunchScreen</key>
+	<dict>
+		<key>UIColorName</key>
+		<string>LaunchBackground</string>
+	</dict>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+	</array>
+	<key>UISupportedInterfaceOrientations~ipad</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+	</array>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>location</string>
+		<string>bluetooth-central</string>
+	</array>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Scout uses GPS while you record a ride so tags land on the map. Recording can continue with the screen off.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Scout uses GPS while you record a ride so tags land on the map. Recording can continue with the screen off.</string>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>Scout connects to a paired bike radar only while you are recording, to log overtaking traffic. Tagging works without it.</string>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>Scout connects to a paired bike radar only while you are recording, to log overtaking traffic. Tagging works without it.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Scout uses the camera only when you tap Take photo during a running ride. Picking an existing picture does not need this.</string>
+	<key>UIRequiresFullScreen</key>
+	<true/>
+</dict>
+</plist>

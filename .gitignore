@@ -27,6 +27,11 @@ Android/help/legal.json
 
 # Atlas instance URL for this build (see Android/.env.example)
 Android/.env.dev.local
+iPhone/.env.dev.local
+
+# Instance-specific in-app help (iPhone)
+iPhone/help/help.json
+iPhone/help/legal.json
 
 # Android / Gradle
 Android/.gradle/
@@ -40,6 +45,11 @@ Android/tools/node_modules/
 # Garmin Connect IQ build output and store working material
 Garmin/bin/
 Garmin/store/
+
+# iPhone / Xcode
+iPhone/DerivedData/
+iPhone/**/xcuserdata/
+iPhone/*.xcuserstate
 
 # Cursor IDE (local only)
 .cursor/

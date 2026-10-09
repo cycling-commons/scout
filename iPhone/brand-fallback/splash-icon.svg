@@ -1,0 +1,8 @@
+<!-- Generic OSS placeholder — not the Scout / Cycling Commons brand.
+     Put your own mark in Brand/splash-icon.svg (gitignored). Artboard 288×288. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="288" height="288" viewBox="0 0 288 288" fill="none">
+  <rect width="288" height="288" fill="#5A5A5A"/>
+  <circle cx="144" cy="144" r="80" fill="#E8E8E8"/>
+  <!-- Simple abstract pin (neutral, not brand artwork) -->
+  <path fill="#5A5A5A" d="M144 88c-26.5 0-48 21.5-48 48 0 36 48 80 48 80s48-44 48-80c0-26.5-21.5-48-48-48zm0 68a20 20 0 1 1 0-40 20 20 0 0 1 0 40z"/>
+</svg>

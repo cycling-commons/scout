@@ -1,0 +1,71 @@
+{
+  "title": "How Scout works",
+  "sections": [
+    {
+      "heading": "Recording",
+      "body": [
+        "Tap Start when you set off. Scout writes a FIT file on this device — no account needed.",
+        "Pause stops GPS and radar to save battery. Stop finishes the file. Open the folder icon on the ride screen to find past rides."
+      ]
+    },
+    {
+      "heading": "Tagging",
+      "body": [
+        "Tap a tile to stamp hazards, closures, surfaces and resupply onto your GPS track.",
+        "Tap the same tile again within a few seconds to undo.",
+        "Surface mode keeps tagging until you tap END on the banner or the END tile.",
+        "While recording, the camera icon adds a photo tagged to your current position. You can type a short note. Photos stay on this device with the ride."
+      ]
+    },
+    {
+      "heading": "Radar (optional)",
+      "body": [
+        "Pair a rear radar under Settings. iPhone uses Bluetooth (Varia-family or Magene L508-family). There is no ANT+ on iPhone.",
+        "It connects when you Start and disconnects on Pause or Stop.",
+        "Overtakes are stored in the FIT file like everything else. Nothing is uploaded automatically."
+      ]
+    },
+    {
+      "heading": "Your ride file",
+      "body": [
+        "Finished rides stay on this device until you delete them. Open the folder icon (when you are not recording) to share or delete them.",
+        "Share can open Cycling Commons in the browser, or send the FIT (or zip, if you added photos) to another app. Choose or drop the file on the review page. Scout never uploads by itself."
+      ]
+    },
+    {
+      "heading": "Permissions",
+      "body": [
+        "Location: records your GPS track and where each tag lands. Recording can continue in the background while a ride is open.",
+        "Bluetooth: only for pairing a BLE radar — tagging works without it.",
+        "Camera: only if you take a photo during a ride. Choosing an existing picture uses the system picker.",
+        "Change these anytime in iPhone Settings → Scout."
+      ]
+    },
+    {
+      "heading": "Sharing (optional)",
+      "body": [
+        "Share can open this instance's review page in the browser, or send the FIT (or zip) to another app.",
+        "Choose or drop the file on the review page. The app cannot publish for you.",
+        "Copy help/help.example.json to help/help.json and edit this section for your instance."
+      ],
+      "links": [
+        {
+          "label": "Your Atlas",
+          "url": "https://example.com"
+        }
+      ]
+    },
+    {
+      "heading": "Source code",
+      "body": [
+        "Scout is open source (MIT). Point this link at your fork's repository."
+      ],
+      "links": [
+        {
+          "label": "GitHub",
+          "url": "https://github.com/your-org/scout"
+        }
+      ]
+    }
+  ]
+}
