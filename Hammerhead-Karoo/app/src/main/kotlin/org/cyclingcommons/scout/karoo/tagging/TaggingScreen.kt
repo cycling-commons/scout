@@ -5,6 +5,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -42,10 +43,14 @@ import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
 import org.cyclingcommons.scout.domain.PoiType
 import org.cyclingcommons.scout.domain.ScoutUiState
+import org.cyclingcommons.scout.domain.Surface
 import org.cyclingcommons.scout.domain.Tile
+import org.cyclingcommons.scout.domain.Tiles
 import org.cyclingcommons.scout.domain.TimerState
 import org.cyclingcommons.scout.domain.UiMode
 import org.cyclingcommons.scout.karoo.R
+import org.cyclingcommons.scout.karoo.theme.ScoutKarooTheme
+import org.cyclingcommons.scout.karoo.ui.KarooPreview
 import org.cyclingcommons.scout.karoo.ui.PALE_TILE_LUMINANCE
 import org.cyclingcommons.scout.karoo.ui.ScoutDimens
 import org.cyclingcommons.scout.karoo.ui.ScoutKarooColors
@@ -54,6 +59,8 @@ import org.cyclingcommons.scout.karoo.ui.ScoutType
 import kotlin.math.ceil
 
 private const val GRID_COLUMNS = 2
+private val COMPACT_TILE_HEIGHT = 64.dp
+private val COMPACT_TILE_WIDTH = 128.dp
 
 @Composable
 fun TaggingScreen(
@@ -191,26 +198,29 @@ private fun RadarStrip(
                 .fillMaxWidth()
                 .background(ScoutKarooColors.Surface, RoundedCornerShape(ScoutDimens.cardCorner))
                 .border(1.dp, ScoutKarooColors.Outline, RoundedCornerShape(ScoutDimens.cardCorner))
-                .padding(horizontal = ScoutSpacing.lg, vertical = ScoutSpacing.md),
+                .padding(horizontal = ScoutSpacing.md, vertical = ScoutSpacing.xs),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(ScoutSpacing.md),
+        horizontalArrangement = Arrangement.spacedBy(ScoutSpacing.sm),
     ) {
-        Text(
-            text = stringResource(R.string.radar_label).uppercase(),
-            style = ScoutType.overline,
-            color = ScoutKarooColors.TextSecondary,
-        )
+        // ~256 dp wide on a Karoo: once cars show, "N cars" names the strip itself.
+        if (!live) {
+            Text(
+                text = stringResource(R.string.radar_label).uppercase(),
+                style = ScoutType.overline,
+                color = ScoutKarooColors.TextSecondary,
+            )
+        }
         Spacer(Modifier.weight(1f))
         if (live) {
             Text(
                 text = stringResource(R.string.radar_cars, carCount),
-                style = ScoutType.metric,
+                style = ScoutType.metric.copy(fontSize = 20.sp),
                 color = ScoutKarooColors.TextPrimary,
             )
             if (speedKph >= 0) {
                 Text(
                     text = stringResource(R.string.radar_speed_kph, speedKph),
-                    style = MaterialTheme.typography.bodyLarge,
+                    style = MaterialTheme.typography.bodyMedium,
                     color = ScoutKarooColors.TextSecondary,
                 )
             }
@@ -236,13 +246,15 @@ private fun OpenSurfaceBanner(
                 .clip(RoundedCornerShape(ScoutDimens.tileCorner))
                 .background(ScoutKarooColors.Brand)
                 .clickable(role = Role.Button, onClick = onEnd)
-                .padding(horizontal = ScoutSpacing.lg, vertical = ScoutSpacing.md),
+                .padding(horizontal = ScoutSpacing.md, vertical = ScoutSpacing.sm),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
             text = stringResource(R.string.surface_open_banner, label),
-            style = ScoutType.tileLabel.copy(fontSize = 18.sp),
+            style = ScoutType.tileLabel.copy(fontSize = 16.sp, lineHeight = 18.sp),
             color = ScoutKarooColors.TextOnBrand,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
             modifier = Modifier.weight(1f),
         )
         Text(
@@ -364,7 +376,7 @@ private fun TagTile(
             else -> ScoutKarooColors.TextOnBrand
         }
     val shape = RoundedCornerShape(ScoutDimens.tileCorner)
-    Box(
+    BoxWithConstraints(
         modifier =
             modifier
                 .clip(shape)
@@ -374,11 +386,22 @@ private fun TagTile(
                 .border(2.dp, color, shape)
                 .clickable(role = Role.Button, onClick = onClick),
     ) {
+        // A Karoo is ~256×427 dp: tiles are ~112 dp wide and the 5-row pickers
+        // make them short. Shrink the label (and the corner count) rather than
+        // clip it or break a word like RESUPPLY mid-word.
+        val compact = maxHeight < COMPACT_TILE_HEIGHT || maxWidth < COMPACT_TILE_WIDTH
+        val labelStyle =
+            if (compact) {
+                ScoutType.tileLabel.copy(fontSize = 16.sp, lineHeight = 18.sp)
+            } else {
+                ScoutType.tileLabel
+            }
+        val countStyle = if (compact) ScoutType.tileCount.copy(fontSize = 16.sp) else ScoutType.tileCount
         Column(
             modifier =
                 Modifier
                     .fillMaxSize()
-                    .padding(ScoutSpacing.sm),
+                    .padding(if (compact) ScoutSpacing.xs else ScoutSpacing.sm),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
@@ -391,22 +414,22 @@ private fun TagTile(
             }
             Text(
                 text = label,
-                style = ScoutType.tileLabel,
+                style = labelStyle,
                 color = content,
                 textAlign = TextAlign.Center,
-                maxLines = 2,
+                maxLines = if (compact) 1 else 2,
                 overflow = TextOverflow.Ellipsis,
             )
         }
         if (count > 0) {
             Text(
                 text = count.toString(),
-                style = ScoutType.tileCount,
+                style = countStyle,
                 color = content,
                 modifier =
                     Modifier
                         .align(Alignment.TopEnd)
-                        .padding(horizontal = ScoutSpacing.md),
+                        .padding(horizontal = ScoutSpacing.sm),
             )
         }
         if (countdownSec > 0) {
@@ -420,5 +443,47 @@ private fun TagTile(
                         .padding(horizontal = ScoutSpacing.md, vertical = ScoutSpacing.sm),
             )
         }
+    }
+}
+
+private fun previewModel(mode: UiMode, openSurface: Boolean = false): TaggingUiModel {
+    val tiles = Tiles.forMode(mode)
+    return TaggingUiModel(
+        scout =
+            ScoutUiState(
+                mode = mode,
+                timer = TimerState.RUNNING,
+                tiles = tiles,
+                title = Tiles.titleFor(mode),
+                tileCounts = List(tiles.size) { if (mode == UiMode.GRID && it == 0) 2 else 0 },
+                tagTotal = 2,
+                radarLive = true,
+                carCount = 12,
+                lastCarSpeedKph = 58,
+                openSurfaceDetail = if (openSurface) Surface.COBBLES else Surface.NONE,
+                openSurfaceLabel = if (openSurface) Tiles.surfaceLabel(Surface.COBBLES) else null,
+            ),
+    )
+}
+
+@KarooPreview
+@Composable
+private fun TaggingGridPreview() {
+    ScoutKarooTheme {
+        TaggingScreen(previewModel(UiMode.GRID), onTileTap = {}, onEndOpenSurface = {}, onDismissMessage = {})
+    }
+}
+
+/** Worst case: 10-tile surface picker plus the open-stretch banner. */
+@KarooPreview
+@Composable
+private fun TaggingSurfacePickerPreview() {
+    ScoutKarooTheme {
+        TaggingScreen(
+            previewModel(UiMode.SURFACE, openSurface = true),
+            onTileTap = {},
+            onEndOpenSurface = {},
+            onDismissMessage = {},
+        )
     }
 }
