@@ -140,4 +140,4 @@ later.
 - [SHARING.md](SHARING.md) — optional post-ride upload of the **FIT** (not this
   zip) when a port implements sharing
 - Android storage/share today: [`Android/docs/TECHNICAL.md`](../Android/docs/TECHNICAL.md) §9
-- iPhone: [`iPhone/`](../iPhone/) (same bundle when the port ships)
+- iPhone: [`iPhone/`](../iPhone/) (same bundle; BLE radar, UUID device ids)

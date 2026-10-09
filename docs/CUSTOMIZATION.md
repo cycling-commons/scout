@@ -19,6 +19,16 @@ which Atlas URL a build talks to**.
 
 Both override files are listed in the repo root [`.gitignore`](../.gitignore).
 
+## Quick reference (iPhone)
+
+| What | Committed template | Your copy (gitignored) | Rebuild needed? |
+| --- | --- | --- | --- |
+| In-app help text & links | `iPhone/help/help.example.json` | `iPhone/help/help.json` → copy into `Scout/Resources/help.json` | yes |
+| Legal / safety overlay | `iPhone/help/legal.example.json` | `iPhone/help/legal.json` → `Scout/Resources/legal.json` | yes |
+| Brand images | `iPhone/brand-fallback/*` | `Brand/` overrides | yes |
+| Atlas instance URL & label | `iPhone/.env.example` | `iPhone/.env.dev.local` → `Scout/Resources/instance.json` | yes |
+| App bundle / App Store | — | change `PRODUCT_BUNDLE_IDENTIFIER`, assets | yes (+ code) |
+
 ---
 
 ## 1. In-app help
@@ -167,7 +177,8 @@ Help and instance URL are the main **no-code** customisation paths on Android.
 | --- | --- |
 | **Android** | `help.json` + `.env.dev.local` (this doc) |
 | **Garmin** | No bundled help JSON yet; store fork rules in `Garmin/docs/PUBLISHING.md` |
-| **Karoo / iPhone** | Not started — should follow the same idea: one committed example, one gitignored override, one bundled config |
+| **iPhone** | Same pattern as Android: `iPhone/help/*.example.json`, `iPhone/.env.example`, copy into `Scout/Resources/` (this doc, Quick reference) |
+| **Karoo** | Not started — should follow the same idea: one committed example, one gitignored override, one bundled config |
 
 ---
 

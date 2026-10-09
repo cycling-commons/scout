@@ -32,7 +32,7 @@ root doc (SPEC or DATA-FORMAT).
 | [Garmin/](Garmin/) | Connect IQ data field (reference implementation, v1.0 shipped) |
 | [Android/](Android/) | Phone app · [setup](Android/docs/SETUP.md) · [permissions](Android/docs/PERMISSIONS.md) · [tech](Android/docs/TECHNICAL.md) · [testing](Android/docs/TESTING.md) |
 | [Hammerhead-Karoo/](Hammerhead-Karoo/) | Karoo port — not started |
-| [iPhone/](iPhone/) | iOS port — not started|
+| [iPhone/](iPhone/) | Phone app · [setup](iPhone/docs/SETUP.md) · [tech](iPhone/docs/TECHNICAL.md) · [testing](iPhone/docs/TESTING.md) |
 
 Radar pairing policy (all ports): **native ANT+ when available, otherwise
 Bluetooth LE**. See [SPEC §8](docs/SPEC.md#8-radar).
@@ -45,11 +45,13 @@ Platforms version **independently**. Git tags are prefixed so they never collide
 | --- | --- |
 | `android/vX.Y.Z` | `versionName` in `Android/app/build.gradle.kts` |
 | `garmin/vX.Y.Z` | version in [Garmin/CHANGELOG.md](Garmin/CHANGELOG.md) (entered in the Connect IQ store) |
+| `iphone/vX.Y.Z` | `MARKETING_VERSION` in [iPhone/Scout.xcodeproj](iPhone/Scout.xcodeproj) |
 
 ```sh
 git tag -a android/v1.0.2 -m "Android 1.0.2"
 git tag -a garmin/v1.0.1 -m "Connect IQ 1.0.1"
-git push origin android/v1.0.2 garmin/v1.0.1
+git tag -a iphone/v1.0.0 -m "iPhone 1.0.0"
+git push origin android/v1.0.2 garmin/v1.0.1 iphone/v1.0.0
 ```
 
 Legacy unprefixed `v1.0.0` is the first Garmin store release; prefer `garmin/v…`

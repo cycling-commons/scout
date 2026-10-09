@@ -22,7 +22,7 @@ stay in the root docs — do not fork them here. For installing tools, see
 
 ### Non-goals (v1)
 
-- iOS build (no Mac in the workflow yet) — leave `iPhone/` stubbed.
+- Kotlin Multiplatform extraction (iPhone is a Swift port; see `iPhone/`).
 - Kotlin Multiplatform extraction (may come later; keep domain code separable).
 - Maps, cloud sync, in-app Atlas upload.
 - Supporting button-only / non-touch primary UI.
