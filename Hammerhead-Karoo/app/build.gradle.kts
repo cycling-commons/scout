@@ -18,7 +18,12 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
+            // Beta: signed with the local debug key so it installs over a debug
+            // build. Switch to a real release keystore before public distribution
+            // (docs/PUBLISHING.md).
+            signingConfig = signingConfigs.getByName("debug")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
@@ -40,6 +45,12 @@ android {
     buildFeatures {
         compose = true
     }
+
+    lint {
+        // lintVital crashes analysing the composite karoo-ext build (its AGP/lint
+        // version differs from ours). Run `:app:lintDebug` for real lint checks.
+        checkReleaseBuilds = false
+    }
 }
 
 dependencies {
@@ -49,6 +60,8 @@ dependencies {
     implementation(libs.bundles.androidx.lifecycle)
     implementation(libs.androidx.activity.compose)
     implementation(libs.bundles.compose.ui)
+    // Preview tooling only in debug: it adds an exported PreviewActivity.
+    debugImplementation(libs.androidx.compose.ui.tooling)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.coroutines.core)
 
