@@ -14,7 +14,7 @@ repo. Distribution is **APK-based**.
 | Channel | Audience | How |
 | --- | --- | --- |
 | **Sideload (debug / beta)** | Developers, early testers | Companion app or `adb install` |
-| **GitHub Releases** | OSS community | Attach `app-release.apk` to a tagged release |
+| **GitHub Releases** | OSS community, beta testers | Push a `karoo/vX.Y.Z` tag; CI publishes the release ([below](#github-releases-ci)) |
 | **Native Extension Library** | General Karoo riders | Hammerhead-curated on-device catalog (submission TBD) |
 
 Curated list context: [awesome-karoo](https://github.com/timklge/awesome-karoo),
@@ -30,7 +30,7 @@ Official guide: [Companion App Sideloading](https://support.hammerhead.io/hc/en-
 
 Typical flow:
 
-1. Publish `app-release.apk` (or share a CI artifact) at a stable URL.
+1. Publish the APK at a stable URL (the GitHub release asset link).
 2. On the phone, open the APK link → **Share** → **Hammerhead Companion**.
 3. On Karoo, review the prompt → **Install**.
 4. Launch Scout from the app drawer.
@@ -52,18 +52,57 @@ new APK via the same sideload path.
 
 ## Release builds
 
-When `Hammerhead-Karoo/app/` exists:
-
 ```sh
 cd Hammerhead-Karoo
 ./gradlew :app:assembleRelease
 ```
 
-Sign with your chosen release keystore (standard Android). Store the keystore
-outside the repo; back it up — losing it blocks Play-style upgrade paths even
-though Karoo sideload does not enforce upload keys.
+Output: `app/build/outputs/apk/release/app-release.apk` (R8 mapping in
+`app/build/outputs/mapping/release/mapping.txt`).
 
-Output: `app/build/outputs/apk/release/app-release.apk`
+Signing: when `KAROO_KEYSTORE_FILE`, `KAROO_KEYSTORE_PASSWORD`, `KAROO_KEY_ALIAS`
+and `KAROO_KEY_PASSWORD` are set, the release is signed with that key; otherwise
+it falls back to the local debug key. Android only installs an update over an
+existing app signed with the **same** key, so every published release must use
+one key. Store the keystore outside the repo and back it up.
+
+### GitHub Releases (CI)
+
+[`.github/workflows/karoo-release.yml`](../../.github/workflows/karoo-release.yml)
+runs on every pushed `karoo/v*` tag. It checks the tag against `versionName`,
+builds a signed release APK, and publishes a GitHub release with:
+
+- `scout-karoo-<version>.apk`: its download link is what testers open for the
+  Companion install
+- `Scout-Karoo-<version>.zip`: APK + `START-HERE.html` (from
+  [`tester/START-HERE.html`](../tester/START-HERE.html), with the version and
+  APK link filled in) + `fit-viewer.html`
+
+A tag with a suffix (`karoo/v0.1.0-beta`) becomes a pre-release. The R8 mapping
+is kept as a workflow artifact for decoding crash traces.
+
+One-time setup: add these repository secrets (Settings → Secrets and variables →
+Actions):
+
+| Secret | Value |
+| --- | --- |
+| `KAROO_KEYSTORE_BASE64` | the keystore file, base64-encoded |
+| `KAROO_KEYSTORE_PASSWORD` | keystore password |
+| `KAROO_KEY_ALIAS` | key alias |
+| `KAROO_KEY_PASSWORD` | key password |
+
+Create a key with
+`keytool -genkeypair -keystore scout-karoo.keystore -alias scout-karoo -keyalg RSA -keysize 2048 -validity 10000`,
+then encode it with `base64 -w0 scout-karoo.keystore` (PowerShell:
+`[Convert]::ToBase64String([IO.File]::ReadAllBytes("scout-karoo.keystore"))`).
+
+Releasing:
+
+```sh
+# bump versionCode / versionName in app/build.gradle.kts first
+git tag -a karoo/v0.1.0-beta -m "Karoo 0.1.0 beta"
+git push origin karoo/v0.1.0-beta
+```
 
 ### Versioning
 

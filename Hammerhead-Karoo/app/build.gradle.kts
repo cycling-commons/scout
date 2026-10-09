@@ -16,14 +16,25 @@ android {
         versionName = "0.1.0"
     }
 
+    signingConfigs {
+        // Release key from the environment (CI: .github/workflows/karoo-release.yml).
+        System.getenv("KAROO_KEYSTORE_FILE")?.let { keystore ->
+            create("release") {
+                storeFile = file(keystore)
+                storePassword = System.getenv("KAROO_KEYSTORE_PASSWORD")
+                keyAlias = System.getenv("KAROO_KEY_ALIAS")
+                keyPassword = System.getenv("KAROO_KEY_PASSWORD")
+            }
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
-            // Beta: signed with the local debug key so it installs over a debug
-            // build. Switch to a real release keystore before public distribution
-            // (docs/PUBLISHING.md).
-            signingConfig = signingConfigs.getByName("debug")
+            // Without a release key (local builds) fall back to the debug key so
+            // it installs over a debug build (docs/PUBLISHING.md).
+            signingConfig = signingConfigs.findByName("release") ?: signingConfigs.getByName("debug")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",

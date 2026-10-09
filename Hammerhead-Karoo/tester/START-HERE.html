@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Scout for Karoo beta</title>
+<style>
+  :root { --bg:#ffffff; --fg:#1b1f24; --muted:#5b6470; --accent:#c25b12; --card:#f5f3ef; --line:#e2ddd5; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#14181c; --fg:#e8e6e3; --muted:#9aa3ad; --accent:#f08a3e; --card:#1d2227; --line:#2c3238; }
+  }
+  body { background:var(--bg); color:var(--fg); font:16px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif; margin:0; }
+  main { max-width:760px; margin:0 auto; padding:24px 16px 64px; }
+  h1 { font-size:1.8rem; margin:0 0 4px; }
+  h2 { font-size:1.25rem; margin:36px 0 8px; padding-top:12px; border-top:1px solid var(--line); }
+  h3 { font-size:1.05rem; margin:20px 0 6px; }
+  .sub { color:var(--muted); margin:0 0 20px; }
+  .note { background:var(--card); border-left:4px solid var(--accent); padding:10px 14px; border-radius:4px; margin:14px 0; }
+  code { background:var(--card); padding:1px 5px; border-radius:3px; font-size:.92em; }
+  table { border-collapse:collapse; width:100%; margin:8px 0; font-size:.95rem; }
+  th, td { text-align:left; padding:6px 8px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { color:var(--muted); font-weight:600; }
+  li { margin:4px 0; }
+  a, a:visited { color:var(--accent); font-weight:600; text-decoration:underline; text-underline-offset:2px; }
+  .url { word-break:break-all; }
+</style>
+</head>
+<body>
+<main>
+<h1>Scout for Karoo: beta test</h1>
+<p class="sub">Version @VERSION@ · thank you for testing!</p>
+
+<p>Scout lets you tag things you see on a ride (potholes, closures, road surface, resupply, scenery) with a tap on your Karoo. The tags, and readings from a rear radar if you have one, are saved inside your ride's normal <code>.fit</code> file. Scout has no account and doesn't upload anything.</p>
+
+<div class="note"><strong>This is the first test on a real Karoo.</strong> Things may break, and that's exactly what we want to find out. A crash or something odd is a useful result. Just note what you were doing when it happened.</div>
+
+<h2>What's in this package</h2>
+<table>
+  <tr><th>File</th><th>What it is</th></tr>
+  <tr><td><code>scout-karoo-@VERSION@.apk</code></td><td>The Scout app to install on your Karoo</td></tr>
+  <tr><td><code>START-HERE.html</code></td><td>This guide</td></tr>
+  <tr><td><code>fit-viewer.html</code></td><td>Optional: open it in a browser on your computer to look at Scout's data in your ride file</td></tr>
+</table>
+
+<h2>1. Before you start</h2>
+<ul>
+  <li>A <strong>Hammerhead Karoo 2 or Karoo 3</strong>, updated to Karoo OS <strong>1.538.2049 or newer</strong>.</li>
+  <li>Optional: a <strong>rear radar</strong> (Garmin Varia or similar ANT+ radar). Scout works without one, but radar data is half of what we're testing.</li>
+</ul>
+
+<h2>2. Install Scout</h2>
+<h3>Karoo 3: with the Hammerhead Companion app on your phone</h3>
+<ol>
+  <li>On your phone, open this download link: <a href="@APK_URL@">Scout @VERSION@ APK</a>. Use the link, not the file inside the zip: the Companion app installs from a link. To type or paste it instead:<br><code class="url">@APK_URL@</code></li>
+  <li>Use your phone's <strong>Share</strong> button and choose <strong>Hammerhead Companion</strong>.</li>
+  <li>On the Karoo, accept the prompt and tap <strong>Install</strong>.</li>
+</ol>
+<p>Hammerhead's guide: <a href="https://support.hammerhead.io/hc/en-us/articles/31576497036827-Companion-App-Sideloading">Companion App Sideloading</a>.</p>
+
+<h3>Karoo 2 (or Karoo 3 via USB): with ADB on a computer</h3>
+<ol>
+  <li>Turn on USB debugging on the Karoo and connect it to your computer.</li>
+  <li>Run <code>adb install -r scout-karoo-@VERSION@.apk</code> from the folder with this package.</li>
+</ol>
+
+<p>Afterwards, <strong>Scout</strong> appears in the Karoo app list.</p>
+
+<h2>3. One-time setup on the Karoo</h2>
+<ol>
+  <li><strong>Add the Scout field to a ride profile (required).</strong> Edit a data page in the profile you'll ride with and add the <strong>Scout</strong> field. Give it a decent-sized slot: it's a graphical field. <em>Without this field, Scout doesn't record anything.</em> You don't have to look at that page while riding; Scout records in the background on regardless of which page you view.</li>
+  <li><strong>Assign the Tag ride button (recommended).</strong> In your controller / button settings, assign the bonus action <strong>Tag ride</strong> to a button. Pressing it opens the tagging screen. You can also open it from the Scout app → <strong>Open tagging</strong>.</li>
+  <li><strong>Pair your radar (optional).</strong> Pair it as usual in Karoo <strong>Settings → Sensors</strong>. Scout has no pairing screen of its own.</li>
+</ol>
+
+<h2>4. Test rides (about 15 minutes each)</h2>
+<p>You only start and stop the ride on the Karoo, as usual. Scout follows along by itself.</p>
+
+<h3>Ride A: recording without tagging</h3>
+<ol>
+  <li>Start a ride. For the first few minutes, stay on a page <strong>without</strong> the Scout field.</li>
+  <li>If you have a radar, ride somewhere cars pass you.</li>
+  <li>Swipe to the Scout page and check that it shows <strong>recording</strong>, a tag count, and a radar line (e.g. <em>Radar</em> or <em>3 cars</em>).</li>
+  <li>End and save the ride.</li>
+</ol>
+
+<h3>Ride B: tagging</h3>
+<ol>
+  <li>Start a ride, then press your <strong>Tag ride</strong> button.</li>
+  <li>Tap a few tiles. You should feel a buzz or hear a beep on every tag.</li>
+  <li>Try a tile that opens a sub-menu (e.g. Danger), pick an option, then <strong>close the screen straight away</strong>. The tag should still be saved.</li>
+  <li><strong>Undo:</strong> tap the same tile again quickly; you get a different buzz.</li>
+  <li><strong>Surface:</strong> start a surface stretch and later end it with the <em>End</em> banner.</li>
+  <li>Go back to your normal pages, ride a bit, end the ride.</li>
+</ol>
+
+<h3>Ride C: radar car count (if you have a radar)</h3>
+<ol>
+  <li>Ride a road with some traffic and roughly <strong>count the cars that overtake you</strong>.</li>
+  <li>At the end, compare your count with the <em>cars</em> number on the Scout field.</li>
+</ol>
+
+<h2>5. What to send back</h2>
+<ul>
+  <li><strong>Karoo model</strong> (2 or 3) and <strong>Karoo OS version</strong> (Settings → About).</li>
+  <li>For each ride: radar yes/no, roughly how many tags you made, and, for Ride C, your car count and Scout's.</li>
+  <li><strong>The ride <code>.fit</code> files.</strong> Get them from the Hammerhead dashboard (export activity), a service you sync to, or over USB.</li>
+  <li>Anything odd: crashes, a Scout field that stays on <em>idle</em> while riding, missing buzzes, a frozen screen. Photos of the Karoo screen help a lot.</li>
+</ul>
+
+<h2>6. Optional: look at your data</h2>
+<p>Open <code>fit-viewer.html</code> in a browser on your computer and load a ride <code>.fit</code> file. While you were recording, each second should have the Scout columns <code>poi_type</code>, <code>poi_detail</code>, <code>radar_count</code>, <code>radar_near</code> and <code>radar_speed</code>. Seconds where you tagged something show non-zero <code>poi_type</code>.</p>
+
+<h2>Known limitations in this beta</h2>
+<ul>
+  <li><code>radar_speed</code> in the file is always <strong>255</strong> (meaning "unknown"): Karoo doesn't give apps the radar's car speeds. The car speed on screen is an estimate.</li>
+  <li>Tagging only works while the ride is recording, not while paused.</li>
+  <li>Tags can't be made from the small Scout field; use the Tag ride screen.</li>
+</ul>
+</main>
+</body>
+</html>

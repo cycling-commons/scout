@@ -46,6 +46,7 @@ Platforms version **independently**. Git tags are prefixed so they never collide
 | `android/vX.Y.Z` | `versionName` in `Android/app/build.gradle.kts` |
 | `garmin/vX.Y.Z` | version in [Garmin/CHANGELOG.md](Garmin/CHANGELOG.md) (entered in the Connect IQ store) |
 | `iphone/vX.Y.Z` | `MARKETING_VERSION` in [iPhone/Scout.xcodeproj](iPhone/Scout.xcodeproj) |
+| `karoo/vX.Y.Z` | `versionName` in `Hammerhead-Karoo/app/build.gradle.kts`; pushing it publishes a GitHub release ([how](Hammerhead-Karoo/docs/PUBLISHING.md#github-releases-ci)) |
 
 ```sh
 git tag -a android/v1.0.2 -m "Android 1.0.2"

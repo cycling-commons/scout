@@ -1,0 +1,97 @@
+name: Karoo release
+
+# Push a karoo/vX.Y.Z tag (or karoo/vX.Y.Z-beta for a pre-release) to build a
+# signed APK and publish it as a GitHub release. See Hammerhead-Karoo/docs/PUBLISHING.md.
+on:
+  push:
+    tags: ['karoo/v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build and publish
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Check tag against versionName
+        id: version
+        run: |
+          version="${GITHUB_REF_NAME#karoo/v}"
+          name=$(sed -n 's/.*versionName = "\(.*\)".*/\1/p' Hammerhead-Karoo/app/build.gradle.kts)
+          if [ "${version%%-*}" != "$name" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match versionName $name in Hammerhead-Karoo/app/build.gradle.kts"
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Fetch karoo-ext
+        run: git clone --depth 1 --branch 1.1.9 https://github.com/hammerheadnav/karoo-ext.git Hammerhead-Karoo/.deps/karoo-ext
+
+      - name: Decode release key
+        env:
+          KAROO_KEYSTORE_BASE64: ${{ secrets.KAROO_KEYSTORE_BASE64 }}
+        run: |
+          if [ -z "$KAROO_KEYSTORE_BASE64" ]; then
+            echo "::error::Secret KAROO_KEYSTORE_BASE64 is not set (see Hammerhead-Karoo/docs/PUBLISHING.md)"
+            exit 1
+          fi
+          echo "$KAROO_KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/karoo.keystore"
+
+      - name: Build release APK
+        working-directory: Hammerhead-Karoo
+        env:
+          KAROO_KEYSTORE_FILE: ${{ runner.temp }}/karoo.keystore
+          KAROO_KEYSTORE_PASSWORD: ${{ secrets.KAROO_KEYSTORE_PASSWORD }}
+          KAROO_KEY_ALIAS: ${{ secrets.KAROO_KEY_ALIAS }}
+          KAROO_KEY_PASSWORD: ${{ secrets.KAROO_KEY_PASSWORD }}
+        run: |
+          chmod +x gradlew
+          ./gradlew :app:assembleRelease --no-daemon
+
+      - name: Package tester bundle
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          apk="scout-karoo-$VERSION.apk"
+          pkg="Scout-Karoo-$VERSION"
+          url="https://github.com/$GITHUB_REPOSITORY/releases/download/$GITHUB_REF_NAME/$apk"
+          mkdir -p "dist/$pkg"
+          cp Hammerhead-Karoo/app/build/outputs/apk/release/app-release.apk "dist/$apk"
+          cp "dist/$apk" "dist/$pkg/"
+          sed -e "s|@VERSION@|$VERSION|g" -e "s|@APK_URL@|$url|g" \
+            Hammerhead-Karoo/tester/START-HERE.html > "dist/$pkg/START-HERE.html"
+          cp tools/fit-viewer.html "dist/$pkg/"
+          (cd dist && zip -qr "$pkg.zip" "$pkg")
+          cat > dist/notes.md <<EOF
+          **Install on a Karoo 3:** open this link on your phone, tap Share, choose Hammerhead Companion:
+          $url
+
+          **Karoo 2 / ADB:** \`adb install -r $apk\`
+
+          Full tester guide (setup, test rides, what to send back): START-HERE.html inside \`$pkg.zip\`.
+          EOF
+
+      - name: Keep R8 mapping
+        uses: actions/upload-artifact@v4
+        with:
+          name: mapping-${{ steps.version.outputs.version }}
+          path: Hammerhead-Karoo/app/build/outputs/mapping/release/mapping.txt
+
+      - name: Publish GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          flags=""
+          case "$VERSION" in *-*) flags="--prerelease" ;; esac
+          gh release create "$GITHUB_REF_NAME" $flags --verify-tag \
+            --title "Scout for Karoo $VERSION" \
+            --notes-file dist/notes.md \
+            "dist/scout-karoo-$VERSION.apk" "dist/Scout-Karoo-$VERSION.zip"
