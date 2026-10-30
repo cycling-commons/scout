@@ -76,7 +76,7 @@ jobs:
 
           **Karoo 2 / ADB:** \`adb install -r $apk\`
 
-          Full tester guide (setup, test rides, what to send back): START-HERE.html inside \`$pkg.zip\`.
+          Tester sheet (download link, test rides, what to send back): START-HERE.html inside \`$pkg.zip\`.
           User manual (install, setup, tiles, troubleshooting): MANUAL.html in the same zip.
           EOF
 
