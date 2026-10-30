@@ -77,3 +77,6 @@ node tools/test-fit-parser.mjs tools/fit-viewer.html
 ## License
 
 [MIT](LICENSE) © BikeCoders (see each platform folder for its copy where applicable).
+
+The Scout name and logos are not covered by the MIT licence; apps built from
+this code need their own name and icon. See [TRADEMARKS.md](TRADEMARKS.md).

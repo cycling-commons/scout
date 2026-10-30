@@ -72,7 +72,7 @@ jobs:
           cp "dist/$apk" "dist/$pkg/"
           # Update manifest (karoo-ext app/manifest.json format): a Karoo installed
           # from its URL checks latestVersionCode and offers the APK as an update.
-          cp Brand/logo-square-transparant.png dist/scout-karoo-icon.png
+          cp Hammerhead-Karoo/docs/scout-karoo-icon.png dist/scout-karoo-icon.png
           jq -n \
             --arg version "$VERSION" \
             --argjson code "$VERSION_CODE" \
