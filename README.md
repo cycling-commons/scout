@@ -46,13 +46,15 @@ Platforms version **independently**. Git tags are prefixed so they never collide
 | `android/vX.Y.Z` | `versionName` in `Android/app/build.gradle.kts` |
 | `garmin/vX.Y.Z` | version in [Garmin/CHANGELOG.md](Garmin/CHANGELOG.md) (entered in the Connect IQ store) |
 | `iphone/vX.Y.Z` | `MARKETING_VERSION` in [iPhone/Scout.xcodeproj](iPhone/Scout.xcodeproj) |
-| `karoo/vX.Y.Z` | `versionName` in `Hammerhead-Karoo/app/build.gradle.kts`; pushing it publishes a GitHub release ([how](Hammerhead-Karoo/docs/PUBLISHING.md#github-releases-ci)) |
+| `karoo/vX.Y.Z` | `versionName` in `Hammerhead-Karoo/app/build.gradle.kts`; pushing it publishes a GitHub release ([how](Hammerhead-Karoo/docs/PUBLISHING.md#github-releases-ci)). A suffix such as `karoo/v0.1.1-beta` publishes a pre-release; only the part before `-` must match `versionName`. |
 
 ```sh
-git tag -a android/v1.0.2 -m "Android 1.0.2"
-git tag -a garmin/v1.0.1 -m "Connect IQ 1.0.1"
-git tag -a iphone/v1.0.0 -m "iPhone 1.0.0"
-git push origin android/v1.0.2 garmin/v1.0.1 iphone/v1.0.0
+git tag -a android/vX.Y.Z -m "Android X.Y.Z"
+git tag -a garmin/vX.Y.Z -m "Connect IQ X.Y.Z"
+git tag -a iphone/vX.Y.Z -m "iPhone X.Y.Z"
+git tag -a karoo/vX.Y.Z-beta -m "Karoo X.Y.Z beta"
+git push origin main            # the tagged commit must be on GitHub
+git push origin karoo/vX.Y.Z-beta   # push only the tags you created
 ```
 
 Legacy unprefixed `v1.0.0` is the first Garmin store release; prefer `garmin/v…`
