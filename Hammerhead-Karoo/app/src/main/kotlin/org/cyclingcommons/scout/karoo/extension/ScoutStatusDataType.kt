@@ -288,7 +288,7 @@ class ScoutStatusDataType(
         // Mirrors ScoutKarooColors / PALE_TILE_LUMINANCE (Compose types aren't usable in RemoteViews).
         private const val OPAQUE = 0xFF000000.toInt()
         private const val SCREEN_BG = 0xFFF0F0F0.toInt()
-        private const val BRAND = 0xFFD1421F.toInt()
+        private const val BRAND = 0xFFF0311B.toInt()
         private const val TEXT_PRIMARY = 0xFF1A1A1A.toInt()
         private const val TEXT_ON_BRAND = 0xFFFFFFFF.toInt()
         private const val IDLE_ALPHA = 0.22f

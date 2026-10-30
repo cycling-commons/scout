@@ -9,9 +9,9 @@ import androidx.compose.ui.unit.sp
 object ScoutKarooColors {
     val Screen = Color(0xFFF0F0F0)
     val Surface = Color(0xFFFFFFFF)
-    val Brand = Color(0xFFD1421F)
+    val Brand = Color(0xFFF0311B)
     val Recording = Color(0xFF2E8B57)
-    val IdleDot = Color(0xFFD1421F)
+    val IdleDot = Color(0xFFF0311B)
     val TextPrimary = Color(0xFF1A1A1A)
     val TextSecondary = Color(0xFF666666)
     val TextOnBrand = Color(0xFFFFFFFF)

@@ -18,7 +18,7 @@ struct ScoutColorScheme {
     let tileIdleAlpha: Double
 }
 
-private let vermillion = Color(red: 240 / 255, green: 50 / 255, blue: 28 / 255)
+private let vermillion = Color(red: 240 / 255, green: 49 / 255, blue: 27 / 255)
 private let ink = Color(red: 20 / 255, green: 20 / 255, blue: 26 / 255)
 
 private let darkColors = ScoutColorScheme(

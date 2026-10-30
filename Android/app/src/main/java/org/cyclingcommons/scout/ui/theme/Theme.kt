@@ -52,7 +52,7 @@ data class ScoutColorScheme(
     val tileIdleAlpha: Float,
 )
 
-private val Vermillion = Color(0xFFF0321C)
+private val Vermillion = Color(0xFFF0311B)
 private val Ink = Color(0xFF14141A)
 
 /** Keep [Screen] in step with `@color/screen_background_dark`. */

@@ -82,7 +82,7 @@ struct ScoutDisc: View {
 
     var body: some View {
         ZStack {
-            Circle().fill(Color(red: 240 / 255, green: 50 / 255, blue: 28 / 255))
+            Circle().fill(Color(red: 240 / 255, green: 49 / 255, blue: 27 / 255))
             ScoutMark(size: size, tint: .white)
         }
         .frame(width: size, height: size)

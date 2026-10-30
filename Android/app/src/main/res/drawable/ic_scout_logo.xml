@@ -6,7 +6,7 @@
     android:viewportWidth="108"
     android:viewportHeight="108">
     <path
-        android:fillColor="#F0321C"
+        android:fillColor="#F0311B"
         android:pathData="M54,54 m-54,0 a54,54 0 1,0 108,0 a54,54 0 1,0 -108,0 Z" />
     <!-- Separate annuli so the red disc reads between each ring. -->
     <path
@@ -26,7 +26,7 @@
                           M37,78.5 a17,6.2 0 1,0 34,0 a17,6.2 0 1,0 -34,0 Z" />
     <!-- Red cup at the pin tip (rings overlap this zone without it). -->
     <path
-        android:fillColor="#F0321C"
+        android:fillColor="#F0311B"
         android:pathData="M42.5,76.2 a11.5,4.5 0 1,0 23,0 a11.5,4.5 0 1,0 -23,0 Z" />
     <path
         android:fillColor="#FFFFFFFF"

@@ -6,7 +6,7 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
-private val ScoutRed = Color(0xFFD1421F)
+private val ScoutRed = Color(0xFFF0311B)
 
 private val LightColors =
     lightColorScheme(
