@@ -3,6 +3,9 @@ package org.cyclingcommons.scout.karoo.extension
 import android.content.Context
 import io.hammerhead.karooext.KarooSystemService
 import io.hammerhead.karooext.models.DataType
+import io.hammerhead.karooext.models.HardwareType
+import io.hammerhead.karooext.models.PlayBeepPattern
+import io.hammerhead.karooext.models.PlayBeepPattern.Tone
 import io.hammerhead.karooext.models.RideState
 import io.hammerhead.karooext.models.StreamState
 import kotlinx.coroutines.CoroutineScope
@@ -38,6 +41,7 @@ object ScoutExtensionRuntime {
     private var speedJob: Job? = null
     private var vehicleJob: Job? = null
     private var tickJob: Job? = null
+    private var feedbackJob: Job? = null
     private val vehicles = VehicleCounter()
 
     @Volatile
@@ -83,6 +87,7 @@ object ScoutExtensionRuntime {
         startSpeedStream(system)
         startVehicleLoop()
         startTickLoop()
+        startFeedback(system)
     }
 
     private fun stopLocked() {
@@ -92,6 +97,8 @@ object ScoutExtensionRuntime {
         vehicleJob = null
         tickJob?.cancel()
         tickJob = null
+        feedbackJob?.cancel()
+        feedbackJob = null
         rideStateConsumerId?.let { karooSystem?.removeConsumer(it) }
         rideStateConsumerId = null
         radarAdapter?.stop()
@@ -150,6 +157,30 @@ object ScoutExtensionRuntime {
                 }
             }
     }
+
+    /**
+     * One beep on the Karoo's own beeper per committed tag (ride-page field or Tag ride
+     * screen); undo gets a distinct two-tone pattern. Karoo has no vibration motor.
+     */
+    private fun startFeedback(system: KarooSystemService) {
+        feedbackJob?.cancel()
+        feedbackJob =
+            scope.launch {
+                ScoutSession.feedback.collect {
+                    system.dispatch(PlayBeepPattern(beepFor(system.hardwareType, it.undone)))
+                }
+            }
+    }
+
+    // Karoo 2's piezo is loudest near 4-5 kHz; Karoo 3 plays musical pitches cleanly
+    // (see the karoo-ext sample app).
+    private fun beepFor(hardware: HardwareType?, undone: Boolean): List<Tone> =
+        when (hardware) {
+            HardwareType.K2 ->
+                if (undone) listOf(Tone(5000, 90), Tone(null, 60), Tone(4000, 90)) else listOf(Tone(5000, 120))
+            else ->
+                if (undone) listOf(Tone(784, 90), Tone(null, 60), Tone(523, 90)) else listOf(Tone(1047, 120))
+        }
 
     private const val TICK_INTERVAL_MS = 200L
 }

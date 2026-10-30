@@ -53,10 +53,6 @@ data class TaggingUiModel(
 
 class TaggingViewModel(app: Application) : AndroidViewModel(app) {
 
-    private val feedback = RideFeedback(app)
-
-
-
     private val _ui = MutableStateFlow(TaggingUiModel())
 
     val ui: StateFlow<TaggingUiModel> = _ui.asStateFlow()
@@ -77,13 +73,8 @@ class TaggingViewModel(app: Application) : AndroidViewModel(app) {
 
         viewModelScope.launch {
 
-            ScoutSession.feedback.collect {
-
-                feedback.confirm(it.undone)
-
-                wake()
-
-            }
+            // ScoutExtensionRuntime beeps; this screen only redraws.
+            ScoutSession.redraw.collect { wake() }
 
         }
 
@@ -133,25 +124,7 @@ class TaggingViewModel(app: Application) : AndroidViewModel(app) {
 
         val now = System.currentTimeMillis()
 
-        val result =
-
-            ScoutSession.withController { c ->
-
-                if (c.timer != TimerState.RUNNING) {
-
-                    null
-
-                } else {
-
-                    c.onTileTap(index, now)
-
-                    Result.success(c.takeFeedback())
-
-                }
-
-            }
-
-        if (result == null) {
+        if (!ScoutSession.tapTile(index, now)) {
 
             _ui.update { it.copy(riderMessage = "idle") }
 
@@ -160,8 +133,6 @@ class TaggingViewModel(app: Application) : AndroidViewModel(app) {
             return
 
         }
-
-        result.getOrNull()?.let { feedback.confirm(it.undone) }
 
         publish(now)
 
@@ -175,13 +146,7 @@ class TaggingViewModel(app: Application) : AndroidViewModel(app) {
 
         val now = System.currentTimeMillis()
 
-        ScoutSession.withController { c ->
-
-            c.endOpenSurface(now)
-
-            c.takeFeedback()
-
-        }?.let { feedback.confirm(it.undone) }
+        ScoutSession.endOpenSurface(now)
 
         publish(now)
 
@@ -200,8 +165,6 @@ class TaggingViewModel(app: Application) : AndroidViewModel(app) {
 
 
     override fun onCleared() {
-
-        feedback.release()
 
         ScoutExtensionRuntime.release()
 

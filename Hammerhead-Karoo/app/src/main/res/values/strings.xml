@@ -7,11 +7,11 @@
     <string name="main_subtitle">Karoo extension for in-ride tagging into your activity FIT file.</string>
     <string name="main_open_tagging">Open tagging</string>
     <string name="main_ride_state">Karoo ride: %1$s</string>
-    <string name="main_extension_ready">Add the Scout data field to a ride profile page, then assign the Tag ride bonus action to a button.</string>
-    <string name="main_setup_steps">1. Ride profile → edit page → add Scout field.\n2. Controller → assign Tag ride.\n3. Start ride on Karoo (no Scout start/stop).</string>
+    <string name="main_extension_ready">Give the Scout data field its own ride profile page: it shows the tag tiles and you tap them right there. You can also assign the Tag ride bonus action to a button.</string>
+    <string name="main_setup_steps">1. Ride profile → edit page → add Scout field, full page (tap tiles to tag).\n2. Optional: controller → assign Tag ride.\n3. Start ride on Karoo (no Scout start/stop).</string>
     <string name="datatype_scout_status">Scout</string>
-    <string name="datatype_scout_status_description">Tag tally, radar cars, and ride status. FIT records on all pages while riding.</string>
-    <string name="field_open_tagging_hint">Bonus: Tag ride</string>
+    <string name="datatype_scout_status_description">Tag tiles you tap in-ride (half a page or more), or tag tally and radar in a small slot. FIT records on all pages while riding.</string>
+    <string name="field_open_tagging_hint">Tap to tag</string>
     <string name="field_surface_strip">rec. surface tap to END</string>
     <string name="tagging_idle_prompt">Start a ride on Karoo before tagging.</string>
     <string name="tagging_tag_count">%1$d tags</string>

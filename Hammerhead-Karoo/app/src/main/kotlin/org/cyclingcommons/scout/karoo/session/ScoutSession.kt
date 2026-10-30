@@ -6,12 +6,17 @@ import org.cyclingcommons.scout.domain.RadarObservation
 import org.cyclingcommons.scout.domain.ScoutController
 import org.cyclingcommons.scout.domain.TagFeedback
 import org.cyclingcommons.scout.domain.TimerState
+import org.cyclingcommons.scout.domain.UiMode
 import org.cyclingcommons.scout.karoo.fit.ScoutFitFields
 import io.hammerhead.karooext.models.FieldValue
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import java.util.concurrent.atomic.AtomicReference
 
 /**
@@ -34,8 +39,13 @@ object ScoutSession {
             onBufferOverflow = BufferOverflow.DROP_OLDEST,
         )
 
-    /** Confirm/undo feedback for tags committed off the UI thread (picker timeouts). */
+    /** Confirm/undo feedback for every committed tag; beeped by ScoutExtensionRuntime. */
     val feedback: SharedFlow<TagFeedback> = _feedback.asSharedFlow()
+
+    private val _redraw = MutableStateFlow(0L)
+
+    /** Bumped whenever tagging state changes, so open views redraw without waiting. */
+    val redraw: StateFlow<Long> = _redraw.asStateFlow()
 
     @Volatile
     var rideState: RideState = RideState.Idle
@@ -61,6 +71,43 @@ object ScoutSession {
                 is RideState.Idle -> c.stop()
             }
         }
+        requestRedraw()
+    }
+
+    /**
+     * Rider tapped tile [index] on the page shown in [expectedMode] (null = whatever is
+     * showing). Returns false when no ride is recording. A tap aimed at a page that has
+     * since changed (picker timed out between draw and tap) is dropped, not misfiled.
+     */
+    fun tapTile(index: Int, nowMs: Long, expectedMode: UiMode? = null): Boolean {
+        var recording = false
+        val committed =
+            withController { c ->
+                if (c.timer != TimerState.RUNNING) return@withController null
+                recording = true
+                if (expectedMode != null && c.snapshot(nowMs).mode != expectedMode) {
+                    return@withController null
+                }
+                c.onTileTap(index, nowMs)
+                c.takeFeedback()
+            }
+        committed?.let { _feedback.tryEmit(it) }
+        requestRedraw()
+        return recording
+    }
+
+    fun endOpenSurface(nowMs: Long) {
+        val committed =
+            withController { c ->
+                c.endOpenSurface(nowMs)
+                c.takeFeedback()
+            }
+        committed?.let { _feedback.tryEmit(it) }
+        requestRedraw()
+    }
+
+    fun requestRedraw() {
+        _redraw.update { it + 1 }
     }
 
     /**
@@ -69,11 +116,14 @@ object ScoutSession {
      * commits on time even after the Tag ride screen is closed.
      */
     fun tick(nowMs: Long) {
+        var changed = false
         val committed =
             withController { c ->
-                if (c.onTick(nowMs)) c.takeFeedback() else null
+                changed = c.onTick(nowMs)
+                if (changed) c.takeFeedback() else null
             }
         committed?.let { _feedback.tryEmit(it) }
+        if (changed) requestRedraw()
     }
 
     fun updateRadar(observation: RadarObservation) {
