@@ -16,14 +16,14 @@ while you are on **any** ride page, as long as Scout is on the ride profile.
 | --- | --- | --- |
 | Start/stop | Karoo/Garmin ride controls it | Same — Karoo `RideState` |
 | FIT + radar while on another screen | Yes (~1 Hz in data field service) | Yes — `ScoutExtension` + `fitFile="true"` |
-| Tile tagging | Only when Scout data field page is visible | Full-screen **Tag ride** UI (BonusAction or app) |
+| Tile tagging | Only when Scout data field page is visible | Tag tiles inside the Scout field (half page or more); full-screen **Tag ride** UI via small field tap, BonusAction, or app |
 | Open surface reminder | Bottom strip `rec. surface tap to END` on Scout field only | Same strip text on Scout field; Tag ride screen uses full banner |
 | Ride-page widget | Data field on a profile page | **Scout** graphical data field (`scout-status`) |
 | Radar pairing | Garmin sensor menu | Karoo **Settings → Sensors** (ANT+ radar) |
 
 **Important:** Add the **Scout** data field to at least one page on your ride profile.
 That enrolls the extension for the ride. You can swipe to other pages — FIT and radar
-should still log. Open **Tag ride** only when you want to tap tiles.
+should still log. Swipe to the Scout page and tap the tiles there (or press **Tag ride**).
 
 ---
 
@@ -31,8 +31,8 @@ should still log. Open **Tag ride** only when you want to tap tiles.
 
 1. **Install APK** — Companion sideload or `adb install -r app-debug.apk` ([SETUP.md](SETUP.md)).
 2. **Extensions** — confirm Scout appears under Karoo extensions / installed apps.
-3. **Ride profile** — edit a data page → add field **Scout** (graphical).
-4. **Controller** — assign bonus action **Tag ride** to a hardware button (recommended).
+3. **Ride profile** — add a data page with one field, **Scout** (graphical), so it fills the page and shows the tag tiles.
+4. **Controller (optional)** — assign bonus action **Tag ride** to a hardware button.
 5. **Radar (optional)** — pair Varia or compatible ANT+ radar in Karoo sensor settings.
 
 ---
@@ -53,8 +53,8 @@ should still log. Open **Tag ride** only when you want to tap tiles.
 ### B. Tagging
 
 1. Start a new ride.
-2. Press **Tag ride** (bonus action) or open Scout app → **Open tagging**.
-3. Tap several tiles (e.g. surface, POI). Confirm haptic/tone on tag.
+2. Swipe to the Scout page and tap tiles there (or press **Tag ride** / open Scout app → **Open tagging**).
+3. Tap several tiles (e.g. surface, POI). Confirm a beep on each tag (Karoo beeper), and a two-tone beep on undo. Note whether it beeps with Karoo sounds off.
 4. Test undo: tap same tile within undo window.
 5. Return to map/data pages — tagging UI can close; ride keeps recording.
 6. End ride.
@@ -88,7 +88,7 @@ should still log. Open **Tag ride** only when you want to tap tiles.
 | Ride start | Scout state → recording, no manual start | Stays idle |
 | FIT fields | Present in fit-viewer while recording | Missing entirely |
 | Background pages | FIT rows while on non-Scout pages | Gaps only when on other pages |
-| Tag ride UI | Tiles respond, tallies increment | Crashes, no haptic, idle message while riding |
+| Tag ride UI | Tiles respond, tallies increment | Crashes, no beep, idle message while riding |
 | Bonus action | Opens tagging screen | No action |
 | Radar (if paired) | `radar_count` / `radar_near` vary | Always 0 / disconnected |
 

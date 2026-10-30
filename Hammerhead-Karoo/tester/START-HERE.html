@@ -39,12 +39,13 @@
   <tr><th>File</th><th>What it is</th></tr>
   <tr><td><code>scout-karoo-@VERSION@.apk</code></td><td>The Scout app to install on your Karoo</td></tr>
   <tr><td><code>START-HERE.html</code></td><td>This guide</td></tr>
+  <tr><td><code>MANUAL.html</code></td><td>The full user manual: setup, every tile and its choices, troubleshooting</td></tr>
   <tr><td><code>fit-viewer.html</code></td><td>Optional: open it in a browser on your computer to look at Scout's data in your ride file</td></tr>
 </table>
 
 <h2>1. Before you start</h2>
 <ul>
-  <li>A <strong>Hammerhead Karoo 2 or Karoo 3</strong>, updated to Karoo OS <strong>1.538.2049 or newer</strong>.</li>
+  <li>A <strong>Hammerhead Karoo 2 or Karoo 3</strong>, with its <strong>latest software update</strong> installed.</li>
   <li>Optional: a <strong>rear radar</strong> (Garmin Varia or similar ANT+ radar). Scout works without one, but radar data is half of what we're testing.</li>
 </ul>
 
@@ -67,8 +68,8 @@
 
 <h2>3. One-time setup on the Karoo</h2>
 <ol>
-  <li><strong>Add the Scout field to a ride profile (required).</strong> Edit a data page in the profile you'll ride with and add the <strong>Scout</strong> field. Give it a decent-sized slot: it's a graphical field. <em>Without this field, Scout doesn't record anything.</em> You don't have to look at that page while riding; Scout records in the background on regardless of which page you view.</li>
-  <li><strong>Assign the Tag ride button (recommended).</strong> In your controller / button settings, assign the bonus action <strong>Tag ride</strong> to a button. Pressing it opens the tagging screen. You can also open it from the Scout app → <strong>Open tagging</strong>.</li>
+  <li><strong>Add the Scout field to a ride profile (required).</strong> In the profile you'll ride with, add a data page with a single field and make it <strong>Scout</strong>, so it fills the whole page. That page shows the tag tiles, and you tag by swiping to it and tapping a tile, the same as a Garmin data field. (In a small slot the field only shows status; tapping it opens the tagging screen.) <em>Without this field, Scout doesn't record anything.</em> You don't have to look at that page while riding; Scout records in the background on regardless of which page you view.</li>
+  <li><strong>Tag ride button (optional).</strong> You can also assign the bonus action <strong>Tag ride</strong> to a controller button; it opens a full-screen copy of the tiles. The Scout app → <strong>Open tagging</strong> does the same.</li>
   <li><strong>Pair your radar (optional).</strong> Pair it as usual in Karoo <strong>Settings → Sensors</strong>. Scout has no pairing screen of its own.</li>
 </ol>
 
@@ -85,10 +86,10 @@
 
 <h3>Ride B: tagging</h3>
 <ol>
-  <li>Start a ride, then press your <strong>Tag ride</strong> button.</li>
-  <li>Tap a few tiles. You should feel a buzz or hear a beep on every tag.</li>
-  <li>Try a tile that opens a sub-menu (e.g. Danger), pick an option, then <strong>close the screen straight away</strong>. The tag should still be saved.</li>
-  <li><strong>Undo:</strong> tap the same tile again quickly; you get a different buzz.</li>
+  <li>Start a ride and swipe to the Scout page. (If tapping the tiles there does nothing, use your <strong>Tag ride</strong> button and tell us.)</li>
+  <li>Tap a few tiles. You should hear a beep on every tag. Please try once with the Karoo's sounds turned off too, and tell us whether it still beeps.</li>
+  <li>Try a tile that opens a sub-menu (e.g. Notice), pick an option, then <strong>close the screen straight away</strong>. The tag should still be saved.</li>
+  <li><strong>Undo:</strong> tap the same tile again quickly; you hear a different, two-tone beep.</li>
   <li><strong>Surface:</strong> start a surface stretch and later end it with the <em>End</em> banner.</li>
   <li>Go back to your normal pages, ride a bit, end the ride.</li>
 </ol>
@@ -101,10 +102,10 @@
 
 <h2>5. What to send back</h2>
 <ul>
-  <li><strong>Karoo model</strong> (2 or 3) and <strong>Karoo OS version</strong> (Settings → About).</li>
+  <li><strong>Karoo model</strong> (2 or 3) and <strong>Karoo software version</strong> (shown in the Karoo settings).</li>
   <li>For each ride: radar yes/no, roughly how many tags you made, and, for Ride C, your car count and Scout's.</li>
   <li><strong>The ride <code>.fit</code> files.</strong> Get them from the Hammerhead dashboard (export activity), a service you sync to, or over USB.</li>
-  <li>Anything odd: crashes, a Scout field that stays on <em>idle</em> while riding, missing buzzes, a frozen screen. Photos of the Karoo screen help a lot.</li>
+  <li>Anything odd: crashes, a Scout field that stays on <em>idle</em> while riding, missing beeps, a frozen screen. Photos of the Karoo screen help a lot.</li>
 </ul>
 
 <h2>6. Optional: look at your data</h2>
@@ -114,7 +115,7 @@
 <ul>
   <li><code>radar_speed</code> in the file is always <strong>255</strong> (meaning "unknown"): Karoo doesn't give apps the radar's car speeds. The car speed on screen is an estimate.</li>
   <li>Tagging only works while the ride is recording, not while paused.</li>
-  <li>Tags can't be made from the small Scout field; use the Tag ride screen.</li>
+  <li>If the Scout field is less than half a page, it shows status only; tap it to open the tag screen.</li>
 </ul>
 </main>
 </body>

@@ -15,6 +15,7 @@ Android extension.
 
 | Doc | Contents |
 | --- | --- |
+| [docs/MANUAL.html](docs/MANUAL.html) | User manual: install, Scout page setup, tiles, troubleshooting (ships in the release zip) |
 | [docs/TECHNICAL.md](docs/TECHNICAL.md) | Extension architecture, FIT via `startFit`, radar, UI plan, phases |
 | [docs/SETUP.md](docs/SETUP.md) | karoo-ext dependency, build, sideload, FIT smoke test |
 | [docs/HANDOFF.md](docs/HANDOFF.md) | Real-device validation checklist |
