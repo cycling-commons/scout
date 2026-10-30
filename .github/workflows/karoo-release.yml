@@ -30,6 +30,7 @@ jobs:
             exit 1
           fi
           echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "code=$(sed -n 's/.*versionCode = \([0-9]*\).*/\1/p' Hammerhead-Karoo/app/build.gradle.kts)" >> "$GITHUB_OUTPUT"
 
       - name: Fetch karoo-ext
         run: git clone --depth 1 --branch 1.1.9 https://github.com/hammerheadnav/karoo-ext.git Hammerhead-Karoo/.deps/karoo-ext
@@ -58,26 +59,50 @@ jobs:
       - name: Package tester bundle
         env:
           VERSION: ${{ steps.version.outputs.version }}
+          VERSION_CODE: ${{ steps.version.outputs.code }}
         run: |
+          channel="stable"
+          case "$VERSION" in *-*) channel="beta" ;; esac
+          MANIFEST_URL="https://github.com/$GITHUB_REPOSITORY/releases/download/karoo/$channel/manifest.json"
           apk="scout-karoo-$VERSION.apk"
           pkg="Scout-Karoo-$VERSION"
           url="https://github.com/$GITHUB_REPOSITORY/releases/download/$GITHUB_REF_NAME/$apk"
           mkdir -p "dist/$pkg"
           cp Hammerhead-Karoo/app/build/outputs/apk/release/app-release.apk "dist/$apk"
           cp "dist/$apk" "dist/$pkg/"
-          sed -e "s|@VERSION@|$VERSION|g" -e "s|@APK_URL@|$url|g" \
-            Hammerhead-Karoo/tester/START-HERE.html > "dist/$pkg/START-HERE.html"
+          # Update manifest (karoo-ext app/manifest.json format): a Karoo installed
+          # from its URL checks latestVersionCode and offers the APK as an update.
+          cp Brand/logo-square-transparant.png dist/scout-karoo-icon.png
+          jq -n \
+            --arg version "$VERSION" \
+            --argjson code "$VERSION_CODE" \
+            --arg apk "$url" \
+            --arg icon "https://github.com/$GITHUB_REPOSITORY/releases/download/karoo/$channel/scout-karoo-icon.png" \
+            --arg notes "Scout for Karoo $VERSION: https://github.com/$GITHUB_REPOSITORY/releases/tag/$GITHUB_REF_NAME" \
+            '{
+              label: "Scout",
+              packageName: "org.cyclingcommons.scout.karoo",
+              iconUrl: $icon,
+              latestApkUrl: $apk,
+              latestVersion: $version,
+              latestVersionCode: $code,
+              developer: "Cycling Commons",
+              description: "Tag what you see on a ride (resupply, closures, surface, hazards, scenery) with a tap. Tags and optional rear-radar readings are saved in the ride FIT file. No account, uploads nothing.",
+              releaseNotes: $notes
+            }' > dist/manifest.json
           cp Hammerhead-Karoo/docs/MANUAL.html "dist/$pkg/"
           cp tools/fit-viewer.html "dist/$pkg/"
           (cd dist && zip -qr "$pkg.zip" "$pkg")
           cat > dist/notes.md <<EOF
           **Install on a Karoo 3:** open this link on your phone, tap Share, choose Hammerhead Companion:
-          $url
+          $MANIFEST_URL
+
+          It always points to the newest $channel build, and the Karoo offers later versions as updates by itself.
+          This version only: $url
 
           **Karoo 2 / ADB:** \`adb install -r $apk\`
 
-          Tester sheet (download link, test rides, what to send back): START-HERE.html inside \`$pkg.zip\`.
-          User manual (install, setup, tiles, troubleshooting): MANUAL.html in the same zip.
+          Manual (install, setup, tiles, troubleshooting, and for beta testers the test rides and what to send back): MANUAL.html inside \`$pkg.zip\`.
           EOF
 
       - name: Keep R8 mapping
@@ -97,3 +122,23 @@ jobs:
             --title "Scout for Karoo $VERSION" \
             --notes-file dist/notes.md \
             "dist/scout-karoo-$VERSION.apk" "dist/Scout-Karoo-$VERSION.zip"
+
+      # Update channels: fixed releases whose manifest.json names the newest build,
+      # so the install link never changes for installed Karoos. karoo/beta gets
+      # every build, karoo/stable only tags without a suffix. (releases/latest
+      # can't serve this: it skips pre-releases and is shared with the other ports.)
+      - name: Update channels
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          channels="beta"
+          case "$VERSION" in *-*) ;; *) channels="beta stable" ;; esac
+          for channel in $channels; do
+            if ! gh release view "karoo/$channel" >/dev/null 2>&1; then
+              gh release create "karoo/$channel" --prerelease --target "$GITHUB_SHA" \
+                --title "Scout for Karoo: $channel update channel" \
+                --notes "Holds the update manifest Karoos check for new Scout builds. Install link: https://github.com/$GITHUB_REPOSITORY/releases/download/karoo/$channel/manifest.json"
+            fi
+            gh release upload "karoo/$channel" dist/manifest.json dist/scout-karoo-icon.png --clobber
+          done

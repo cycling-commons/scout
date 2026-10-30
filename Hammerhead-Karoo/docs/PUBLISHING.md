@@ -30,8 +30,12 @@ Official guide: [Companion App Sideloading](https://support.hammerhead.io/hc/en-
 
 Typical flow:
 
-1. Publish the APK at a stable URL (the GitHub release asset link).
-2. On the phone, open the APK link → **Share** → **Hammerhead Companion**.
+1. Publish the update manifest at a stable URL (CI does this, see
+   [below](#github-releases-ci)):
+   `https://github.com/cycling-commons/scout/releases/download/karoo/stable/manifest.json`
+   (testers: `karoo/beta` instead of `karoo/stable`)
+2. On the phone, open the manifest link → **Share** → **Hammerhead Companion**.
+   Sharing a bare APK link also installs, but that Karoo never sees updates.
 3. On Karoo, review the prompt → **Install**.
 4. Launch Scout from the app drawer.
 
@@ -45,8 +49,11 @@ Historical walkthrough: [DC Rainmaker sideload guide](https://www.dcrainmaker.co
 
 ### Updates
 
-Long-press the app icon on the Karoo home screen → **Update**, then install the
-new APK via the same sideload path.
+A Karoo installed from the manifest URL checks its `latestVersionCode` and offers
+`latestApkUrl` as an update when it is higher than the installed `versionCode`
+(format: karoo-ext's `app/manifest.json`). So every release must bump
+`versionCode` and be signed with the same key. APK-link and ADB installs don't
+update: reinstall, or install once from the manifest URL.
 
 ---
 
@@ -74,9 +81,21 @@ builds a signed release APK, and publishes a GitHub release with:
 
 - `scout-karoo-<version>.apk`: its download link is what testers open for the
   Companion install
-- `Scout-Karoo-<version>.zip`: APK + `START-HERE.html` (from
-  [`tester/START-HERE.html`](../tester/START-HERE.html), with the version and
-  APK link filled in) + `fit-viewer.html`
+- `Scout-Karoo-<version>.zip`: APK + [`MANUAL.html`](MANUAL.html) (user
+  manual, with a beta-testing section) + `fit-viewer.html`
+It then writes the update manifest and uploads it with the icon to fixed
+**update channel** releases (each created on its first run), replacing the
+previous files. Their manifest URLs are the install links:
+
+| Channel | Gets | Install link |
+| --- | --- | --- |
+| `karoo/beta` | every tag, beta or stable | `…/releases/download/karoo/beta/manifest.json` |
+| `karoo/stable` | tags without a suffix only | `…/releases/download/karoo/stable/manifest.json` |
+
+Testers install from the beta link, riders from the stable link. The stable
+link 404s until the first tag without a suffix. `releases/latest/download/…`
+can't serve this: GitHub's "latest" skips pre-releases and is shared with the
+other Scout ports in this repo.
 
 A tag with a suffix (`karoo/v0.1.0-beta`) becomes a pre-release. The R8 mapping
 is kept as a workflow artifact for decoding crash traces.

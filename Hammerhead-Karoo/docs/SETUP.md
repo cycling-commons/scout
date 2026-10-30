@@ -130,8 +130,8 @@ See **[PUBLISHING.md](PUBLISHING.md)** for full detail. Short version:
 
 ### Update
 
-Long-press the app icon on the Karoo home screen → **Update** (after installing a
-newer APK).
+Installs from the release manifest link update themselves; debug APKs are
+reinstalled the same way (see [PUBLISHING.md](PUBLISHING.md#updates)).
 
 ---
 

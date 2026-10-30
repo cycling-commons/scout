@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Scout for Karoo manual</title>
 <style>
-  /* Same palette as tester/START-HERE.html; Karoo screen mockups use the field's own colours. */
+  /* Karoo screen mockups use the field's own colours. */
   :root { --bg:#ffffff; --fg:#1b1f24; --muted:#5b6470; --accent:#c25b12; --card:#f5f3ef; --line:#e2ddd5; --bezel:#17191c; }
   @media (prefers-color-scheme: dark) {
     :root { --bg:#14181c; --fg:#e8e6e3; --muted:#9aa3ad; --accent:#f08a3e; --card:#1d2227; --line:#2c3238; --bezel:#050607; }
@@ -24,6 +24,7 @@
   th { color:var(--muted); font-weight:600; }
   li { margin:4px 0; }
   a, a:visited { color:var(--accent); font-weight:600; text-decoration:underline; text-underline-offset:2px; }
+  .url { word-break:break-all; }
   nav ol { columns:2; column-gap:32px; padding-left:20px; margin:8px 0 0; }
   @media (max-width:520px) { nav ol { columns:1; } }
 
@@ -57,6 +58,8 @@
 
 <p>Scout lets you tag what you see on a ride (resupply stops, closures, road surface, hazards, scenery) with a tap on your Karoo. The tags, and readings from a rear radar if you have one, are saved inside your ride's normal <code>.fit</code> file. Scout has no account and uploads nothing.</p>
 
+<div class="note"><strong>Beta tester?</strong> Thank you! Install from the <strong>beta</strong> link in <a href="#install">Install Scout</a>, set up the page, then do the test rides in <a href="#beta">Beta testing</a> and send us what it asks for.</div>
+
 <nav>
   <strong>Contents</strong>
   <ol>
@@ -69,20 +72,26 @@
     <li><a href="#data">Your data</a></li>
     <li><a href="#trouble">Troubleshooting</a></li>
     <li><a href="#update">Update or remove</a></li>
+    <li><a href="#beta">Beta testing</a></li>
   </ol>
 </nav>
 
 <h2 id="need">1. What you need</h2>
 <ul>
   <li>A <strong>Hammerhead Karoo 2 or Karoo 3</strong> with its latest software update installed. Scout is a Karoo extension, which needs recent Karoo software.</li>
-  <li>The Scout APK from the <a href="https://github.com/cycling-commons/scout/releases">Scout releases page</a>. Karoo builds are the releases named <strong>Scout for Karoo</strong>.</li>
+  <li>On a Karoo 3: a phone with the <strong>Hammerhead Companion</strong> app. On a Karoo 2: a computer with ADB and the Scout APK from the <a href="https://github.com/cycling-commons/scout/releases">Scout releases page</a> (the releases named <strong>Scout for Karoo</strong>).</li>
   <li>Optional: a <strong>rear radar</strong> (Garmin Varia or similar ANT+ radar).</li>
 </ul>
 
 <h2 id="install">2. Install Scout</h2>
 <h3>Karoo 3: with the Hammerhead Companion app</h3>
 <ol>
-  <li>On your phone, open the releases page and long-press the <code>scout-karoo-….apk</code> link of the newest Scout for Karoo release, then <strong>Share</strong> it. The Companion app installs from a link, not from a downloaded file.</li>
+  <li>On your phone, long-press the install link, then <strong>Share</strong> it. The Companion app installs from a link, not from a downloaded file.
+    <ul>
+      <li><a href="https://github.com/cycling-commons/scout/releases/download/karoo/stable/manifest.json">Regular releases</a>: <code class="url">https://github.com/cycling-commons/scout/releases/download/karoo/stable/manifest.json</code></li>
+      <li><a href="https://github.com/cycling-commons/scout/releases/download/karoo/beta/manifest.json">Beta testers</a>, also getting test builds: <code class="url">https://github.com/cycling-commons/scout/releases/download/karoo/beta/manifest.json</code></li>
+    </ul>
+    The link always points to the newest version of its kind, and a Karoo installed from it offers later versions as updates. Installed an earlier beta from an APK link? Install once more from the link to get updates.</li>
   <li>Choose <strong>Hammerhead Companion</strong> as the share target.</li>
   <li>On the Karoo, accept the prompt and tap <strong>Install</strong>.</li>
 </ol>
@@ -180,8 +189,46 @@
 
 <h2 id="update">9. Update or remove</h2>
 <ul>
-  <li><strong>Update:</strong> install the newer APK the same way you installed Scout. Your profile pages stay as they are.</li>
+  <li><strong>Update:</strong> if you installed with the Companion install link, the Karoo offers new versions by itself; accept the update when it appears. If you installed from an APK link or with ADB, install the newer APK the same way, or switch to the install link once. Your profile pages stay as they are.</li>
   <li><strong>Remove:</strong> uninstall Scout from the Karoo's app settings, then delete the Scout page from your ride profiles.</li>
+</ul>
+
+<h2 id="beta">10. Beta testing</h2>
+<div class="note"><strong>This is an early test on a real Karoo.</strong> Things may break, and that's exactly what we want to find out. A crash or something odd is a useful result. Just note what you were doing when it happened.</div>
+<p>Install from the beta link (<a href="#install">section 2</a>) and give the Scout field <strong>a page of its own</strong> (<a href="#setup">section 3</a>), so it shows the tag tiles. Each test ride takes about 15 minutes. Start and stop the ride on the Karoo as usual.</p>
+
+<h3>Ride A: recording without tagging</h3>
+<ol>
+  <li>Start a ride. For the first few minutes, stay on a page <strong>without</strong> the Scout field.</li>
+  <li>If you have a radar, ride somewhere cars pass you.</li>
+  <li>Swipe to the Scout page and check that it shows <strong>RECORDING</strong>, a tag count, and a radar line (e.g. <em>no radar</em> or <em>3 cars</em>).</li>
+  <li>End and save the ride.</li>
+</ol>
+
+<h3>Ride B: tagging</h3>
+<ol>
+  <li>Start a ride and swipe to the Scout page.</li>
+  <li><strong>Tap a few tiles.</strong> Does the tile light up and the count go up? If tapping does nothing, use the <strong>Tag ride</strong> bonus action or the Scout app's <strong>Open tagging</strong> instead, and tell us.</li>
+  <li><strong>Beeps:</strong> do you hear a beep on every tag? Try once with the Karoo's sounds turned off too, and tell us whether it still beeps.</li>
+  <li><strong>Choices:</strong> tap NOTICE, pick an option, then <strong>swipe to another page straight away</strong>. The tag should still be saved (the count goes up).</li>
+  <li><strong>Undo:</strong> tap OTHER, then tap it again within 3 seconds. You should hear a different, two-tone beep and the count goes back down.</li>
+  <li><strong>Surface:</strong> tap SURFACE and pick one. Ride a bit, then end the stretch with the red <strong>END</strong> strip at the bottom.</li>
+  <li>Go back to your normal pages, ride a bit, end the ride.</li>
+</ol>
+
+<h3>Ride C: radar car count (if you have a radar)</h3>
+<ol>
+  <li>Ride a road with some traffic and roughly <strong>count the cars that overtake you</strong>.</li>
+  <li>At the end, compare your count with the <em>cars</em> number on the Scout page.</li>
+</ol>
+
+<h3>What to send back</h3>
+<ul>
+  <li><strong>Karoo model</strong> (2 or 3), <strong>Karoo software version</strong> (shown in the Karoo settings) and the <strong>Scout version</strong> (in the Karoo app list).</li>
+  <li>Ride B: did taps on the Scout page work, and did it beep with sounds on and with sounds off?</li>
+  <li>For each ride: radar yes/no, roughly how many tags you made, and, for Ride C, your car count and Scout's.</li>
+  <li><strong>The ride <code>.fit</code> files.</strong> Get them from the Hammerhead dashboard (export activity), a service you sync to, or over USB.</li>
+  <li>Anything odd: crashes, a Scout page that says to start a ride while you're riding, missing beeps, a frozen screen. Photos of the Karoo screen help a lot.</li>
 </ul>
 </main>
 
